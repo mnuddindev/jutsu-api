@@ -9,8 +9,6 @@ The word _Jutsu_ literally translates to _Art_ in Japanese (**術**). And that's
 
 ## ✨ Features
 
-> _Constantly evolving — new modules will be added with every release, this is only inits._
-
 - ⚙️ RESTful endpoints for anime, episodes, and streaming sources
 - ⚡ Fast response times powered by Go’s concurrency
 - 🔐 Secure JWT authentication
@@ -21,7 +19,9 @@ The word _Jutsu_ literally translates to _Art_ in Japanese (**術**). And that's
 
 ---
 
-## 🧱 Tech Stack (Inits, will be updated soon)
+## 🧱 Tech Stack
+
+> _Constantly evolving — new modules will be added with every release, this is only inits._
 
 | Component        | Technology                                 |
 | ---------------- | ------------------------------------------ |
