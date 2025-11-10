@@ -26,11 +26,57 @@ The word _Jutsu_ literally translates to _Art_ in Japanese (**術**). And that's
 | Component        | Technology                                 |
 | ---------------- | ------------------------------------------ |
 | **Language**     | Go (Golang)                                |
-| **Database**     | PostgreSQL                                 |
+| **Framework**    | GoFiber v2                                 |
 | **Cache**        | Redis                                      |
-| **Auth**         | JWT-based                                  |
+| **Config**       | Viper + godotenv                           |
+| **Logger**       | Zap                                        |
+| **Validation**   | go-playground/validator                    |
+| **Docs**         | Swagger                                    |
 | **Architecture** | Clean Architecture (Domain Driven Design)  |
-| **Docs**         | Swagger / Postman Collection (coming soon) |
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Go 1.25+
+- Redis 6+ (optional)
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies: `make install`
+3. Setup environment: `cp .env.example .env`
+4. Start services: `make docker-up`
+5. Run the application: `make run`
+
+See [SETUP.md](SETUP.md) for detailed setup instructions.
+
+## 📁 Project Structure
+
+```
+jutsu-api/
+├── cmd/api/           # Application entry point
+├── internal/
+│   ├── config/        # Configuration
+│   ├── infrastructure/ # Cache, logger
+│   ├── interface/     # HTTP handlers, middleware
+│   └── usecase/       # Business logic
+├── pkg/utils/         # Utilities
+└── docs/              # Swagger documentation
+```
+
+## ✨ Features
+
+- ✅ Clean Architecture
+- ✅ Configuration management
+- ✅ Structured logging
+- ✅ Redis caching
+- ✅ Request validation
+- ✅ CORS & Recovery middleware
+- ✅ Swagger documentation
+- ✅ Graceful shutdown
+- ✅ Health checks
+- ✅ Docker support
+- ✅ Modular design
 
 ---
 

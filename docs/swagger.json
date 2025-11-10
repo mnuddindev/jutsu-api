@@ -1,0 +1,103 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Jutsu API",
+        "description": "A high-performance anime streaming API built with Go",
+        "version": "1.0.0",
+        "contact": {
+            "name": "API Support",
+            "email": "support@jutsu-api.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "tags": [
+        {
+            "name": "health",
+            "description": "Health check endpoints"
+        }
+    ],
+    "paths": {
+        "/health": {
+            "get": {
+                "tags": ["health"],
+                "summary": "Health check",
+                "description": "Check the health of the application and its services",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/HealthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ready": {
+            "get": {
+                "tags": ["health"],
+                "summary": "Readiness check",
+                "description": "Check if the application is ready to serve traffic",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "503": {
+                        "description": "Service Unavailable"
+                    }
+                }
+            }
+        },
+        "/live": {
+            "get": {
+                "tags": ["health"],
+                "summary": "Liveness check",
+                "description": "Check if the application is alive",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "HealthResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "services": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/ServiceInfo"
+                    }
+                }
+            }
+        },
+        "ServiceInfo": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
+

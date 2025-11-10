@@ -1,0 +1,147 @@
+package main
+
+import (
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"go.uber.org/zap"
+	"github.com/gofiber/fiber/v2"
+
+	"github.com/mnuddindev/jutsu-api/internal/config"
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
+	appLogger "github.com/mnuddindev/jutsu-api/internal/infrastructure/logger"
+	"github.com/mnuddindev/jutsu-api/internal/interface/middleware"
+	"github.com/mnuddindev/jutsu-api/internal/interface/http/router"
+	"github.com/mnuddindev/jutsu-api/internal/interface/validation"
+	
+	_ "github.com/mnuddindev/jutsu-api/docs"
+)
+
+func main() {
+	// Load configuration
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		panic("Failed to load configuration: " + err.Error())
+	}
+
+	// Initialize logger
+	if err := appLogger.InitLogger(&cfg.Logger); err != nil {
+		panic("Failed to initialize logger: " + err.Error())
+	}
+	defer appLogger.Sync()
+
+	appLogger.Info("Starting Jutsu API", zap.String("version", cfg.App.Version))
+
+	// Initialize validator
+	if err := validation.InitValidator(); err != nil {
+		appLogger.Fatal("Failed to initialize validator", zap.Error(err))
+	}
+
+	// Initialize cache (optional - app can run without it)
+	if err := cache.InitCache(&cfg.Redis); err != nil {
+		appLogger.Warn("Failed to initialize cache - continuing without cache", zap.Error(err))
+	} else {
+		defer func() {
+			if err := cache.CloseCache(); err != nil {
+				appLogger.Error("Failed to close cache", zap.Error(err))
+			}
+		}()
+	}
+
+	// Create Fiber app with performance optimizations
+	app := fiber.New(fiber.Config{
+		AppName:               cfg.App.Name,
+		Prefork:               cfg.Server.Prefork,
+		ServerHeader:          "Jutsu",
+		StrictRouting:         true,
+		CaseSensitive:         true,
+		DisableDefaultDate:    false,
+		DisableStartupMessage: false,
+		ReadTimeout:           time.Duration(cfg.Server.ReadTimeout) * time.Second,
+		WriteTimeout:          time.Duration(cfg.Server.WriteTimeout) * time.Second,
+		IdleTimeout:           time.Duration(cfg.Server.IdleTimeout) * time.Second,
+		EnablePrintRoutes:     cfg.App.Debug,
+		EnableTrustedProxyCheck: true,
+		TrustedProxies:        []string{"0.0.0.0/0"},
+		ProxyHeader:           fiber.HeaderXForwardedFor,
+		ErrorHandler:          errorHandler,
+	})
+
+	// Setup middleware
+	setupMiddleware(app, cfg)
+
+	// Setup routes
+	router.SetupRoutes(app)
+
+	// Create a channel to receive OS signals
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+
+	// Start server in a goroutine for graceful shutdown
+	addr := cfg.GetServerAddr()
+	go func() {
+		if err := app.Listen(addr); err != nil {
+			appLogger.Fatal("Failed to start server", zap.Error(err))
+		}
+	}()
+
+	// Small delay to ensure Fiber startup message is printed
+	time.Sleep(100 * time.Millisecond)
+
+	// Wait for interrupt signal to gracefully shutdown the server
+	<-quit
+
+	appLogger.Info("Shutting down server...")
+
+	// Gracefully shutdown server with a timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := app.ShutdownWithContext(ctx); err != nil {
+		appLogger.Error("Server forced to shutdown", zap.Error(err))
+	}
+
+	appLogger.Info("Server exited")
+}
+
+// setupMiddleware sets up all middleware
+func setupMiddleware(app *fiber.App, cfg *config.Config) {
+	// Recovery middleware (should be first)
+	app.Use(middleware.SetupRecover())
+
+	// CORS middleware
+	app.Use(middleware.SetupCORS(&cfg.Cors))
+
+	// Request logger middleware
+	app.Use(middleware.RequestLogger())
+
+	// Add other middleware here as needed
+}
+
+// errorHandler is a custom error handler
+func errorHandler(c *fiber.Ctx, err error) error {
+	code := fiber.StatusInternalServerError
+	message := "Internal Server Error"
+
+	// Check if it's a fiber error
+	if e, ok := err.(*fiber.Error); ok {
+		code = e.Code
+		message = e.Message
+	}
+
+	appLogger.Error("Request error",
+		zap.Error(err),
+		zap.String("path", c.Path()),
+		zap.String("method", c.Method()),
+		zap.Int("status", code),
+	)
+
+	return c.Status(code).JSON(fiber.Map{
+		"success": false,
+		"message": message,
+	})
+}
+

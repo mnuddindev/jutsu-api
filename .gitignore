@@ -27,6 +27,33 @@ go.work.sum
 # env file
 .env
 
+# Build artifacts
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test coverage
+coverage.html
+coverage.out
+
+# Logs
+*.log
+logs/
+
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+postgres_data/
+redis_data/
+SETUP.md
