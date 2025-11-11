@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"strings"
 
-	"go.uber.org/zap"
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	enTranslations "github.com/go-playground/validator/v10/translations/en"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 
 	appLogger "github.com/mnuddindev/jutsu-api/internal/infrastructure/logger"
 )
@@ -113,4 +113,3 @@ func registerCustomValidators() {
 	// Example:
 	// Validate.RegisterValidation("custom_tag", customValidatorFunc)
 }
-

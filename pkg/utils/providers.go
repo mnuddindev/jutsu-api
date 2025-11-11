@@ -2,9 +2,9 @@ package utils
 
 // Providers holds all provider information
 type Providers struct {
-	BaseProviders    []string
-	FallbackStreams  []string
-	StreamProvider   string
+	BaseProviders   []string
+	FallbackStreams []string
+	StreamProvider  string
 }
 
 var (
@@ -69,4 +69,3 @@ func IsValidFallbackStream(stream string) bool {
 	}
 	return false
 }
-

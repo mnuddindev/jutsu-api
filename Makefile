@@ -13,7 +13,7 @@ build:
 # Run the application
 run:
 	@echo "Running $(APP_NAME)..."
-	@go run ./cmd/api
+	@air
 
 # Run tests
 test:

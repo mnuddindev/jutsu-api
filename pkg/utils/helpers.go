@@ -109,4 +109,3 @@ func FormatTime(t time.Time) string {
 func FormatTimeString(t time.Time) string {
 	return t.Format(time.RFC3339)
 }
-

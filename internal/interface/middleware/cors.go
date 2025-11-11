@@ -48,4 +48,3 @@ func SetupCORS(cfg *config.CorsConfig) fiber.Handler {
 		MaxAge:           cfg.MaxAge,
 	})
 }
-

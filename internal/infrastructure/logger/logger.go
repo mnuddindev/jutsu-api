@@ -190,4 +190,3 @@ func LogCacheOperation(operation, key string, err error) {
 		Debug("Cache Operation", fields...)
 	}
 }
-

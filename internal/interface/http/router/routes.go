@@ -87,4 +87,3 @@ var RouteTypes = []string{
 	"az-list/y",
 	"az-list/z",
 }
-

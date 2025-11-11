@@ -20,7 +20,7 @@ func SetupRoutes(app *fiber.App) {
 
 	// API routes (matching the Node.js API structure)
 	notImplementedHandler := handler.NewNotImplementedHandler()
-	
+
 	// Home info routes
 	app.Get("/api", notImplementedHandler.NotImplemented)
 	app.Get("/api/", notImplementedHandler.NotImplemented)
@@ -77,4 +77,3 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/api/watchlist/:userId", notImplementedHandler.NotImplemented)
 	app.Get("/api/watchlist/:userId/:page", notImplementedHandler.NotImplemented)
 }
-

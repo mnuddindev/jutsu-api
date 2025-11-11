@@ -26,7 +26,7 @@ type NotImplementedResponse struct {
 func (h *NotImplementedHandler) NotImplemented(c *fiber.Ctx) error {
 	// Optionally include health status
 	includeHealth := c.Query("health", "false") == "true"
-	
+
 	response := NotImplementedResponse{
 		Success: false,
 		Message: "This endpoint is not yet implemented. It will be available soon.",
@@ -34,7 +34,7 @@ func (h *NotImplementedHandler) NotImplemented(c *fiber.Ctx) error {
 
 	if includeHealth {
 		health := make(map[string]interface{})
-		
+
 		// Check cache status
 		cacheStatus := "healthy"
 		if err := cache.HealthCheck(); err != nil {
@@ -43,11 +43,10 @@ func (h *NotImplementedHandler) NotImplemented(c *fiber.Ctx) error {
 		health["cache"] = map[string]string{
 			"status": cacheStatus,
 		}
-		
+
 		health["timestamp"] = utils.FormatTimeString(utils.Now())
 		response.Health = health
 	}
 
 	return c.Status(fiber.StatusNotImplemented).JSON(response)
 }
-

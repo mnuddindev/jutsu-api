@@ -3,8 +3,8 @@ package middleware
 import (
 	"time"
 
-	"go.uber.org/zap"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 
 	appLogger "github.com/mnuddindev/jutsu-api/internal/infrastructure/logger"
 )
@@ -40,4 +40,3 @@ func RequestLogger() fiber.Handler {
 		return err
 	}
 }
-

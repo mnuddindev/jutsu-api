@@ -78,4 +78,3 @@ func InternalServerError(c *fiber.Ctx, message string) error {
 func UnprocessableEntity(c *fiber.Ctx, message string) error {
 	return ErrorResponse(c, fiber.StatusUnprocessableEntity, message)
 }
-

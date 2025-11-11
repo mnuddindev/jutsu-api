@@ -7,16 +7,17 @@ import (
 	"syscall"
 	"time"
 
-	"go.uber.org/zap"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 
 	"github.com/mnuddindev/jutsu-api/internal/config"
 	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	appLogger "github.com/mnuddindev/jutsu-api/internal/infrastructure/logger"
-	"github.com/mnuddindev/jutsu-api/internal/interface/middleware"
 	"github.com/mnuddindev/jutsu-api/internal/interface/http/router"
+	"github.com/mnuddindev/jutsu-api/internal/interface/middleware"
 	"github.com/mnuddindev/jutsu-api/internal/interface/validation"
-	
+	"github.com/mnuddindev/jutsu-api/pkg/utils"
+
 	_ "github.com/mnuddindev/jutsu-api/docs"
 )
 
@@ -33,6 +34,7 @@ func main() {
 	}
 	defer appLogger.Sync()
 
+	utils.SetAppStartTime(time.Now())
 	appLogger.Info("Starting Jutsu API", zap.String("version", cfg.App.Version))
 
 	// Initialize validator
@@ -53,21 +55,21 @@ func main() {
 
 	// Create Fiber app with performance optimizations
 	app := fiber.New(fiber.Config{
-		AppName:               cfg.App.Name,
-		Prefork:               cfg.Server.Prefork,
-		ServerHeader:          "Jutsu",
-		StrictRouting:         true,
-		CaseSensitive:         true,
-		DisableDefaultDate:    false,
-		DisableStartupMessage: false,
-		ReadTimeout:           time.Duration(cfg.Server.ReadTimeout) * time.Second,
-		WriteTimeout:          time.Duration(cfg.Server.WriteTimeout) * time.Second,
-		IdleTimeout:           time.Duration(cfg.Server.IdleTimeout) * time.Second,
-		EnablePrintRoutes:     cfg.App.Debug,
+		AppName:                 cfg.App.Name,
+		Prefork:                 cfg.Server.Prefork,
+		ServerHeader:            "Jutsu",
+		StrictRouting:           true,
+		CaseSensitive:           true,
+		DisableDefaultDate:      false,
+		DisableStartupMessage:   false,
+		ReadTimeout:             time.Duration(cfg.Server.ReadTimeout) * time.Second,
+		WriteTimeout:            time.Duration(cfg.Server.WriteTimeout) * time.Second,
+		IdleTimeout:             time.Duration(cfg.Server.IdleTimeout) * time.Second,
+		EnablePrintRoutes:       cfg.App.Debug,
 		EnableTrustedProxyCheck: true,
-		TrustedProxies:        []string{"0.0.0.0/0"},
-		ProxyHeader:           fiber.HeaderXForwardedFor,
-		ErrorHandler:          errorHandler,
+		TrustedProxies:          []string{"0.0.0.0/0"},
+		ProxyHeader:             fiber.HeaderXForwardedFor,
+		ErrorHandler:            errorHandler,
 	})
 
 	// Setup middleware
@@ -144,4 +146,3 @@ func errorHandler(c *fiber.Ctx, err error) error {
 		"message": message,
 	})
 }
-

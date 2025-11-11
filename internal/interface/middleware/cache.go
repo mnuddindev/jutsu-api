@@ -72,4 +72,3 @@ func InvalidateCache(pattern string) fiber.Handler {
 		return nil
 	}
 }
-

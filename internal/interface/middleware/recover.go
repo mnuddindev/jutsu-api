@@ -3,9 +3,9 @@ package middleware
 import (
 	"fmt"
 
-	"go.uber.org/zap"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"go.uber.org/zap"
 
 	appLogger "github.com/mnuddindev/jutsu-api/internal/infrastructure/logger"
 )
@@ -27,4 +27,3 @@ func SetupRecover() fiber.Handler {
 		},
 	})
 }
-

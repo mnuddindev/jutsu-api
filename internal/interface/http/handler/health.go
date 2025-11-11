@@ -1,8 +1,13 @@
 package handler
 
 import (
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/config"
 	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
@@ -15,17 +20,31 @@ func NewHealthHandler() *HealthHandler {
 	return &HealthHandler{}
 }
 
-// HealthResponse represents the health check response
-type HealthResponse struct {
-	Status    string                 `json:"status"`
-	Timestamp string                 `json:"timestamp"`
-	Services  map[string]ServiceInfo `json:"services"`
+// CacheCheck represents cache health
+type CacheCheck struct {
+	Status         string `json:"status"`
+	ResponseTimeMs int64  `json:"response_time_ms"`
 }
 
-// ServiceInfo represents service health information
-type ServiceInfo struct {
-	Status  string `json:"status"`
-	Message string `json:"message,omitempty"`
+// ExternalSourcesCheck represents external source health
+type ExternalSourcesCheck struct {
+	AnimeProvider map[string]string `json:"anime_provider"`
+}
+
+// Checks groups all checks
+type Checks struct {
+	Cache           CacheCheck           `json:"cache"`
+	ExternalSources ExternalSourcesCheck `json:"external_sources"`
+}
+
+// HealthResponse represents the health check response
+type HealthResponse struct {
+	Status    string `json:"status"`
+	Service   string `json:"service"`
+	Version   string `json:"version"`
+	Uptime    string `json:"uptime"`
+	Checks    Checks `json:"checks"`
+	Timestamp string `json:"timestamp"`
 }
 
 // Health checks the health of the application and its services
@@ -37,36 +56,54 @@ type ServiceInfo struct {
 // @Success 200 {object} HealthResponse
 // @Router /health [get]
 func (h *HealthHandler) Health(c *fiber.Ctx) error {
-	services := make(map[string]ServiceInfo)
-	allHealthy := true
+	cfg := config.Cfg
+	if cfg == nil {
+		// Fallback if not initialized
+		if loaded, err := config.LoadConfig(); err == nil {
+			cfg = loaded
+		}
+	}
 
-	// Check cache (optional - don't fail if cache is down)
-	cacheStatus := "healthy"
-	cacheMessage := ""
+	// Cache check
+	cacheStart := time.Now()
+	cacheStatus := "ok"
 	if err := cache.HealthCheck(); err != nil {
 		cacheStatus = "unhealthy"
-		cacheMessage = err.Error()
-		// Cache is optional, so we don't set allHealthy to false
 	}
-	services["cache"] = ServiceInfo{
-		Status:  cacheStatus,
-		Message: cacheMessage,
+	cacheCheck := CacheCheck{
+		Status:         cacheStatus,
+		ResponseTimeMs: time.Since(cacheStart).Milliseconds(),
 	}
 
-	status := "healthy"
-	statusCode := fiber.StatusOK
-	if !allHealthy {
-		status = "unhealthy"
-		statusCode = fiber.StatusServiceUnavailable
+	// External providers check with Redis cache (24h)
+	providerStatus := map[string]string{}
+	cached := false
+	if cache.Client != nil {
+		if err := cache.Get("providers:status", &providerStatus); err == nil && len(providerStatus) > 0 {
+			cached = true
+		}
+	}
+	if !cached {
+		providers := utils.GetBaseProviders()
+		for _, p := range providers {
+			providerStatus[p] = probeURL(p)
+		}
+		// cache for 24h
+		_ = cache.Set("providers:status", providerStatus, 24*time.Hour)
 	}
 
-	response := HealthResponse{
-		Status:    status,
+	external := ExternalSourcesCheck{AnimeProvider: providerStatus}
+
+	resp := HealthResponse{
+		Status:    "ok",
+		Service:   cfg.App.Name,
+		Version:   cfg.App.Version,
+		Uptime:    utils.GetUptimeString(),
+		Checks:    Checks{Cache: cacheCheck, ExternalSources: external},
 		Timestamp: utils.FormatTimeString(utils.Now()),
-		Services:  services,
 	}
 
-	return c.Status(statusCode).JSON(response)
+	return c.Status(fiber.StatusOK).JSON(resp)
 }
 
 // Ready checks if the application is ready to serve traffic
@@ -97,3 +134,23 @@ func (h *HealthHandler) Live(c *fiber.Ctx) error {
 	})
 }
 
+// probeURL checks if a provider is reachable and returns "live" or "down"
+func probeURL(hostOrURL string) string {
+	url := hostOrURL
+	if !strings.HasPrefix(strings.ToLower(url), "http://") && !strings.HasPrefix(strings.ToLower(url), "https://") {
+		url = "https://" + hostOrURL
+	}
+	client := &http.Client{Timeout: 2 * time.Second}
+	// Try HEAD first
+	req, _ := http.NewRequest(http.MethodHead, url, nil)
+	resp, err := client.Do(req)
+	if err == nil && resp != nil && resp.StatusCode < 500 {
+		return "live"
+	}
+	// Fallback to GET
+	resp, err = client.Get(url)
+	if err == nil && resp != nil && resp.StatusCode < 500 {
+		return "live"
+	}
+	return "down"
+}

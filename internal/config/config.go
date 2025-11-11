@@ -38,19 +38,19 @@ type ServerConfig struct {
 
 // RedisConfig holds Redis configuration
 type RedisConfig struct {
-	Host            string
-	Port            string
-	Password        string
-	DB              int
-	MaxRetries      int
-	PoolSize        int
-	MinIdleConns    int
-	DialTimeout     int
-	ReadTimeout     int
-	WriteTimeout    int
-	PoolTimeout     int
-	IdleTimeout     int
-	IdleCheckFreq   int
+	Host          string
+	Port          string
+	Password      string
+	DB            int
+	MaxRetries    int
+	PoolSize      int
+	MinIdleConns  int
+	DialTimeout   int
+	ReadTimeout   int
+	WriteTimeout  int
+	PoolTimeout   int
+	IdleTimeout   int
+	IdleCheckFreq int
 }
 
 // LoggerConfig holds logger configuration
@@ -103,19 +103,19 @@ func LoadConfig() (*Config, error) {
 			Prefork:      getBool("SERVER_PREFORK", false),
 		},
 		Redis: RedisConfig{
-			Host:            getString("REDIS_HOST", "localhost"),
-			Port:            getString("REDIS_PORT", "6379"),
-			Password:        getString("REDIS_PASSWORD", ""),
-			DB:              getInt("REDIS_DB", 0),
-			MaxRetries:      getInt("REDIS_MAX_RETRIES", 3),
-			PoolSize:        getInt("REDIS_POOL_SIZE", 10),
-			MinIdleConns:    getInt("REDIS_MIN_IDLE_CONNS", 5),
-			DialTimeout:     getInt("REDIS_DIAL_TIMEOUT", 5),
-			ReadTimeout:     getInt("REDIS_READ_TIMEOUT", 3),
-			WriteTimeout:    getInt("REDIS_WRITE_TIMEOUT", 3),
-			PoolTimeout:     getInt("REDIS_POOL_TIMEOUT", 4),
-			IdleTimeout:     getInt("REDIS_IDLE_TIMEOUT", 5),
-			IdleCheckFreq:   getInt("REDIS_IDLE_CHECK_FREQ", 1),
+			Host:          getString("REDIS_HOST", "localhost"),
+			Port:          getString("REDIS_PORT", "6379"),
+			Password:      getString("REDIS_PASSWORD", ""),
+			DB:            getInt("REDIS_DB", 0),
+			MaxRetries:    getInt("REDIS_MAX_RETRIES", 3),
+			PoolSize:      getInt("REDIS_POOL_SIZE", 10),
+			MinIdleConns:  getInt("REDIS_MIN_IDLE_CONNS", 5),
+			DialTimeout:   getInt("REDIS_DIAL_TIMEOUT", 5),
+			ReadTimeout:   getInt("REDIS_READ_TIMEOUT", 3),
+			WriteTimeout:  getInt("REDIS_WRITE_TIMEOUT", 3),
+			PoolTimeout:   getInt("REDIS_POOL_TIMEOUT", 4),
+			IdleTimeout:   getInt("REDIS_IDLE_TIMEOUT", 5),
+			IdleCheckFreq: getInt("REDIS_IDLE_CHECK_FREQ", 1),
 		},
 		Logger: LoggerConfig{
 			Level:      getString("LOG_LEVEL", "info"),
@@ -213,4 +213,3 @@ func setDefaults() {
 	viper.SetDefault("APP_ENV", "development")
 	viper.SetDefault("APP_DEBUG", false)
 }
-

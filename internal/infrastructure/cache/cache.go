@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"go.uber.org/zap"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 
 	"github.com/mnuddindev/jutsu-api/internal/config"
 	appLogger "github.com/mnuddindev/jutsu-api/internal/infrastructure/logger"
@@ -347,4 +347,3 @@ func HDel(key string, fields ...string) error {
 func GetClient() *redis.Client {
 	return Client
 }
-
