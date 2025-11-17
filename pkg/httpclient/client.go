@@ -33,7 +33,9 @@ func GetWithHeaders(url string, headers map[string]string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
@@ -63,7 +65,9 @@ func PostJSON(url string, payload interface{}, headers map[string]string) (strin
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err

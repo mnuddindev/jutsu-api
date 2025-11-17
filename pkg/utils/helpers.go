@@ -11,7 +11,9 @@ import (
 // GenerateID generates a random ID
 func GenerateID() string {
 	b := make([]byte, 16)
-	rand.Read(b)
+	if _, err := rand.Read(b); err != nil {
+		panic(fmt.Sprintf("utils.GenerateID: rand.Read failed: %v", err))
+	}
 	return hex.EncodeToString(b)
 }
 

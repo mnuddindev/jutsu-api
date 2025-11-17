@@ -172,7 +172,9 @@ func getInt(key string, defaultValue int) int {
 		return defaultValue
 	}
 	var intValue int
-	fmt.Sscanf(value, "%d", &intValue)
+	if _, err := fmt.Sscanf(value, "%d", &intValue); err != nil {
+		return defaultValue
+	}
 	if intValue == 0 {
 		return defaultValue
 	}

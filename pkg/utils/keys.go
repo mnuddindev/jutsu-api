@@ -4,9 +4,10 @@ import (
 	"errors"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
-type ErrorLoadingException struct{
+type ErrorLoadingException struct {
 	error
 }
 
@@ -24,10 +25,16 @@ func MatchingKey(value, script string) (string, error) {
 }
 
 func GetKeys(script string) [][]int {
-	re := regexp.MustCompile(`case\s*0x[0-9a-f]+:(?![^;]*=partKey)\s*\w+\s*=\s*(\w+)\s*,\s*\w+\s*=\s*(\w+);`)
+	re := regexp.MustCompile(`case\s*0x[0-9a-f]+:\s*\w+\s*=\s*(\w+)\s*,\s*\w+\s*=\s*(\w+);`)
 	matches := re.FindAllStringSubmatch(script, -1)
 	var out [][]int
 	for _, m := range matches {
+		if len(m) < 3 {
+			continue
+		}
+		if strings.Contains(strings.ToLower(m[0]), "=partkey") {
+			continue
+		}
 		k1, err1 := MatchingKey(m[1], script)
 		k2, err2 := MatchingKey(m[2], script)
 		if err1 != nil || err2 != nil {

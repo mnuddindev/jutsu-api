@@ -52,3 +52,25 @@ func ExtractSchedule(date string, tzOffset int, baseURL string) ([]ScheduleItem,
 	}
 	return items, nil
 }
+
+// ExtractNextEpisodeSchedule mirrors getNextEpisodeSchedule.extractor.js.
+// It loads the watch page and reads `.schedule-alert > .alert.small > span:last`
+// data-value attribute, which contains the next episode timestamp.
+func ExtractNextEpisodeSchedule(id string, baseURL string) (string, error) {
+	c := utils.NewCollector()
+	var value string
+	url := fmt.Sprintf("https://%s/watch/%s", baseURL, id)
+	c.OnHTML(".schedule-alert > .alert.small > span:last-child", func(e *colly.HTMLElement) {
+		if v := e.Attr("data-value"); strings.TrimSpace(v) != "" {
+			value = strings.TrimSpace(v)
+		}
+	})
+	var errVisit error
+	c.OnError(func(_ *colly.Response, err error) { errVisit = err })
+	_ = c.Visit(url)
+	c.Wait()
+	if errVisit != nil {
+		return "", errVisit
+	}
+	return value, nil
+}
