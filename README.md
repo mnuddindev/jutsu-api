@@ -1,5 +1,5 @@
 <div align="center">
-
+[![Jutsu](https://i.imgur.com/WlFJPl1.png)](#jutsu---a-anime-api-made-with-golang)
 # 🌀 Jutsu API
 
 > **High-Performance Anime Streaming API built with Go**
@@ -72,7 +72,7 @@
 #### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/jutsu-api.git
+git clone https://github.com/mnuddindev/jutsu-api.git
 cd jutsu-api
 ```
 
@@ -372,6 +372,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ using Go**
 
-[⭐ Star this repo](https://github.com/yourusername/jutsu-api) • [🐛 Report Bug](https://github.com/yourusername/jutsu-api/issues) • [💡 Request Feature](https://github.com/yourusername/jutsu-api/issues)
+[⭐ Star this repo](https://github.com/mnuddindev/jutsu-api) • [🐛 Report Bug](https://github.com/mnuddindev/jutsu-api/issues) • [💡 Request Feature](https://github.com/mnuddindev/jutsu-api/issues)
 
 </div>
