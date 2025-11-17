@@ -102,19 +102,3 @@ func ExtractVoiceActorPage(id string, page int, baseURL string) (VoiceActorPageR
 	}
 	return out, nil
 }
-
-func lastSegment(href string) string {
-	parts := strings.Split(strings.Trim(href, "/"), "/")
-	if len(parts) == 0 {
-		return ""
-	}
-	return parts[len(parts)-1]
-}
-
-func seg(href string, idx int) string {
-	parts := strings.Split(strings.Trim(href, "/"), "/")
-	if idx >= 0 && idx < len(parts) {
-		return parts[idx]
-	}
-	return ""
-}

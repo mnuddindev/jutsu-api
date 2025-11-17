@@ -21,7 +21,7 @@ func ExtractRandomID(baseURL string) (string, error) {
 	return lastSegment(loc), nil
 }
 
-// Placeholder: when animeInfo is implemented, call it here to mirror Node behavior
+// ExtractRandom fetches a random anime ID and returns its full info.
 func ExtractRandom(baseURL string) (AnimeInfo, error) {
 	id, err := ExtractRandomID(baseURL)
 	if err != nil {

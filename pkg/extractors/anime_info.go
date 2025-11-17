@@ -252,26 +252,3 @@ func parseCharacterList(html string) ([]CharactersVoiceActors, error) {
 	})
 	return list, nil
 }
-
-func embedID(u string) string {
-	parts := strings.Split(u, "/embed/")
-	if len(parts) < 2 {
-		return ""
-	}
-	tail := parts[1]
-	tail = strings.Split(tail, "?")[0]
-	return strings.Split(tail, "&")[0]
-}
-
-func toString(v interface{}) string {
-	switch val := v.(type) {
-	case string:
-		return val
-	case float64:
-		return fmt.Sprintf("%.0f", val)
-	case json.Number:
-		return val.String()
-	default:
-		return ""
-	}
-}

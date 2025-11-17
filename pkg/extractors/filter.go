@@ -105,9 +105,3 @@ func digits(s string) int {
 	n, _ := strconv.Atoi(s)
 	return n
 }
-func firstNonEmpty(a, b string) string {
-	if a != "" {
-		return a
-	}
-	return b
-}
