@@ -57,6 +57,5 @@ Thumbs.db
 # Docker volumes
 postgres_data/
 redis_data/
-SETUP.md
 dump.rdb
 *.rdb
