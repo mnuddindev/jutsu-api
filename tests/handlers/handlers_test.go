@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -114,8 +115,8 @@ func TestHandlerValidation(t *testing.T) {
 		h := handler.NewAnimeInfoHandler()
 		app.Get("/test", h.GetAnimeInfo)
 
-		req := httptest.NewRequest("GET", "/test", nil)
-		resp, err := app.Test(req)
+		req := httptest.NewRequest(http.MethodGet, "/test", nil)
+		resp, err := app.Test(req, -1)
 		assert.NoError(t, err)
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
@@ -124,8 +125,8 @@ func TestHandlerValidation(t *testing.T) {
 		h := handler.NewEpisodeListHandler()
 		app.Get("/test/:id", h.GetEpisodes)
 
-		req := httptest.NewRequest("GET", "/test/", nil)
-		resp, err := app.Test(req)
+		req := httptest.NewRequest(http.MethodGet, "/test/", nil)
+		resp, err := app.Test(req, -1)
 		assert.NoError(t, err)
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
@@ -134,8 +135,8 @@ func TestHandlerValidation(t *testing.T) {
 		h := handler.NewServersHandler()
 		app.Get("/test", h.GetServers)
 
-		req := httptest.NewRequest("GET", "/test", nil)
-		resp, err := app.Test(req)
+		req := httptest.NewRequest(http.MethodGet, "/test", nil)
+		resp, err := app.Test(req, -1)
 		assert.NoError(t, err)
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
@@ -144,8 +145,8 @@ func TestHandlerValidation(t *testing.T) {
 		h := handler.NewSuggestionHandler()
 		app.Get("/test", h.GetSuggestions)
 
-		req := httptest.NewRequest("GET", "/test", nil)
-		resp, err := app.Test(req)
+		req := httptest.NewRequest(http.MethodGet, "/test", nil)
+		resp, err := app.Test(req, -1)
 		assert.NoError(t, err)
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 	})
