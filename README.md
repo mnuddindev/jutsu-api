@@ -1,5 +1,7 @@
-<div align="center">
 [![Jutsu](https://i.imgur.com/WlFJPl1.png)](#jutsu---a-anime-api-made-with-golang)
+
+<div align="center">
+
 # 🌀 Jutsu API
 
 > **High-Performance Anime Streaming API built with Go**
