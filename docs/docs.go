@@ -4,40 +4,30 @@ package docs
 import "github.com/swaggo/swag"
 
 const docTemplate = `{
+    "schemes": {{ marshal .Schemes }},
     "swagger": "2.0",
     "info": {
-        "title": "Jutsu API",
-        "description": "A high-performance anime streaming API built with Go",
-        "version": "1.0.0",
-        "contact": {
-            "name": "API Support",
-            "email": "support@jutsu-api.com"
-        },
-        "license": {
-            "name": "MIT",
-            "url": "https://opensource.org/licenses/MIT"
-        }
+        "description": "{{escape .Description}}",
+        "title": "{{.Title}}",
+        "contact": {},
+        "version": "{{.Version}}"
     },
-    "host": "localhost:8080",
-    "basePath": "/api/v1",
-    "schemes": [
-        "http",
-        "https"
-    ],
-    "tags": [
-        {
-            "name": "health",
-            "description": "Health check endpoints"
-        }
-    ],
+    "host": "{{.Host}}",
+    "basePath": "{{.BasePath}}",
     "paths": {
         "/health": {
             "get": {
+                "description": "Check the health of the application and its services",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "health"
                 ],
                 "summary": "Health check",
-                "description": "Check the health of the application and its services",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -48,63 +38,112 @@ const docTemplate = `{
                 }
             }
         },
-        "/ready": {
-            "get": {
-                "tags": [
-                    "health"
-                ],
-                "summary": "Readiness check",
-                "description": "Check if the application is ready to serve traffic",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "503": {
-                        "description": "Service Unavailable"
-                    }
-                }
-            }
-        },
         "/live": {
             "get": {
+                "description": "Check if the application is alive",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "health"
                 ],
                 "summary": "Liveness check",
-                "description": "Check if the application is alive",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ready": {
+            "get": {
+                "description": "Check if the application is ready to serve traffic",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Readiness check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "handler.CacheCheck": {
+            "type": "object",
+            "properties": {
+                "response_time_ms": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.Checks": {
+            "type": "object",
+            "properties": {
+                "cache": {
+                    "$ref": "#/definitions/handler.CacheCheck"
+                },
+                "external_sources": {
+                    "$ref": "#/definitions/handler.ExternalSourcesCheck"
+                }
+            }
+        },
+        "handler.ExternalSourcesCheck": {
+            "type": "object",
+            "properties": {
+                "anime_provider": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "handler.HealthResponse": {
             "type": "object",
             "properties": {
+                "checks": {
+                    "$ref": "#/definitions/handler.Checks"
+                },
+                "service": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 },
                 "timestamp": {
                     "type": "string"
                 },
-                "services": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/handler.ServiceInfo"
-                    }
-                }
-            }
-        },
-        "handler.ServiceInfo": {
-            "type": "object",
-            "properties": {
-                "status": {
+                "uptime": {
                     "type": "string"
                 },
-                "message": {
+                "version": {
                     "type": "string"
                 }
             }
@@ -114,14 +153,16 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0.0",
-	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
-	Schemes:          []string{"http", "https"},
-	Title:            "Jutsu API",
-	Description:      "A high-performance anime streaming API built with Go",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
+	Schemes:          []string{},
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {

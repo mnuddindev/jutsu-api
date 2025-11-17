@@ -1,0 +1,29 @@
+package extractors
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func ExtractRandomID(baseURL string) (string, error) {
+	client := &http.Client{CheckRedirect: func(req *http.Request, via []*http.Request) error { return http.ErrUseLastResponse }}
+	resp, err := client.Get(fmt.Sprintf("https://%s/random", baseURL))
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	loc := resp.Header.Get("Location")
+	if loc == "" {
+		return "", nil
+	}
+	return lastSegment(loc), nil
+}
+
+// Placeholder: when animeInfo is implemented, call it here to mirror Node behavior
+func ExtractRandom(baseURL string) (map[string]interface{}, error) {
+	id, err := ExtractRandomID(baseURL)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]interface{}{"id": id}, nil
+}

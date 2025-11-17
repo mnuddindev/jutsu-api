@@ -2,15 +2,15 @@ package scrape
 
 import (
 	"fmt"
-	"net/http"
 	"strconv"
 	"strings"
 
-	"github.com/PuerkitoBio/goquery"
+	"github.com/gocolly/colly/v2"
+	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 type TVInfo struct {
-	ShowType  string `json:"showType"`
+	ShowType string `json:"showType"`
 	Duration string `json:"duration"`
 	Sub      string `json:"sub,omitempty"`
 	Dub      string `json:"dub,omitempty"`
@@ -30,74 +30,69 @@ type ExtractedItem struct {
 
 func ExtractPage(page int, params, baseURL string) ([]ExtractedItem, int, error) {
 	url := fmt.Sprintf("https://%s/%s?page=%d", baseURL, params, page)
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, 0, err
-	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, 0, err
-	}
-	defer resp.Body.Close()
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	if err != nil {
-		return nil, 0, err
-	}
-	// totalPages
-	lastSel := doc.Find(`.pre-pagination nav .pagination > .page-item a[title="Last"]`)
-	nextSel := doc.Find(`.pre-pagination nav .pagination > .page-item a[title="Next"]`)
-	activeText := strings.TrimSpace(doc.Find(".pre-pagination nav .pagination > .page-item.active a").Text())
-	var totalPages int
-	if href, ok := lastSel.Attr("href"); ok {
-		parts := strings.Split(href, "=")
-		last := parts[len(parts)-1]
-		totalPages, _ = strconv.Atoi(last)
-	}
-	if totalPages == 0 {
-		if href, ok := nextSel.Attr("href"); ok {
+	c := utils.NewCollector()
+
+	items := make([]ExtractedItem, 0, 50)
+	totalPages := 1
+
+	c.OnHTML(`.pre-pagination nav .pagination > .page-item a[title="Last"]`, func(e *colly.HTMLElement) {
+		if href := e.Attr("href"); href != "" {
 			parts := strings.Split(href, "=")
 			last := parts[len(parts)-1]
-			totalPages, _ = strconv.Atoi(last)
+			if n, err := strconv.Atoi(last); err == nil && n > 0 {
+				totalPages = n
+			}
 		}
-	}
-	if totalPages == 0 {
-		totalPages, _ = strconv.Atoi(activeText)
-		if totalPages == 0 {
-			totalPages = 1
+	})
+	c.OnHTML(`.pre-pagination nav .pagination > .page-item a[title="Next"]`, func(e *colly.HTMLElement) {
+		if totalPages != 1 {
+			return
 		}
-	}
+		if href := e.Attr("href"); href != "" {
+			parts := strings.Split(href, "=")
+			last := parts[len(parts)-1]
+			if n, err := strconv.Atoi(last); err == nil && n > 0 {
+				totalPages = n
+			}
+		}
+	})
+	c.OnHTML(`.pre-pagination nav .pagination > .page-item.active a`, func(e *colly.HTMLElement) {
+		if totalPages != 1 {
+			return
+		}
+		if n, err := strconv.Atoi(strings.TrimSpace(e.Text)); err == nil && n > 0 {
+			totalPages = n
+		}
+	})
+
 	contentSelector := ".tab-content"
 	if !strings.Contains(params, "az-list") {
 		contentSelector = "#main-content"
 	}
-	var items []ExtractedItem
-	doc.Find(contentSelector + " .film_list-wrap .flw-item").Each(func(i int, s *goquery.Selection) {
-		fdi := s.Find(".film-detail .fd-infor .fdi-item")
-		var showType string
-		fdi.EachWithBreak(func(_ int, fs *goquery.Selection) bool {
-			t := strings.ToLower(strings.TrimSpace(fs.Text()))
+	c.OnHTML(contentSelector+" .film_list-wrap .flw-item", func(e *colly.HTMLElement) {
+		// showType
+		showType := "Unknown"
+		e.ForEach(".film-detail .fd-infor .fdi-item", func(_ int, el *colly.HTMLElement) {
+			t := strings.ToLower(strings.TrimSpace(el.Text))
 			for _, typ := range []string{"tv", "ona", "movie", "ova", "special"} {
 				if strings.Contains(t, typ) {
-					showType = strings.TrimSpace(fs.Text())
-					return false
+					showType = strings.TrimSpace(el.Text)
 				}
 			}
-			return true
 		})
-		poster, _ := s.Find(".film-poster>img").Attr("data-src")
-		title := s.Find(".film-detail .film-name").Text()
-		jtitle, _ := s.Find(".film-detail>.film-name>a").Attr("data-jname")
-		desc := strings.TrimSpace(s.Find(".film-detail .description").Text())
-		dataID, _ := s.Find(".film-poster>a").Attr("data-id")
-		idHref, _ := s.Find(".film-poster>a").Attr("href")
+		poster := e.ChildAttr(".film-poster>img", "data-src")
+		title := e.ChildText(".film-detail .film-name")
+		jtitle := e.ChildAttr(".film-detail>.film-name>a", "data-jname")
+		desc := strings.TrimSpace(e.ChildText(".film-detail .description"))
+		dataID := e.ChildAttr(".film-poster>a", "data-id")
+		idHref := e.ChildAttr(".film-poster>a", "href")
 		id := idHref
 		if parts := strings.Split(idHref, "/"); len(parts) > 0 {
 			id = parts[len(parts)-1]
 		}
-		tv := TVInfo{ShowType: strings.TrimSpace(showType), Duration: strings.TrimSpace(s.Find(".film-detail .fd-infor .fdi-duration").Text())}
+		tv := TVInfo{ShowType: strings.TrimSpace(showType), Duration: strings.TrimSpace(e.ChildText(".film-detail .fd-infor .fdi-duration"))}
 		for _, prop := range []string{"sub", "dub", "eps"} {
-			val := strings.TrimSpace(s.Find(".tick .tick-" + prop).Text())
+			val := strings.TrimSpace(e.ChildText(".tick .tick-" + prop))
 			if val != "" {
 				switch prop {
 				case "sub":
@@ -109,10 +104,7 @@ func ExtractPage(page int, params, baseURL string) ([]ExtractedItem, int, error)
 				}
 			}
 		}
-		adult := false
-		if strings.Contains(strings.TrimSpace(s.Find(".film-poster>.tick-rate").Text()), "18+") {
-			adult = true
-		}
+		adult := strings.Contains(strings.TrimSpace(e.ChildText(".film-poster>.tick-rate")), "18+")
 		items = append(items, ExtractedItem{
 			ID:            id,
 			DataID:        dataID,
@@ -124,5 +116,13 @@ func ExtractPage(page int, params, baseURL string) ([]ExtractedItem, int, error)
 			AdultContent:  adult,
 		})
 	})
+
+	var visitErr error
+	c.OnError(func(_ *colly.Response, err error) { visitErr = err })
+	_ = c.Visit(url)
+	c.Wait()
+	if visitErr != nil {
+		return nil, 0, visitErr
+	}
 	return items, totalPages, nil
 }

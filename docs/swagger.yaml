@@ -1,0 +1,90 @@
+definitions:
+  handler.CacheCheck:
+    properties:
+      response_time_ms:
+        type: integer
+      status:
+        type: string
+    type: object
+  handler.Checks:
+    properties:
+      cache:
+        $ref: '#/definitions/handler.CacheCheck'
+      external_sources:
+        $ref: '#/definitions/handler.ExternalSourcesCheck'
+    type: object
+  handler.ExternalSourcesCheck:
+    properties:
+      anime_provider:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  handler.HealthResponse:
+    properties:
+      checks:
+        $ref: '#/definitions/handler.Checks'
+      service:
+        type: string
+      status:
+        type: string
+      timestamp:
+        type: string
+      uptime:
+        type: string
+      version:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Check the health of the application and its services
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.HealthResponse'
+      summary: Health check
+      tags:
+      - health
+  /live:
+    get:
+      consumes:
+      - application/json
+      description: Check if the application is alive
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Liveness check
+      tags:
+      - health
+  /ready:
+    get:
+      consumes:
+      - application/json
+      description: Check if the application is ready to serve traffic
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Readiness check
+      tags:
+      - health
+swagger: "2.0"

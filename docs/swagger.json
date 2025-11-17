@@ -1,41 +1,53 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Jutsu API",
-        "description": "A high-performance anime streaming API built with Go",
-        "version": "1.0.0",
-        "contact": {
-            "name": "API Support",
-            "email": "support@jutsu-api.com"
-        },
-        "license": {
-            "name": "MIT",
-            "url": "https://opensource.org/licenses/MIT"
-        }
+        "contact": {}
     },
-    "host": "localhost:8080",
-    "basePath": "/api/v1",
-    "schemes": [
-        "http",
-        "https"
-    ],
-    "tags": [
-        {
-            "name": "health",
-            "description": "Health check endpoints"
-        }
-    ],
     "paths": {
         "/health": {
             "get": {
-                "tags": ["health"],
-                "summary": "Health check",
                 "description": "Check the health of the application and its services",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Health check",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/HealthResponse"
+                            "$ref": "#/definitions/handler.HealthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/live": {
+            "get": {
+                "description": "Check if the application is alive",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Liveness check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -43,61 +55,87 @@
         },
         "/ready": {
             "get": {
-                "tags": ["health"],
-                "summary": "Readiness check",
                 "description": "Check if the application is ready to serve traffic",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Readiness check",
                 "responses": {
                     "200": {
-                        "description": "OK"
-                    },
-                    "503": {
-                        "description": "Service Unavailable"
-                    }
-                }
-            }
-        },
-        "/live": {
-            "get": {
-                "tags": ["health"],
-                "summary": "Liveness check",
-                "description": "Check if the application is alive",
-                "responses": {
-                    "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
-        "HealthResponse": {
+        "handler.CacheCheck": {
             "type": "object",
             "properties": {
+                "response_time_ms": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.Checks": {
+            "type": "object",
+            "properties": {
+                "cache": {
+                    "$ref": "#/definitions/handler.CacheCheck"
+                },
+                "external_sources": {
+                    "$ref": "#/definitions/handler.ExternalSourcesCheck"
+                }
+            }
+        },
+        "handler.ExternalSourcesCheck": {
+            "type": "object",
+            "properties": {
+                "anime_provider": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "handler.HealthResponse": {
+            "type": "object",
+            "properties": {
+                "checks": {
+                    "$ref": "#/definitions/handler.Checks"
+                },
+                "service": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 },
                 "timestamp": {
                     "type": "string"
                 },
-                "services": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/ServiceInfo"
-                    }
-                }
-            }
-        },
-        "ServiceInfo": {
-            "type": "object",
-            "properties": {
-                "status": {
+                "uptime": {
                     "type": "string"
                 },
-                "message": {
+                "version": {
                     "type": "string"
                 }
             }
         }
     }
 }
-
