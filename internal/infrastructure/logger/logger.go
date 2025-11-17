@@ -19,22 +19,32 @@ var SugaredLogger *zap.SugaredLogger
 func InitLogger(cfg *config.LoggerConfig) error {
 	var encoderConfig zapcore.EncoderConfig
 
+	// Always use console encoder for better readability
+	// JSON encoding only for file output in production
 	if config.Cfg.IsProduction() {
 		encoderConfig = zap.NewProductionEncoderConfig()
 		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 		encoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
 	} else {
+		// Development: Use colorful, readable console output
 		encoderConfig = zap.NewDevelopmentEncoderConfig()
-		encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
+		encoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05")
 		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 		encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+		encoderConfig.EncodeDuration = zapcore.StringDurationEncoder
 	}
 
-	var encoder zapcore.Encoder
-	if cfg.Encoding == "json" {
-		encoder = zapcore.NewJSONEncoder(encoderConfig)
+	var consoleEncoder zapcore.Encoder
+	var fileEncoder zapcore.Encoder
+
+	// Console always uses console encoder for readability
+	consoleEncoder = zapcore.NewConsoleEncoder(encoderConfig)
+
+	// File uses JSON in production, console in development
+	if cfg.Encoding == "json" || config.Cfg.IsProduction() {
+		fileEncoder = zapcore.NewJSONEncoder(encoderConfig)
 	} else {
-		encoder = zapcore.NewConsoleEncoder(encoderConfig)
+		fileEncoder = zapcore.NewConsoleEncoder(encoderConfig)
 	}
 
 	// Set log level
@@ -59,9 +69,9 @@ func InitLogger(cfg *config.LoggerConfig) error {
 	// Setup writers
 	var cores []zapcore.Core
 
-	// Console output (stdout)
+	// Console output (stdout) - always use console encoder for readability
 	consoleWriter := zapcore.AddSync(os.Stdout)
-	consoleCore := zapcore.NewCore(encoder, consoleWriter, level)
+	consoleCore := zapcore.NewCore(consoleEncoder, consoleWriter, level)
 	cores = append(cores, consoleCore)
 
 	// File output for production (if specified)
@@ -74,7 +84,7 @@ func InitLogger(cfg *config.LoggerConfig) error {
 			Compress:   true,
 			LocalTime:  true,
 		})
-		fileCore := zapcore.NewCore(encoder, fileWriter, level)
+		fileCore := zapcore.NewCore(fileEncoder, fileWriter, level)
 		cores = append(cores, fileCore)
 	}
 
@@ -91,7 +101,7 @@ func InitLogger(cfg *config.LoggerConfig) error {
 		errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 			return lvl >= zapcore.ErrorLevel && level <= lvl
 		})
-		errorCore := zapcore.NewCore(encoder, errorWriter, errorLevel)
+		errorCore := zapcore.NewCore(fileEncoder, errorWriter, errorLevel)
 		cores = append(cores, errorCore)
 	}
 
@@ -151,8 +161,13 @@ func WithFields(fields ...zap.Field) *zap.Logger {
 	return Logger.With(fields...)
 }
 
-// LogRequest logs HTTP request details
+// LogRequest logs HTTP request details with better formatting
 func LogRequest(method, path string, statusCode int, latency time.Duration, err error) {
+	// Skip logging for static assets like favicon.ico
+	if path == "/favicon.ico" {
+		return
+	}
+
 	fields := []zap.Field{
 		zap.String("method", method),
 		zap.String("path", path),
@@ -162,9 +177,18 @@ func LogRequest(method, path string, statusCode int, latency time.Duration, err 
 
 	if err != nil {
 		fields = append(fields, zap.Error(err))
-		Error("HTTP Request", fields...)
+		Error("HTTP Request Failed", fields...)
 	} else {
-		Info("HTTP Request", fields...)
+		// Color code status codes
+		if statusCode >= 200 && statusCode < 300 {
+			Info("✓ HTTP Request", fields...)
+		} else if statusCode >= 300 && statusCode < 400 {
+			Info("→ HTTP Request", fields...)
+		} else if statusCode >= 400 && statusCode < 500 {
+			Warn("⚠ HTTP Request", fields...)
+		} else {
+			Error("✗ HTTP Request", fields...)
+		}
 	}
 }
 

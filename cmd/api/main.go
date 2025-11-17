@@ -134,12 +134,15 @@ func errorHandler(c *fiber.Ctx, err error) error {
 		message = e.Message
 	}
 
-	appLogger.Error("Request error",
-		zap.Error(err),
-		zap.String("path", c.Path()),
-		zap.String("method", c.Method()),
-		zap.Int("status", code),
-	)
+	// Skip logging for static assets like favicon.ico
+	if c.Path() != "/favicon.ico" {
+		appLogger.Error("Request Error",
+			zap.Error(err),
+			zap.String("path", c.Path()),
+			zap.String("method", c.Method()),
+			zap.Int("status", code),
+		)
+	}
 
 	return c.Status(code).JSON(fiber.Map{
 		"success": false,
