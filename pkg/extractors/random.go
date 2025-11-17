@@ -22,10 +22,13 @@ func ExtractRandomID(baseURL string) (string, error) {
 }
 
 // Placeholder: when animeInfo is implemented, call it here to mirror Node behavior
-func ExtractRandom(baseURL string) (map[string]interface{}, error) {
+func ExtractRandom(baseURL string) (AnimeInfo, error) {
 	id, err := ExtractRandomID(baseURL)
 	if err != nil {
-		return nil, err
+		return AnimeInfo{}, err
 	}
-	return map[string]interface{}{"id": id}, nil
+	if id == "" {
+		return AnimeInfo{}, fmt.Errorf("random id is empty")
+	}
+	return ExtractAnimeInfo(id, baseURL)
 }

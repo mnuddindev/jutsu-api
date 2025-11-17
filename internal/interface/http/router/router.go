@@ -20,6 +20,9 @@ func SetupRoutes(app *fiber.App) {
 
 	// API routes (matching the Node.js API structure)
 	notImplementedHandler := handler.NewNotImplementedHandler()
+	streamHandler := handler.NewStreamHandler()
+	creatorHandler := handler.NewCreatorHandler()
+	randomHandler := handler.NewRandomHandler()
 
 	// Home info routes
 	app.Get("/api", notImplementedHandler.NotImplemented)
@@ -43,8 +46,8 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/api/servers/:id", notImplementedHandler.NotImplemented)
 
 	// Stream
-	app.Get("/api/stream", notImplementedHandler.NotImplemented)
-	app.Get("/api/stream/fallback", notImplementedHandler.NotImplemented)
+	app.Get("/api/stream", streamHandler.GetStream)
+	app.Get("/api/stream/fallback", streamHandler.GetStreamFallback)
 
 	// Search
 	app.Get("/api/search", notImplementedHandler.NotImplemented)
@@ -59,14 +62,15 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/api/schedule/:id", notImplementedHandler.NotImplemented)
 
 	// Random
-	app.Get("/api/random", notImplementedHandler.NotImplemented)
-	app.Get("/api/random/id", notImplementedHandler.NotImplemented)
+	app.Get("/api/random", randomHandler.GetRandom)
+	app.Get("/api/random/id", randomHandler.GetRandomID)
 
 	// Qtip
 	app.Get("/api/qtip/:id", notImplementedHandler.NotImplemented)
 
 	// Producer
-	app.Get("/api/producer/:id", notImplementedHandler.NotImplemented)
+	app.Get("/api/producer/:id", creatorHandler.GetProducer)
+	app.Get("/api/studio/:id", creatorHandler.GetStudio)
 
 	// Character and voice actors
 	app.Get("/api/character/list/:id", notImplementedHandler.NotImplemented)
