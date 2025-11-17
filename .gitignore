@@ -60,5 +60,3 @@ redis_data/
 SETUP.md
 dump.rdb
 *.rdb
-COMPLETION_SUMMARY.md
-PRODUCTION.md

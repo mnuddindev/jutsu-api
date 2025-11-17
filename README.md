@@ -21,11 +21,11 @@
 
 <div align="center">
 
-| 🚀 Performance | 🔒 Security | 📦 Architecture | 🛠️ Developer Experience |
-|:---:|:---:|:---:|:---:|
-| ⚡ Ultra-fast response times | 🔐 JWT Authentication | 🏗️ Clean Architecture | 📝 Comprehensive Docs |
-| 💾 Redis Caching | 🛡️ Input Validation | 🧩 Modular Design | 🧪 Unit Tests |
-| 🔄 Concurrent Processing | 🔒 CORS Protection | 📊 Structured Logging | 🐳 Docker Support |
+|        🚀 Performance        |      🔒 Security      |    📦 Architecture    | 🛠️ Developer Experience |
+| :--------------------------: | :-------------------: | :-------------------: | :---------------------: |
+| ⚡ Ultra-fast response times | 🔐 JWT Authentication | 🏗️ Clean Architecture |  📝 Comprehensive Docs  |
+|       💾 Redis Caching       |  🛡️ Input Validation  |   🧩 Modular Design   |      🧪 Unit Tests      |
+|   🔄 Concurrent Processing   |  🔒 CORS Protection   | 📊 Structured Logging |    🐳 Docker Support    |
 
 </div>
 
@@ -45,15 +45,15 @@
 
 <div align="center">
 
-| Component | Technology | Purpose |
-|:---------:|:----------:|:--------|
-| **Language** | [Go 1.21+](https://golang.org/) | High-performance backend |
-| **Framework** | [Fiber v2](https://gofiber.io/) | Fast HTTP framework |
-| **Cache** | [Redis](https://redis.io/) | Distributed caching |
-| **Logger** | [Zap](https://github.com/uber-go/zap) | Structured logging |
-| **Config** | [Viper](https://github.com/spf13/viper) | Configuration management |
-| **Validation** | [go-playground/validator](https://github.com/go-playground/validator) | Request validation |
-| **Docs** | [Swagger](https://swagger.io/) | API documentation |
+|   Component    |                              Technology                               | Purpose                  |
+| :------------: | :-------------------------------------------------------------------: | :----------------------- |
+|  **Language**  |                    [Go 1.21+](https://golang.org/)                    | High-performance backend |
+| **Framework**  |                    [Fiber v2](https://gofiber.io/)                    | Fast HTTP framework      |
+|   **Cache**    |                      [Redis](https://redis.io/)                       | Distributed caching      |
+|   **Logger**   |                 [Zap](https://github.com/uber-go/zap)                 | Structured logging       |
+|   **Config**   |                [Viper](https://github.com/spf13/viper)                | Configuration management |
+| **Validation** | [go-playground/validator](https://github.com/go-playground/validator) | Request validation       |
+|    **Docs**    |                    [Swagger](https://swagger.io/)                     | API documentation        |
 
 </div>
 
@@ -176,6 +176,7 @@ curl "http://localhost:8080/api/stream?id=anime-id?ep=episode-id&server=hd-1&typ
 ### Swagger Documentation
 
 Once the server is running, visit:
+
 ```
 http://localhost:8080/swagger/index.html
 ```
@@ -186,34 +187,34 @@ http://localhost:8080/swagger/index.html
 
 ### Core Endpoints
 
-| Method | Endpoint | Description |
-|:------:|:--------:|:------------|
-| `GET` | `/api` | Home page data |
-| `GET` | `/api/info` | Anime details |
-| `GET` | `/api/episodes/:id` | Episode list |
-| `GET` | `/api/stream` | Streaming information |
-| `GET` | `/api/search` | Search anime |
-| `GET` | `/api/filter` | Filter anime |
+| Method |      Endpoint       | Description           |
+| :----: | :-----------------: | :-------------------- |
+| `GET`  |       `/api`        | Home page data        |
+| `GET`  |     `/api/info`     | Anime details         |
+| `GET`  | `/api/episodes/:id` | Episode list          |
+| `GET`  |    `/api/stream`    | Streaming information |
+| `GET`  |    `/api/search`    | Search anime          |
+| `GET`  |    `/api/filter`    | Filter anime          |
 
 ### Category Endpoints
 
-| Method | Endpoint | Description |
-|:------:|:--------:|:------------|
-| `GET` | `/api/genre/{genre}` | Genre listings |
-| `GET` | `/api/top-airing` | Top airing anime |
-| `GET` | `/api/most-popular` | Most popular anime |
-| `GET` | `/api/top-ten` | Top 10 anime |
+| Method |       Endpoint       | Description        |
+| :----: | :------------------: | :----------------- |
+| `GET`  | `/api/genre/{genre}` | Genre listings     |
+| `GET`  |  `/api/top-airing`   | Top airing anime   |
+| `GET`  | `/api/most-popular`  | Most popular anime |
+| `GET`  |    `/api/top-ten`    | Top 10 anime       |
 
 ### Additional Endpoints
 
-| Method | Endpoint | Description |
-|:------:|:--------:|:------------|
-| `GET` | `/api/schedule` | Daily schedule |
-| `GET` | `/api/random` | Random anime |
-| `GET` | `/api/character/:id` | Character details |
-| `GET` | `/api/actors/:id` | Voice actor details |
-| `GET` | `/api/producer/:id` | Producer listings |
-| `GET` | `/api/studio/:id` | Studio listings |
+| Method |       Endpoint       | Description         |
+| :----: | :------------------: | :------------------ |
+| `GET`  |   `/api/schedule`    | Daily schedule      |
+| `GET`  |    `/api/random`     | Random anime        |
+| `GET`  | `/api/character/:id` | Character details   |
+| `GET`  |  `/api/actors/:id`   | Voice actor details |
+| `GET`  | `/api/producer/:id`  | Producer listings   |
+| `GET`  |  `/api/studio/:id`   | Studio listings     |
 
 > 📖 See [docs/API.md](docs/API.md) for complete endpoint documentation with examples
 
@@ -299,14 +300,14 @@ docker run -p 8080:8080 jutsu-api
 
 The API implements intelligent caching with optimized TTLs:
 
-| Data Type | Cache Duration | Reason |
-|:---------:|:--------------:|:-------|
-| Home Info | 15 minutes | Frequently updated |
-| Anime Info | 1 hour | Relatively stable |
-| Categories | 30 minutes | Moderate updates |
-| Search/Filter | 5 minutes | Dynamic results |
-| Streaming | 5 minutes | Links may expire |
-| Schedule | 10 minutes | Daily updates |
+|   Data Type   | Cache Duration | Reason             |
+| :-----------: | :------------: | :----------------- |
+|   Home Info   |   15 minutes   | Frequently updated |
+|  Anime Info   |     1 hour     | Relatively stable  |
+|  Categories   |   30 minutes   | Moderate updates   |
+| Search/Filter |   5 minutes    | Dynamic results    |
+|   Streaming   |   5 minutes    | Links may expire   |
+|   Schedule    |   10 minutes   | Daily updates      |
 
 ### Benchmarks
 
@@ -362,7 +363,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Inspired by [anime-api](https://github.com/itzzzme/anime-api)
 - Built with [Go Fiber](https://gofiber.io/)
 - Powered by the anime community
 
