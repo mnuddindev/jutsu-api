@@ -22,6 +22,15 @@ func NewRandomHandler() *RandomHandler {
 }
 
 // GetRandomID returns only the random anime identifier (matching the Node API behavior).
+// @Summary      Get random anime ID
+// @Description  Returns a random anime identifier
+// @Tags         Random
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}  "Random anime ID"
+// @Failure      502  {object}  ErrorResponse           "Bad Gateway"
+// @Failure      503  {object}  ErrorResponse           "Service Unavailable"
+// @Router       /random/id [get]
 func (h *RandomHandler) GetRandomID(c *fiber.Ctx) error {
 	id, err := extractors.ExtractRandomID(h.baseHost)
 	if err != nil {
@@ -37,6 +46,14 @@ func (h *RandomHandler) GetRandomID(c *fiber.Ctx) error {
 }
 
 // GetRandom returns the full anime information for a randomly selected title.
+// @Summary      Get random anime
+// @Description  Returns full information for a randomly selected anime
+// @Tags         Random
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}  "Random anime information"
+// @Failure      502  {object}  ErrorResponse           "Bad Gateway"
+// @Router       /random [get]
 func (h *RandomHandler) GetRandom(c *fiber.Ctx) error {
 	info, err := extractors.ExtractRandom(h.baseHost)
 	if err != nil {

@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -11,8 +10,6 @@ import (
 	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
-
-const animeInfoCacheTTL = 30 * time.Minute
 
 // AnimeInfoHandler serves the anime info endpoint.
 type AnimeInfoHandler struct {
@@ -27,6 +24,16 @@ func NewAnimeInfoHandler() *AnimeInfoHandler {
 }
 
 // GetAnimeInfo returns combined anime info with seasons.
+// @Summary      Get anime information
+// @Description  Returns detailed information about a specific anime including seasons
+// @Tags         Anime
+// @Accept       json
+// @Produce      json
+// @Param        id   query     string  true  "Anime ID or slug"  example(frieren-beyond-journeys-end-18542)
+// @Success      200  {object}  map[string]interface{}  "Anime information"
+// @Failure      400  {object}  map[string]interface{}  "Bad Request"
+// @Failure      502  {object}  map[string]interface{}  "Bad Gateway"
+// @Router       /info [get]
 func (h *AnimeInfoHandler) GetAnimeInfo(c *fiber.Ctx) error {
 	id := strings.TrimSpace(c.Query("id"))
 	if id == "" {
@@ -59,7 +66,7 @@ func (h *AnimeInfoHandler) GetAnimeInfo(c *fiber.Ctx) error {
 		"seasons": seasons,
 	}
 
-	_ = helper.SetCachedData(cacheKey, responseData, animeInfoCacheTTL)
+	_ = helper.SetCachedData(cacheKey, responseData, helper.AnimeInfoCacheTTL)
 
 	return c.JSON(fiber.Map{
 		"success": true,

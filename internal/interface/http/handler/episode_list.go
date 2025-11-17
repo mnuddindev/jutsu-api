@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -12,8 +11,6 @@ import (
 	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
-
-const episodeListCacheTTL = 30 * time.Minute
 
 // EpisodeListHandler serves the episode list endpoint.
 type EpisodeListHandler struct {
@@ -52,7 +49,7 @@ func (h *EpisodeListHandler) GetEpisodes(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch episodes: %v", err))
 	}
 
-	_ = helper.SetCachedData(cacheKey, episodes, episodeListCacheTTL)
+	_ = helper.SetCachedData(cacheKey, episodes, helper.EpisodeListCacheTTL)
 
 	return c.JSON(fiber.Map{
 		"success": true,

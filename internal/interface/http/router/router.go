@@ -15,7 +15,7 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/ready", healthHandler.Ready)
 	app.Get("/live", healthHandler.Live)
 
-	// Swagger documentation
+	// Swagger documentation with modern UI
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
 	// API routes (matching the Node.js API structure)

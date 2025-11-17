@@ -1,3 +1,4 @@
+basePath: /api
 definitions:
   handler.CacheCheck:
     properties:
@@ -12,6 +13,16 @@ definitions:
         $ref: '#/definitions/handler.CacheCheck'
       external_sources:
         $ref: '#/definitions/handler.ExternalSourcesCheck'
+    type: object
+  handler.ErrorResponse:
+    description: Standard error response
+    properties:
+      message:
+        example: Error message here
+        type: string
+      success:
+        example: false
+        type: boolean
     type: object
   handler.ExternalSourcesCheck:
     properties:
@@ -35,9 +46,90 @@ definitions:
       version:
         type: string
     type: object
+  handler.SearchResponse:
+    properties:
+      results:
+        properties:
+          data: {}
+          totalPage:
+            example: 5
+            type: integer
+        type: object
+      success:
+        example: true
+        type: boolean
+    type: object
+host: localhost:8080
 info:
-  contact: {}
+  contact:
+    email: support@jutsu-api.com
+    name: Jutsu API Support
+    url: https://github.com/mnuddindev/jutsu-api
+  description: |-
+    High-Performance Anime Streaming API built with Go
+    A blazing-fast, production-ready RESTful API for anime streaming platforms
+
+    **Features:**
+    - Complete anime data (episodes, metadata, streaming sources)
+    - Advanced search and filtering
+    - Schedule management and notifications
+    - Character and voice actor information
+    - User watchlist support
+    - Optimized caching with Redis
+
+    **Disclaimer:**
+    This API does not store any files. It only links to media hosted on 3rd party services.
+    This API is explicitly made for educational purposes only.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Jutsu API
+  version: 1.0.0
 paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Returns combined home page data including spotlights, trending,
+        top 10, schedule, and category previews
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Home page data
+          schema:
+            additionalProperties: true
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get home page data
+      tags:
+      - Home
+  /api:
+    get:
+      consumes:
+      - application/json
+      description: Returns combined home page data including spotlights, trending,
+        top 10, schedule, and category previews
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Home page data
+          schema:
+            additionalProperties: true
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get home page data
+      tags:
+      - Home
   /health:
     get:
       consumes:
@@ -53,6 +145,39 @@ paths:
       summary: Health check
       tags:
       - health
+  /info:
+    get:
+      consumes:
+      - application/json
+      description: Returns detailed information about a specific anime including seasons
+      parameters:
+      - description: Anime ID or slug
+        example: frieren-beyond-journeys-end-18542
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Anime information
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get anime information
+      tags:
+      - Anime
   /live:
     get:
       consumes:
@@ -70,6 +195,50 @@ paths:
       summary: Liveness check
       tags:
       - health
+  /random:
+    get:
+      consumes:
+      - application/json
+      description: Returns full information for a randomly selected anime
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Random anime information
+          schema:
+            additionalProperties: true
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get random anime
+      tags:
+      - Random
+  /random/id:
+    get:
+      consumes:
+      - application/json
+      description: Returns a random anime identifier
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Random anime ID
+          schema:
+            additionalProperties: true
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get random anime ID
+      tags:
+      - Random
   /ready:
     get:
       consumes:
@@ -87,4 +256,242 @@ paths:
       summary: Readiness check
       tags:
       - health
+  /schedule:
+    get:
+      consumes:
+      - application/json
+      description: Returns anime schedule for a specific date
+      parameters:
+      - description: 'Date in YYYY-MM-DD format (default: today)'
+        example: "2025-01-18"
+        in: query
+        name: date
+        type: string
+      - default: -330
+        description: 'Timezone offset in minutes (default: -330)'
+        example: -330
+        in: query
+        name: tzOffset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Schedule data
+          schema:
+            additionalProperties: true
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get anime schedule
+      tags:
+      - Schedule
+  /search:
+    get:
+      consumes:
+      - application/json
+      description: Search anime with various filters including keyword, type, status,
+        rating, genres, and more
+      parameters:
+      - description: Search keyword
+        example: naruto
+        in: query
+        name: keyword
+        type: string
+      - description: Anime type (tv, movie, ova, etc.)
+        example: tv
+        in: query
+        name: type
+        type: string
+      - description: Status (ongoing, completed, etc.)
+        example: ongoing
+        in: query
+        name: status
+        type: string
+      - description: Rating filter
+        in: query
+        name: rated
+        type: string
+      - description: Minimum score
+        in: query
+        name: score
+        type: string
+      - description: Season filter
+        in: query
+        name: season
+        type: string
+      - description: Language (sub, dub)
+        in: query
+        name: language
+        type: string
+      - description: Comma-separated genre IDs
+        example: 1,2,3
+        in: query
+        name: genres
+        type: string
+      - description: Sort order
+        in: query
+        name: sort
+        type: string
+      - description: Start year
+        in: query
+        name: sy
+        type: string
+      - description: Start month
+        in: query
+        name: sm
+        type: string
+      - description: Start day
+        in: query
+        name: sd
+        type: string
+      - description: End year
+        in: query
+        name: ey
+        type: string
+      - description: End month
+        in: query
+        name: em
+        type: string
+      - description: End day
+        in: query
+        name: ed
+        type: string
+      - default: 1
+        description: Page number
+        example: 1
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Search results
+          schema:
+            $ref: '#/definitions/handler.SearchResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Search anime
+      tags:
+      - Search
+  /stream:
+    get:
+      consumes:
+      - application/json
+      description: Returns streaming information for an episode with specified server
+        and type
+      parameters:
+      - description: 'Episode ID (format: anime-id?ep=episode-id)'
+        example: frieren-beyond-journeys-end-18542?ep=107257
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Server name (e.g., vidcloud, hd-1)
+        example: hd-1
+        in: query
+        name: server
+        type: string
+      - description: Stream type (sub or dub)
+        example: sub
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Streaming information
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get streaming information
+      tags:
+      - Streaming
+  /stream/fallback:
+    get:
+      consumes:
+      - application/json
+      description: Returns fallback streaming information when primary stream fails
+      parameters:
+      - description: 'Episode ID (format: anime-id?ep=episode-id)'
+        example: frieren-beyond-journeys-end-18542?ep=107257
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Server name
+        example: hd-1
+        in: query
+        name: server
+        type: string
+      - description: Stream type (sub or dub)
+        example: sub
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Fallback streaming information
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get fallback streaming information
+      tags:
+      - Streaming
+schemes:
+- http
+- https
 swagger: "2.0"
+tags:
+- description: Home page data and featured content
+  name: Home
+- description: Anime information, episodes, and details
+  name: Anime
+- description: Genre and category listings
+  name: Categories
+- description: Search and filter anime
+  name: Search
+- description: Streaming information and servers
+  name: Streaming
+- description: Anime schedule and episode notifications
+  name: Schedule
+- description: Character and voice actor information
+  name: Characters
+- description: Random anime discovery
+  name: Random
+- description: User watchlist management
+  name: Watchlist
+- description: Health check endpoints
+  name: Health

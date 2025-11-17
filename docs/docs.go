@@ -9,12 +9,82 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "Jutsu API Support",
+            "url": "https://github.com/mnuddindev/jutsu-api",
+            "email": "support@jutsu-api.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/": {
+            "get": {
+                "description": "Returns combined home page data including spotlights, trending, top 10, schedule, and category previews",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Home"
+                ],
+                "summary": "Get home page data",
+                "responses": {
+                    "200": {
+                        "description": "Home page data",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api": {
+            "get": {
+                "description": "Returns combined home page data including spotlights, trending, top 10, schedule, and category previews",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Home"
+                ],
+                "summary": "Get home page data",
+                "responses": {
+                    "200": {
+                        "description": "Home page data",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "Check the health of the application and its services",
@@ -33,6 +103,54 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/handler.HealthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/info": {
+            "get": {
+                "description": "Returns detailed information about a specific anime including seasons",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anime"
+                ],
+                "summary": "Get anime information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "frieren-beyond-journeys-end-18542",
+                        "description": "Anime ID or slug",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Anime information",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -64,6 +182,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/random": {
+            "get": {
+                "description": "Returns full information for a randomly selected anime",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Random"
+                ],
+                "summary": "Get random anime",
+                "responses": {
+                    "200": {
+                        "description": "Random anime information",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/random/id": {
+            "get": {
+                "description": "Returns a random anime identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Random"
+                ],
+                "summary": "Get random anime ID",
+                "responses": {
+                    "200": {
+                        "description": "Random anime ID",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/ready": {
             "get": {
                 "description": "Check if the application is ready to serve traffic",
@@ -85,6 +269,316 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule": {
+            "get": {
+                "description": "Returns anime schedule for a specific date",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedule"
+                ],
+                "summary": "Get anime schedule",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "2025-01-18",
+                        "description": "Date in YYYY-MM-DD format (default: today)",
+                        "name": "date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": -330,
+                        "example": -330,
+                        "description": "Timezone offset in minutes (default: -330)",
+                        "name": "tzOffset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Schedule data",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/search": {
+            "get": {
+                "description": "Search anime with various filters including keyword, type, status, rating, genres, and more",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Search anime",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "naruto",
+                        "description": "Search keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "tv",
+                        "description": "Anime type (tv, movie, ova, etc.)",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "ongoing",
+                        "description": "Status (ongoing, completed, etc.)",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Rating filter",
+                        "name": "rated",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Minimum score",
+                        "name": "score",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season filter",
+                        "name": "season",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Language (sub, dub)",
+                        "name": "language",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "1,2,3",
+                        "description": "Comma-separated genre IDs",
+                        "name": "genres",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start year",
+                        "name": "sy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start month",
+                        "name": "sm",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start day",
+                        "name": "sd",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End year",
+                        "name": "ey",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End month",
+                        "name": "em",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End day",
+                        "name": "ed",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Search results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SearchResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/stream": {
+            "get": {
+                "description": "Returns streaming information for an episode with specified server and type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Streaming"
+                ],
+                "summary": "Get streaming information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "frieren-beyond-journeys-end-18542?ep=107257",
+                        "description": "Episode ID (format: anime-id?ep=episode-id)",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "hd-1",
+                        "description": "Server name (e.g., vidcloud, hd-1)",
+                        "name": "server",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "sub",
+                        "description": "Stream type (sub or dub)",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Streaming information",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/stream/fallback": {
+            "get": {
+                "description": "Returns fallback streaming information when primary stream fails",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Streaming"
+                ],
+                "summary": "Get fallback streaming information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "frieren-beyond-journeys-end-18542?ep=107257",
+                        "description": "Episode ID (format: anime-id?ep=episode-id)",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "hd-1",
+                        "description": "Server name",
+                        "name": "server",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "sub",
+                        "description": "Stream type (sub or dub)",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Fallback streaming information",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -111,6 +605,20 @@ const docTemplate = `{
                 },
                 "external_sources": {
                     "$ref": "#/definitions/handler.ExternalSourcesCheck"
+                }
+            }
+        },
+        "handler.ErrorResponse": {
+            "description": "Standard error response",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Error message here"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": false
                 }
             }
         },
@@ -147,18 +655,79 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "handler.SearchResponse": {
+            "type": "object",
+            "properties": {
+                "results": {
+                    "type": "object",
+                    "properties": {
+                        "data": {},
+                        "totalPage": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
         }
-    }
+    },
+    "tags": [
+        {
+            "description": "Home page data and featured content",
+            "name": "Home"
+        },
+        {
+            "description": "Anime information, episodes, and details",
+            "name": "Anime"
+        },
+        {
+            "description": "Genre and category listings",
+            "name": "Categories"
+        },
+        {
+            "description": "Search and filter anime",
+            "name": "Search"
+        },
+        {
+            "description": "Streaming information and servers",
+            "name": "Streaming"
+        },
+        {
+            "description": "Anime schedule and episode notifications",
+            "name": "Schedule"
+        },
+        {
+            "description": "Character and voice actor information",
+            "name": "Characters"
+        },
+        {
+            "description": "Random anime discovery",
+            "name": "Random"
+        },
+        {
+            "description": "User watchlist management",
+            "name": "Watchlist"
+        },
+        {
+            "description": "Health check endpoints",
+            "name": "Health"
+        }
+    ]
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
-	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Version:          "1.0.0",
+	Host:             "localhost:8080",
+	BasePath:         "/api",
+	Schemes:          []string{"http", "https"},
+	Title:            "Jutsu API",
+	Description:      "High-Performance Anime Streaming API built with Go\nA blazing-fast, production-ready RESTful API for anime streaming platforms\n\n**Features:**\n- Complete anime data (episodes, metadata, streaming sources)\n- Advanced search and filtering\n- Schedule management and notifications\n- Character and voice actor information\n- User watchlist support\n- Optimized caching with Redis\n\n**Disclaimer:**\nThis API does not store any files. It only links to media hosted on 3rd party services.\nThis API is explicitly made for educational purposes only.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

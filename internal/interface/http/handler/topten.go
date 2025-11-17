@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -10,8 +9,6 @@ import (
 	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
-
-const topTenCacheTTL = 30 * time.Minute
 
 // TopTenHandler serves the top ten anime endpoint.
 type TopTenHandler struct {
@@ -42,7 +39,7 @@ func (h *TopTenHandler) GetTopTen(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch top ten: %v", err))
 	}
 
-	_ = helper.SetCachedData(cacheKey, topTen, topTenCacheTTL)
+	_ = helper.SetCachedData(cacheKey, topTen, helper.TopTenCacheTTL)
 
 	return c.JSON(fiber.Map{
 		"success": true,

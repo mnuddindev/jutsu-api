@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -12,8 +11,6 @@ import (
 	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
-
-const categoryCacheTTL = 30 * time.Minute
 
 // CategoryHandler serves category/genre listing endpoints.
 type CategoryHandler struct {
@@ -65,7 +62,7 @@ func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "requested page exceeds total available pages")
 	}
 
-	_ = helper.SetCachedData(cacheKey, result, categoryCacheTTL)
+	_ = helper.SetCachedData(cacheKey, result, helper.CategoryCacheTTL)
 
 	return c.JSON(fiber.Map{
 		"success": true,

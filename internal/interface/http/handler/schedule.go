@@ -25,6 +25,16 @@ func NewScheduleHandler() *ScheduleHandler {
 }
 
 // GetSchedule returns the schedule for a specific date.
+// @Summary      Get anime schedule
+// @Description  Returns anime schedule for a specific date
+// @Tags         Schedule
+// @Accept       json
+// @Produce      json
+// @Param        date      query     string  false  "Date in YYYY-MM-DD format (default: today)"  example(2025-01-18)
+// @Param        tzOffset  query     int     false  "Timezone offset in minutes (default: -330)"  default(-330)  example(-330)
+// @Success      200       {object}  map[string]interface{}  "Schedule data"
+// @Failure      502       {object}  ErrorResponse           "Bad Gateway"
+// @Router       /schedule [get]
 func (h *ScheduleHandler) GetSchedule(c *fiber.Ctx) error {
 	date := strings.TrimSpace(c.Query("date"))
 	if date == "" {

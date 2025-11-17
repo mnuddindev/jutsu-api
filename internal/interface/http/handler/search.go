@@ -24,6 +24,31 @@ func NewSearchHandler() *SearchHandler {
 }
 
 // Search handles search requests with various query parameters.
+// @Summary      Search anime
+// @Description  Search anime with various filters including keyword, type, status, rating, genres, and more
+// @Tags         Search
+// @Accept       json
+// @Produce      json
+// @Param        keyword   query     string  false  "Search keyword"  example(naruto)
+// @Param        type      query     string  false  "Anime type (tv, movie, ova, etc.)"  example(tv)
+// @Param        status    query     string  false  "Status (ongoing, completed, etc.)"  example(ongoing)
+// @Param        rated     query     string  false  "Rating filter"
+// @Param        score     query     string  false  "Minimum score"
+// @Param        season    query     string  false  "Season filter"
+// @Param        language  query     string  false  "Language (sub, dub)"
+// @Param        genres    query     string  false  "Comma-separated genre IDs"  example(1,2,3)
+// @Param        sort      query     string  false  "Sort order"
+// @Param        sy        query     string  false  "Start year"
+// @Param        sm        query     string  false  "Start month"
+// @Param        sd        query     string  false  "Start day"
+// @Param        ey        query     string  false  "End year"
+// @Param        em        query     string  false  "End month"
+// @Param        ed        query     string  false  "End day"
+// @Param        page      query     int     false  "Page number"  default(1)  example(1)
+// @Success      200       {object}  SearchResponse  "Search results"
+// @Failure      404       {object}  ErrorResponse   "Not Found"
+// @Failure      502       {object}  ErrorResponse   "Bad Gateway"
+// @Router       /search [get]
 func (h *SearchHandler) Search(c *fiber.Ctx) error {
 	params := make(map[string]string)
 

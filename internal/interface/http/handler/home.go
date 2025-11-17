@@ -25,6 +25,15 @@ func NewHomeHandler() *HomeHandler {
 }
 
 // GetHomeInfo returns the combined home page data.
+// @Summary      Get home page data
+// @Description  Returns combined home page data including spotlights, trending, top 10, schedule, and category previews
+// @Tags         Home
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}  "Home page data"
+// @Failure      502  {object}  map[string]interface{}  "Bad Gateway"
+// @Router       / [get]
+// @Router       /api [get]
 func (h *HomeHandler) GetHomeInfo(c *fiber.Ctx) error {
 	cacheKey := "homeInfo"
 	var cached map[string]interface{}
@@ -120,7 +129,7 @@ func (h *HomeHandler) GetHomeInfo(c *fiber.Ctx) error {
 		"genres":          genres,
 	}
 
-	_ = helper.SetCachedData(cacheKey, responseData, homeInfoCacheTTL)
+	_ = helper.SetCachedData(cacheKey, responseData, helper.HomeInfoCacheTTL)
 
 	return c.JSON(fiber.Map{
 		"success": true,

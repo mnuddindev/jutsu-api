@@ -21,6 +21,65 @@ import (
 	_ "github.com/mnuddindev/jutsu-api/docs"
 )
 
+// @title           Jutsu API
+// @version         1.0.0
+// @description     High-Performance Anime Streaming API built with Go
+// @description     A blazing-fast, production-ready RESTful API for anime streaming platforms
+// @description
+// @description     **Features:**
+// @description     - Complete anime data (episodes, metadata, streaming sources)
+// @description     - Advanced search and filtering
+// @description     - Schedule management and notifications
+// @description     - Character and voice actor information
+// @description     - User watchlist support
+// @description     - Optimized caching with Redis
+// @description
+// @description     **Disclaimer:**
+// @description     This API does not store any files. It only links to media hosted on 3rd party services.
+// @description     This API is explicitly made for educational purposes only.
+//
+// @contact.name   Jutsu API Support
+// @contact.url    https://github.com/mnuddindev/jutsu-api
+// @contact.email  support@jutsu-api.com
+//
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+//
+// @host      localhost:8080
+// @BasePath  /api
+//
+// @schemes   http https
+//
+// @tag.name  Home
+// @tag.description Home page data and featured content
+//
+// @tag.name  Anime
+// @tag.description Anime information, episodes, and details
+//
+// @tag.name  Categories
+// @tag.description Genre and category listings
+//
+// @tag.name  Search
+// @tag.description Search and filter anime
+//
+// @tag.name  Streaming
+// @tag.description Streaming information and servers
+//
+// @tag.name  Schedule
+// @tag.description Anime schedule and episode notifications
+//
+// @tag.name  Characters
+// @tag.description Character and voice actor information
+//
+// @tag.name  Random
+// @tag.description Random anime discovery
+//
+// @tag.name  Watchlist
+// @tag.description User watchlist management
+//
+// @tag.name  Health
+// @tag.description Health check endpoints
+
 func main() {
 	// Load configuration
 	cfg, err := config.LoadConfig()

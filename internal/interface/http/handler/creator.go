@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -12,8 +11,6 @@ import (
 	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
-
-const creatorCacheTTL = 30 * time.Minute
 
 // CreatorHandler serves producer/studio listing endpoints.
 type CreatorHandler struct {
@@ -76,7 +73,7 @@ func (h *CreatorHandler) handleCreatorRequest(c *fiber.Ctx, prefix string) error
 		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to load %s data: %v", prefix, err))
 	}
 
-	_ = helper.SetCachedData(cacheKey, result, creatorCacheTTL)
+	_ = helper.SetCachedData(cacheKey, result, helper.CreatorCacheTTL)
 
 	return c.JSON(fiber.Map{
 		"success": true,

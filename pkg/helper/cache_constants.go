@@ -78,4 +78,3 @@ const (
 	// Updates when episodes air
 	NextEpisodeScheduleCacheTTL = 10 * time.Minute
 )
-
