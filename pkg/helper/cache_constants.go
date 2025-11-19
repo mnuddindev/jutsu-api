@@ -77,4 +77,8 @@ const (
 	// NextEpisodeScheduleCacheTTL - Next episode schedule
 	// Updates when episodes air
 	NextEpisodeScheduleCacheTTL = 10 * time.Minute
+
+	// ServersCacheTTL - Available servers for episodes
+	// Relatively stable, cache for medium duration
+	ServersCacheTTL = 10 * time.Minute
 )

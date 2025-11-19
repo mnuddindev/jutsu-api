@@ -44,7 +44,7 @@ func TestResolveStreamingLinkPrimary(t *testing.T) {
 	)
 	defer restore()
 
-	res, err := extractors.ResolveStreamingLinkForTest("episode", "server-id", "Vidcloud", "sub", false)
+	res, err := extractors.ResolveStreamingLinkForTest("anime-id?ep=episode", "episode", "server-id", "Vidcloud", "sub", false)
 	if err != nil {
 		t.Fatalf("ResolveStreamingLinkForTest returned error: %v", err)
 	}
@@ -60,9 +60,11 @@ func TestResolveStreamingLinkFallbackFlow(t *testing.T) {
 		},
 		func(epID, id, name, typ string, fallback bool) (parsers.DecryptedSources, error) {
 			if fallback {
-				if id != "episode-slug" {
-					t.Fatalf("expected fallback to receive episode slug, got %s", id)
+				// For fallback, epID should be the episode ID only, id (serverID) can be empty
+				if epID != "episode-slug" {
+					t.Fatalf("expected fallback to receive episode slug as epID, got %s", epID)
 				}
+				// id (serverID) can be empty for fallback since decryptFallback doesn't use it
 			} else if id != "server-id" {
 				t.Fatalf("expected legacy decryptor to receive server-id, got %s", id)
 			}
@@ -72,7 +74,7 @@ func TestResolveStreamingLinkFallbackFlow(t *testing.T) {
 	defer restore()
 
 	// Case 1: automatic legacy fallback after megacloud error.
-	res, err := extractors.ResolveStreamingLinkForTest("episode", "server-id", "Vidcloud", "sub", false)
+	res, err := extractors.ResolveStreamingLinkForTest("anime-id?ep=episode", "episode", "server-id", "Vidcloud", "sub", false)
 	if err != nil {
 		t.Fatalf("legacy fallback returned error: %v", err)
 	}
@@ -81,7 +83,7 @@ func TestResolveStreamingLinkFallbackFlow(t *testing.T) {
 	}
 
 	// Case 2: explicit fallback flag should bypass server id requirement.
-	res, err = extractors.ResolveStreamingLinkForTest("episode-slug", "", "HD-1", "dub", true)
+	res, err = extractors.ResolveStreamingLinkForTest("anime-id?ep=episode-slug", "episode-slug", "", "HD-1", "dub", true)
 	if err != nil {
 		t.Fatalf("explicit fallback returned error: %v", err)
 	}

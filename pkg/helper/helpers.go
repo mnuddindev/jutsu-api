@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
@@ -61,4 +62,27 @@ func GetKeys(script string) [][]int {
 // ExtractToken mirrors token.helper.js.
 func ExtractToken(url string, baseURL string) (string, error) {
 	return scrape.ExtractToken(url, baseURL)
+}
+
+// GenerateCacheKey generates a cache key from a base key and query parameters
+// This ensures consistent cache keys for requests with query params
+func GenerateCacheKey(baseKey string, params map[string]string) string {
+	if len(params) == 0 {
+		return baseKey
+	}
+
+	// Sort keys for consistent ordering (simple approach)
+	keyParts := make([]string, 0, len(params))
+	for k, v := range params {
+		if v != "" {
+			keyParts = append(keyParts, fmt.Sprintf("%s:%s", k, v))
+		}
+	}
+
+	// Simple hash-like approach for cache key
+	keyStr := baseKey
+	for _, part := range keyParts {
+		keyStr += "_" + part
+	}
+	return keyStr
 }

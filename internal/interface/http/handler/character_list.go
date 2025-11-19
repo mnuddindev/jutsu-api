@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
+	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
@@ -36,17 +37,39 @@ func (h *CharacterListHandler) GetVoiceActors(c *fiber.Ctx) error {
 		page = 1
 	}
 
+	cacheKey := fmt.Sprintf("character_list:%s:%d", id, page)
+
+	// Try to get from cache
+	var cached map[string]interface{}
+	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
+		return c.JSON(fiber.Map{
+			"success": true,
+			"results": cached,
+			"cached":  true,
+		})
+	}
+
 	result, err := extractors.ExtractVoiceActorPage(id, page, h.baseHost)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch character list: %v", err))
 	}
 
+	data := result.CharactersVoiceActors
+	if data == nil {
+		data = []extractors.CharactersVoiceActors{}
+	}
+
+	responseData := fiber.Map{
+		"currentPage": page,
+		"totalPages":  result.TotalPages,
+		"data":        data,
+	}
+
+	// Cache the response
+	_ = helper.SetCachedData(cacheKey, responseData, helper.CharacterCacheTTL)
+
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": fiber.Map{
-			"currentPage": page,
-			"totalPages":  result.TotalPages,
-			"data":        result.CharactersVoiceActors,
-		},
+		"results": responseData,
 	})
 }

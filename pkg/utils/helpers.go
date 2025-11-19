@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"html"
 	"strings"
 	"time"
 )
@@ -110,4 +111,19 @@ func FormatTime(t time.Time) string {
 // FormatTimeString formats a time string to RFC3339 format
 func FormatTimeString(t time.Time) string {
 	return t.Format(time.RFC3339)
+}
+
+// ExtractDataID get the numeric id from the dataid
+func ExtractDataID(id string) string {
+	parts := strings.Split(id, "-")
+	return parts[len(parts)-1]
+}
+
+// CleanHTML takes the raw JSON-escaped HTML from the AJAX response and returns clean, proper HTML that goquery can parse.
+func CleanHTML(raw string) string {
+	// replace escaped quotes
+	clean := strings.ReplaceAll(raw, "\\\"", "\"")
+	// decode HTML entities
+	clean = html.UnescapeString(clean)
+	return clean
 }

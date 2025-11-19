@@ -59,6 +59,9 @@ func decryptFallback(epID, id, name, typ string) (DecryptedSources, error) {
 	}
 
 	linkFile := extractSourceFile(data)
+	if strings.TrimSpace(linkFile) == "" {
+		return DecryptedSources{}, fmt.Errorf("failed to extract source file from fallback response")
+	}
 	return DecryptedSources{
 		ID:   id,
 		Type: typ,
@@ -77,7 +80,10 @@ func decryptFallback(epID, id, name, typ string) (DecryptedSources, error) {
 func decryptPrimary(id, name, typ string) (DecryptedSources, error) {
 	baseURL := utils.GetV4BaseURL()
 	sourceEndpoint := fmt.Sprintf("%s/ajax/episode/sources?id=%s", baseURL, id)
-	raw, err := httpclient.Get(sourceEndpoint)
+	// Add Referer header to match original Node.js implementation
+	raw, err := httpclient.GetWithHeaders(sourceEndpoint, map[string]string{
+		"Referer": baseURL + "/",
+	})
 	if err != nil {
 		return DecryptedSources{}, err
 	}
@@ -96,7 +102,18 @@ func decryptPrimary(id, name, typ string) (DecryptedSources, error) {
 		return DecryptedSources{}, err
 	}
 
-	rawSource, err := httpclient.Get(getSourcesURL)
+	// Parse the base URL from getSourcesURL to set Referer
+	parsedSourcesURL, err := url.Parse(getSourcesURL)
+	if err != nil {
+		return DecryptedSources{}, err
+	}
+	refererURL := fmt.Sprintf("%s://%s/", parsedSourcesURL.Scheme, parsedSourcesURL.Host)
+
+	// Add Referer and X-Requested-With headers for getSources request
+	rawSource, err := httpclient.GetWithHeaders(getSourcesURL, map[string]string{
+		"Referer":          refererURL,
+		"X-Requested-With": "XMLHttpRequest",
+	})
 	if err != nil {
 		return DecryptedSources{}, err
 	}
@@ -106,6 +123,9 @@ func decryptPrimary(id, name, typ string) (DecryptedSources, error) {
 	}
 
 	linkFile := extractSourceFile(data)
+	if strings.TrimSpace(linkFile) == "" {
+		return DecryptedSources{}, fmt.Errorf("failed to extract source file from primary response")
+	}
 	return DecryptedSources{
 		ID:   id,
 		Type: typ,

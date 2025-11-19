@@ -42,7 +42,6 @@ func SetupRoutes(app *fiber.App) {
 
 	// Home info routes
 	app.Get("/api", homeHandler.GetHomeInfo)
-	app.Get("/api/", homeHandler.GetHomeInfo)
 
 	// Category routes (genre and other categories)
 	for _, routeType := range RouteTypes {
@@ -59,11 +58,11 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/api/episodes/:id", episodeListHandler.GetEpisodes)
 
 	// Servers
-	app.Get("/api/servers/:id", serversHandler.GetServers)
+	app.Get("/api/servers", serversHandler.GetServers)
 
 	// Stream
-	app.Get("/api/stream", streamHandler.GetStream)
-	app.Get("/api/stream/fallback", streamHandler.GetStreamFallback)
+	app.Get("/api/stream/:id", streamHandler.GetStream)
+	app.Get("/api/stream/fallback/:id", streamHandler.GetStreamFallback)
 
 	// Search
 	app.Get("/api/search", searchHandler.Search)
@@ -79,7 +78,7 @@ func SetupRoutes(app *fiber.App) {
 
 	// Random
 	app.Get("/api/random", randomHandler.GetRandom)
-	app.Get("/api/random/id", randomHandler.GetRandomID)
+	app.Get("/api/random/:id", randomHandler.GetRandomID)
 
 	// Qtip
 	app.Get("/api/qtip/:id", qtipHandler.GetQtip)

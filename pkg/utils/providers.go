@@ -18,8 +18,8 @@ type Providers struct {
 const (
 	baseV1Host = "hianime.do"
 	baseV2Host = "kaido.to"
-	baseV3Host = "9animetv.to"
-	baseV4Host = "aniplay.lol"
+	baseV3Host = "aniplay.lol"
+	baseV4Host = "9animetv.to"
 
 	fallback1Host = "megaplay.buzz"
 	fallback2Host = "vidwish.live"

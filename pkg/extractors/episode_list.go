@@ -1,7 +1,7 @@
 package extractors
 
 import (
-	"bytes"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -10,6 +10,11 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
+
+type EpisodeHTMLResponse struct {
+	Status bool   `json:"status"`
+	HTML   string `json:"html"`
+}
 
 type EpisodeList struct {
 	TotalEpisodes int            `json:"totalEpisodes"`
@@ -27,17 +32,25 @@ type EpisodeEntry struct {
 func ExtractEpisodeList(id string, baseURL string) (EpisodeList, error) {
 	c := utils.NewCollector()
 	var out EpisodeList
-	showId := lastSegment(id)
-	url := fmt.Sprintf("https://%s/ajax/v2/episode/list/%s", baseURL, showId)
+	url := fmt.Sprintf("https://%s/ajax/v2/episode/list/%s", baseURL, utils.ExtractDataID(id))
 	c.OnRequest(func(r *colly.Request) {
 		r.Headers.Set("X-Requested-With", "XMLHttpRequest")
 		r.Headers.Set("Referer", fmt.Sprintf("https://%s/watch/%s", baseURL, id))
 	})
 	c.OnResponse(func(r *colly.Response) {
-		doc, err := goquery.NewDocumentFromReader(bytes.NewReader(r.Body))
+		var res EpisodeHTMLResponse
+
+		if err := json.Unmarshal(r.Body, &res); err != nil {
+			fmt.Println("JSON parse error:", err)
+			return
+		}
+
+		body := utils.CleanHTML(res.HTML)
+		doc, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 		if err != nil {
 			return
 		}
+
 		doc.Find(".detail-infor-content .ss-list a").Each(func(_ int, sel *goquery.Selection) {
 			var ent EpisodeEntry
 			ent.ID = lastSegment(sel.AttrOr("href", ""))

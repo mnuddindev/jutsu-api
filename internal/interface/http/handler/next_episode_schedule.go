@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
+	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
@@ -29,15 +30,32 @@ func (h *NextEpisodeScheduleHandler) GetNextEpisodeSchedule(c *fiber.Ctx) error 
 		return fiber.NewError(fiber.StatusBadRequest, "path parameter 'id' is required")
 	}
 
+	cacheKey := fmt.Sprintf("next_episode_schedule:%s", id)
+
+	// Try to get from cache
+	var cached interface{}
+	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
+		return c.JSON(fiber.Map{
+			"success": true,
+			"results": cached,
+			"cached":  true,
+		})
+	}
+
 	nextSchedule, err := extractors.ExtractNextEpisodeSchedule(id, h.baseHost)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch next episode schedule: %v", err))
 	}
 
+	responseData := fiber.Map{
+		"nextEpisodeSchedule": nextSchedule,
+	}
+
+	// Cache the response
+	_ = helper.SetCachedData(cacheKey, responseData, helper.NextEpisodeScheduleCacheTTL)
+
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": fiber.Map{
-			"nextEpisodeSchedule": nextSchedule,
-		},
+		"results": responseData,
 	})
 }

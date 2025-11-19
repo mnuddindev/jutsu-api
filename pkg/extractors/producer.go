@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/mnuddindev/jutsu-api/pkg/scrape"
+	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 var extractPageFn = scrape.ExtractPage
@@ -36,7 +37,7 @@ func extractCreatorList(prefix, id string, page int, baseURL string) (CategoryRe
 	if page <= 0 {
 		page = 1
 	}
-	route := fmt.Sprintf("%s/%s", prefix, slug)
+	route := fmt.Sprintf("%s/%s", prefix, utils.ExtractDataID(slug))
 	data, totalPages, err := extractPageFn(page, route, baseURL)
 	if err != nil {
 		return CategoryResult{}, err

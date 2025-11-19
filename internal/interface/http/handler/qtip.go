@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
+	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
@@ -29,10 +30,25 @@ func (h *QtipHandler) GetQtip(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "path parameter 'id' is required")
 	}
 
+	cacheKey := fmt.Sprintf("qtip:%s", id)
+
+	// Try to get from cache
+	var cached interface{}
+	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
+		return c.JSON(fiber.Map{
+			"success": true,
+			"results": cached,
+			"cached":  true,
+		})
+	}
+
 	qtip, err := extractors.ExtractQtip(id, h.baseHost)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch qtip: %v", err))
 	}
+
+	// Cache the response
+	_ = helper.SetCachedData(cacheKey, qtip, helper.QtipCacheTTL)
 
 	return c.JSON(fiber.Map{
 		"success": true,

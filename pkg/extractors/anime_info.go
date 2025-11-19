@@ -174,7 +174,7 @@ func ExtractAnimeInfo(id, baseURL string) (AnimeInfo, error) {
 }
 
 func fetchCharacterHTML(dataID, baseURL string) (string, error) {
-	endpoint := fmt.Sprintf("https://%s/ajax/character/list/%s", baseURL, dataID)
+	endpoint := fmt.Sprintf("https://%s/ajax/character/list/%s", baseURL, utils.ExtractDataID(dataID))
 	raw, err := httpclient.Get(endpoint)
 	if err != nil {
 		return "", err

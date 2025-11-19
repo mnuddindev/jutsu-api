@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"strconv"
 	"strings"
@@ -8,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
+	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
@@ -83,6 +86,19 @@ func (h *FilterHandler) Filter(c *fiber.Ctx) error {
 		params["page"] = strconv.Itoa(page)
 	}
 
+	// Generate cache key from params
+	cacheKey := h.generateFilterCacheKey(params)
+
+	// Try to get from cache
+	var cached map[string]interface{}
+	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
+		return c.JSON(fiber.Map{
+			"success": true,
+			"results": cached,
+			"cached":  true,
+		})
+	}
+
 	result, err := extractors.ExtractFilter(params, h.baseHost)
 	if err != nil {
 		if strings.Contains(err.Error(), "exceeds total available pages") {
@@ -95,13 +111,31 @@ func (h *FilterHandler) Filter(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "requested page exceeds total available pages")
 	}
 
+	responseData := fiber.Map{
+		"data":      result.Data,
+		"totalPage": result.TotalPage,
+		"page":      result.Page,
+		"hasNext":   result.HasNext,
+	}
+
+	// Cache the response
+	_ = helper.SetCachedData(cacheKey, responseData, helper.FilterCacheTTL)
+
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": fiber.Map{
-			"data":      result.Data,
-			"totalPage": result.TotalPage,
-			"page":      result.Page,
-			"hasNext":   result.HasNext,
-		},
+		"results": responseData,
 	})
+}
+
+// generateFilterCacheKey generates a cache key from filter parameters
+func (h *FilterHandler) generateFilterCacheKey(params map[string]string) string {
+	key := "filter:"
+	for k, v := range params {
+		if v != "" {
+			key += fmt.Sprintf("%s:%s:", k, v)
+		}
+	}
+	// Hash the key to ensure it's not too long
+	hash := md5.Sum([]byte(key))
+	return fmt.Sprintf("filter:%s", hex.EncodeToString(hash[:]))
 }
