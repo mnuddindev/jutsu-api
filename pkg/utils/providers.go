@@ -21,8 +21,8 @@ const (
 	baseV3Host = "aniplay.lol"
 	baseV4Host = "9animetv.to"
 
-	fallback1Host = "megaplay.buzz"
-	fallback2Host = "vidwish.live"
+	fallback1Host = "vidwish.live"
+	fallback2Host = "megaplay.buzz"
 
 	streamProviderHost = "megacloud.club"
 )

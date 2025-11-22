@@ -1,7 +1,7 @@
 package extractors
 
 import (
-	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -25,7 +25,15 @@ func ExtractSchedule(date string, tzOffset int, baseURL string) ([]ScheduleItem,
 	var items []ScheduleItem
 	url := fmt.Sprintf("https://%s/ajax/schedule/list?tzOffset=%d&date=%s", baseURL, tzOffset, date)
 	c.OnResponse(func(r *colly.Response) {
-		doc, err := goquery.NewDocumentFromReader(bytes.NewReader(r.Body))
+		var res EpisodeHTMLResponse
+
+		if err := json.Unmarshal(r.Body, &res); err != nil {
+			fmt.Println("JSON parse error:", err)
+			return
+		}
+
+		body := utils.CleanHTML(res.HTML)
+		doc, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 		if err != nil {
 			return
 		}

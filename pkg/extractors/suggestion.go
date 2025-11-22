@@ -1,7 +1,7 @@
 package extractors
 
 import (
-	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -26,7 +26,15 @@ func ExtractSuggestions(keyword, baseURL string) ([]SuggestionItem, error) {
 	var items []SuggestionItem
 	url := fmt.Sprintf("https://%s/ajax/search/suggest?keyword=%s", baseURL, keyword)
 	c.OnResponse(func(r *colly.Response) {
-		doc, err := goquery.NewDocumentFromReader(bytes.NewReader(r.Body))
+		var res EpisodeHTMLResponse
+
+		if err := json.Unmarshal(r.Body, &res); err != nil {
+			fmt.Println("JSON parse error:", err)
+			return
+		}
+
+		body := utils.CleanHTML(res.HTML)
+		doc, err := goquery.NewDocumentFromReader(strings.NewReader(body))
 		if err != nil {
 			return
 		}
