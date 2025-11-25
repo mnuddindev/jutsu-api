@@ -21,12 +21,6 @@ test:
 	@go test -v -race -coverprofile=coverage.out ./...
 	@go tool cover -html=coverage.out -o coverage.html
 
-# Run integration tests (requires server to be running)
-test-integration:
-	@echo "Running integration tests..."
-	@echo "Make sure the server is running on http://localhost:8080"
-	@go test -v ./tests/integration/...
-
 # Clean build artifacts
 clean:
 	@echo "Cleaning..."

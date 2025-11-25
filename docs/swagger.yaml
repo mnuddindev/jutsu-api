@@ -383,17 +383,23 @@ paths:
       summary: Search anime
       tags:
       - Search
-  /stream:
+  /stream/{id}:
     get:
       consumes:
       - application/json
       description: Returns streaming information for an episode with specified server
         and type
       parameters:
-      - description: 'Episode ID (format: anime-id?ep=episode-id)'
-        example: frieren-beyond-journeys-end-18542?ep=107257
-        in: query
+      - description: Anime ID
+        example: frieren-beyond-journeys-end-18542
+        in: path
         name: id
+        required: true
+        type: string
+      - description: Episode ID
+        example: "107257"
+        in: query
+        name: ep
         required: true
         type: string
       - description: Server name (e.g., vidcloud, hd-1)
@@ -427,16 +433,22 @@ paths:
       summary: Get streaming information
       tags:
       - Streaming
-  /stream/fallback:
+  /stream/fallback/{id}:
     get:
       consumes:
       - application/json
       description: Returns fallback streaming information when primary stream fails
       parameters:
-      - description: 'Episode ID (format: anime-id?ep=episode-id)'
-        example: frieren-beyond-journeys-end-18542?ep=107257
-        in: query
+      - description: Anime ID
+        example: frieren-beyond-journeys-end-18542
+        in: path
         name: id
+        required: true
+        type: string
+      - description: Episode ID
+        example: "107257"
+        in: query
+        name: ep
         required: true
         type: string
       - description: Server name

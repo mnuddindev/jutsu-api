@@ -28,7 +28,3 @@ func TestCacheGetNoClient(t *testing.T) {
 		t.Fatalf("GetCachedData returned error with nil client: %v", err)
 	}
 }
-
-func TestGetKeysLimitationDocumented(t *testing.T) {
-	t.Skip("utils.GetKeys relies on JS-specific regex; documented skip")
-}

@@ -2,12 +2,6 @@ package parsers
 
 import "encoding/json"
 
-type ServerData struct {
-	Name string `json:"name"`
-	ID   string `json:"id"`
-	Type string `json:"type"`
-}
-
 type StreamLink struct {
 	File string `json:"file"`
 	Type string `json:"type"`

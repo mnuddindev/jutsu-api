@@ -460,69 +460,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/stream": {
-            "get": {
-                "description": "Returns streaming information for an episode with specified server and type",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Streaming"
-                ],
-                "summary": "Get streaming information",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "frieren-beyond-journeys-end-18542?ep=107257",
-                        "description": "Episode ID (format: anime-id?ep=episode-id)",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "example": "hd-1",
-                        "description": "Server name (e.g., vidcloud, hd-1)",
-                        "name": "server",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "sub",
-                        "description": "Stream type (sub or dub)",
-                        "name": "type",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Streaming information",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "502": {
-                        "description": "Bad Gateway",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/stream/fallback": {
+        "/stream/fallback/{id}": {
             "get": {
                 "description": "Returns fallback streaming information when primary stream fails",
                 "consumes": [
@@ -538,9 +476,17 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "frieren-beyond-journeys-end-18542?ep=107257",
-                        "description": "Episode ID (format: anime-id?ep=episode-id)",
+                        "example": "frieren-beyond-journeys-end-18542",
+                        "description": "Anime ID",
                         "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "107257",
+                        "description": "Episode ID",
+                        "name": "ep",
                         "in": "query",
                         "required": true
                     },
@@ -576,6 +522,76 @@ const docTemplate = `{
                     },
                     "503": {
                         "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/stream/{id}": {
+            "get": {
+                "description": "Returns streaming information for an episode with specified server and type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Streaming"
+                ],
+                "summary": "Get streaming information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "frieren-beyond-journeys-end-18542",
+                        "description": "Anime ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "107257",
+                        "description": "Episode ID",
+                        "name": "ep",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "hd-1",
+                        "description": "Server name (e.g., vidcloud, hd-1)",
+                        "name": "server",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "sub",
+                        "description": "Stream type (sub or dub)",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Streaming information",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true

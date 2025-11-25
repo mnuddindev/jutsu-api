@@ -29,6 +29,7 @@ func (h *NextEpisodeScheduleHandler) GetNextEpisodeSchedule(c *fiber.Ctx) error 
 	if id == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "path parameter 'id' is required")
 	}
+
 	cacheKey := fmt.Sprintf("next_episode_schedule:%s", id)
 
 	// Try to get from cache

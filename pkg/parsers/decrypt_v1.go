@@ -20,7 +20,6 @@ func DecryptSourcesV1(epID string, id string, name string, typ string, fallback 
 
 func decryptFallback(epID, id, name, typ string) (DecryptedSources, error) {
 	targetServer := utils.GetFallback2Host()
-	fmt.Print(targetServer)
 	switch strings.ToLower(name) {
 	case "hd-1", "hd-3":
 		targetServer = utils.GetFallback1Host()
