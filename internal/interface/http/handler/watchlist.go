@@ -25,6 +25,18 @@ func NewWatchlistHandler() *WatchlistHandler {
 }
 
 // GetWatchlist returns a user's watchlist with pagination.
+// @Summary      Get user watchlist
+// @Description  Returns a paginated watchlist for a specific user
+// @Tags         Watchlist
+// @Accept       json
+// @Produce      json
+// @Param        userId   path      string  true  "User identifier"  example(user123)
+// @Param        page     path      int     false "Page number (must be >= 1)"  default(1)  example(1)
+// @Success      200      {object}  SuccessResponse  "Watchlist data"
+// @Failure      400      {object}  ErrorResponse    "Missing or invalid parameters"
+// @Failure      502      {object}  ErrorResponse    "Failed to fetch watchlist"
+// @Router       /watchlist/{userId} [get]
+// @Router       /watchlist/{userId}/{page} [get]
 func (h *WatchlistHandler) GetWatchlist(c *fiber.Ctx) error {
 	userID := strings.TrimSpace(c.Params("userId"))
 	if userID == "" {

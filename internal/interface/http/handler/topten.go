@@ -23,6 +23,14 @@ func NewTopTenHandler() *TopTenHandler {
 }
 
 // GetTopTen returns the top 10 anime data.
+// @Summary      Get Top 10 anime's info
+// @Description  Returns the Top 10 anime lists for today, week and month
+// @Tags         Categories
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  SuccessResponse  "Top 10 anime data"
+// @Failure      502  {object}  ErrorResponse    "Failed to fetch top ten"
+// @Router       /top-ten [get]
 func (h *TopTenHandler) GetTopTen(c *fiber.Ctx) error {
 	cacheKey := "topTen"
 	var cached extractors.TopTenResult

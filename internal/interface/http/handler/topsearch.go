@@ -23,6 +23,14 @@ func NewTopSearchHandler() *TopSearchHandler {
 }
 
 // GetTopSearch returns top search keywords.
+// @Summary      Get Top Search
+// @Description  Returns the list of top search keywords
+// @Tags         Search
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  SuccessResponse  "Top search keywords"
+// @Failure      502  {object}  ErrorResponse    "Failed to fetch top search"
+// @Router       /top-search [get]
 func (h *TopSearchHandler) GetTopSearch(c *fiber.Ctx) error {
 	cacheKey := "top_search"
 

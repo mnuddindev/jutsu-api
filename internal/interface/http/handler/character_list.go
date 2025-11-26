@@ -25,6 +25,17 @@ func NewCharacterListHandler() *CharacterListHandler {
 }
 
 // GetVoiceActors returns paginated list of characters with voice actors.
+// @Summary      Get anime characters
+// @Description  Returns a paginated list of characters with voice actors for a specific anime
+// @Tags         Characters
+// @Accept       json
+// @Produce      json
+// @Param        id     path      string  true  "Anime ID or slug"  example(frieren-beyond-journeys-end-18542)
+// @Param        page   query     int     false "Page number (must be >= 1)"  default(1)  example(1)
+// @Success      200    {object}  SuccessResponse  "Characters and voice actors"
+// @Failure      400    {object}  ErrorResponse    "Missing or invalid parameters"
+// @Failure      502    {object}  ErrorResponse    "Failed to fetch character list"
+// @Router       /character/list/{id} [get]
 func (h *CharacterListHandler) GetVoiceActors(c *fiber.Ctx) error {
 	id := strings.TrimSpace(c.Params("id"))
 	if id == "" {

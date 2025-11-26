@@ -25,6 +25,16 @@ func NewEpisodeListHandler() *EpisodeListHandler {
 }
 
 // GetEpisodes returns the list of episodes for an anime.
+// @Summary      Get anime episode list
+// @Description  Returns the list of episodes for a specific anime
+// @Tags         Anime
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Anime ID or slug"  example(frieren-beyond-journeys-end-18542)
+// @Success      200  {object}  SuccessResponse  "Episode list"
+// @Failure      400  {object}  ErrorResponse    "Missing or invalid path parameter"
+// @Failure      502  {object}  ErrorResponse    "Failed to fetch episodes"
+// @Router       /episodes/{id} [get]
 func (h *EpisodeListHandler) GetEpisodes(c *fiber.Ctx) error {
 	id := strings.TrimSpace(c.Params("id"))
 	if id == "" {

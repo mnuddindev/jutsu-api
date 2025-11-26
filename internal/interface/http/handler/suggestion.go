@@ -25,6 +25,16 @@ func NewSuggestionHandler() *SuggestionHandler {
 }
 
 // GetSuggestions returns search suggestions for a keyword.
+// @Summary      Get search suggestions
+// @Description  Returns search suggestions for a given keyword
+// @Tags         Search
+// @Accept       json
+// @Produce      json
+// @Param        keyword  query     string  true  "Search keyword"  example(nar)
+// @Success      200      {object}  SuccessResponse  "Search suggestions"
+// @Failure      400      {object}  ErrorResponse    "Missing keyword"
+// @Failure      502      {object}  ErrorResponse    "Failed to fetch suggestions"
+// @Router       /search/suggest [get]
 func (h *SuggestionHandler) GetSuggestions(c *fiber.Ctx) error {
 	keyword := strings.TrimSpace(c.Query("keyword"))
 	if keyword == "" {

@@ -24,6 +24,16 @@ func NewQtipHandler() *QtipHandler {
 }
 
 // GetQtip returns qtip data for an anime.
+// @Summary      Get anime Qtip info
+// @Description  Returns Qtip sidebar information for a specific anime
+// @Tags         Anime
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Anime ID or slug"  example(frieren-beyond-journeys-end-18542)
+// @Success      200  {object}  SuccessResponse  "Qtip info"
+// @Failure      400  {object}  ErrorResponse    "Missing path parameter"
+// @Failure      502  {object}  ErrorResponse    "Failed to fetch qtip info"
+// @Router       /qtip/{id} [get]
 func (h *QtipHandler) GetQtip(c *fiber.Ctx) error {
 	id := strings.TrimSpace(c.Params("id"))
 	if id == "" {

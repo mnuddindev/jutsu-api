@@ -25,6 +25,33 @@ func NewCategoryHandler() *CategoryHandler {
 }
 
 // GetCategory returns paginated anime rows for a category/genre route.
+// @Summary      Get category or genre listing
+// @Description  Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)
+// @Tags         Categories
+// @Accept       json
+// @Produce      json
+// @Param        page   query     int   false  "Page number (must be >= 1)"  default(1)  example(1)
+// @Success      200    {object}  CategoryResponse  "Category results"
+// @Failure      400    {object}  ErrorResponse     "Invalid page parameter"
+// @Failure      404    {object}  ErrorResponse     "Requested page exceeds total available pages"
+// @Failure      502    {object}  ErrorResponse     "Failed to load category data"
+// @Router       /genre/{slug} [get]
+// @Router       /top-airing [get]
+// @Router       /most-popular [get]
+// @Router       /most-favorite [get]
+// @Router       /completed [get]
+// @Router       /recently-updated [get]
+// @Router       /recently-added [get]
+// @Router       /top-upcoming [get]
+// @Router       /subbed-anime [get]
+// @Router       /dubbed-anime [get]
+// @Router       /movie [get]
+// @Router       /special [get]
+// @Router       /ova [get]
+// @Router       /ona [get]
+// @Router       /tv [get]
+// @Router       /az-list [get]
+// @Router       /az-list/{letter} [get]
 func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
 	// Extract route type from path (e.g., "/api/genre/action" -> "genre/action")
 	path := c.Path()

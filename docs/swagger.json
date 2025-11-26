@@ -52,6 +52,57 @@
                 }
             }
         },
+        "/actors/{id}": {
+            "get": {
+                "description": "Returns detailed information about a specific voice actor and their roles",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Characters"
+                ],
+                "summary": "Get voice actor details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "gakuto-kajiwara-534",
+                        "description": "Voice actor ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Voice actor details",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing path parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "No voice actor found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch voice actor",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api": {
             "get": {
                 "description": "Returns combined home page data including spotlights, trending, top 10, schedule, and category previews",
@@ -78,6 +129,546 @@
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/az-list": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/az-list/{letter}": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/character/list/{id}": {
+            "get": {
+                "description": "Returns a paginated list of characters with voice actors for a specific anime",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Characters"
+                ],
+                "summary": "Get anime characters",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "frieren-beyond-journeys-end-18542",
+                        "description": "Anime ID or slug",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Characters and voice actors",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid parameters",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch character list",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/character/{id}": {
+            "get": {
+                "description": "Returns detailed information about a specific character including voice actors and animeography",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Characters"
+                ],
+                "summary": "Get character details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "asta-340",
+                        "description": "Character ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Character details",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing path parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Character not found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch character",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/completed": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/dubbed-anime": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/episodes/{id}": {
+            "get": {
+                "description": "Returns the list of episodes for a specific anime",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anime"
+                ],
+                "summary": "Get anime episode list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "frieren-beyond-journeys-end-18542",
+                        "description": "Anime ID or slug",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Episode list",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid path parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch episodes",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/filter": {
+            "get": {
+                "description": "Filter anime using the same query options as search (type, status, rating, genres, dates, etc.)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Filter anime",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Anime type (tv, movie, ova, etc.)",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status (ongoing, completed, etc.)",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Rating filter",
+                        "name": "rated",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Minimum score",
+                        "name": "score",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season filter",
+                        "name": "season",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Language (sub, dub)",
+                        "name": "language",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "1,2,3",
+                        "description": "Comma-separated genre IDs",
+                        "name": "genres",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start year",
+                        "name": "sy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start month",
+                        "name": "sm",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start day",
+                        "name": "sd",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End year",
+                        "name": "ey",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End month",
+                        "name": "em",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End day",
+                        "name": "ed",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Filter results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SearchResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to filter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/genre/{slug}": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
                         }
                     }
                 }
@@ -180,6 +771,365 @@
                 }
             }
         },
+        "/most-favorite": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/most-popular": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/movie": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ona": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ova": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/producer/{id}": {
+            "get": {
+                "description": "Returns paginated anime rows for a producer identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get anime of specific producers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "1",
+                        "description": "Producer ID or slug",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Producer anime list",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Page out of range",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load producer data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/qtip/{id}": {
+            "get": {
+                "description": "Returns Qtip sidebar information for a specific anime",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anime"
+                ],
+                "summary": "Get anime Qtip info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "frieren-beyond-journeys-end-18542",
+                        "description": "Anime ID or slug",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Qtip info",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing path parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch qtip info",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/random": {
             "get": {
                 "description": "Returns full information for a randomly selected anime",
@@ -272,6 +1222,108 @@
                 }
             }
         },
+        "/recently-added": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/recently-updated": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/schedule": {
             "get": {
                 "description": "Returns anime schedule for a specific date",
@@ -312,6 +1364,51 @@
                     },
                     "502": {
                         "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/{id}": {
+            "get": {
+                "description": "Returns next-episode schedule information for a given anime",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedule"
+                ],
+                "summary": "Get schedule of next episode of anime",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "frieren-beyond-journeys-end-18542",
+                        "description": "Anime ID or slug",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Next episode schedule",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing path parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch next episode schedule",
                         "schema": {
                             "$ref": "#/definitions/handler.ErrorResponse"
                         }
@@ -458,6 +1555,147 @@
                 }
             }
         },
+        "/search/suggest": {
+            "get": {
+                "description": "Returns search suggestions for a given keyword",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Get search suggestions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "nar",
+                        "description": "Search keyword",
+                        "name": "keyword",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Search suggestions",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing keyword",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch suggestions",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/servers": {
+            "get": {
+                "description": "Returns the list of available streaming servers for an episode",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Streaming"
+                ],
+                "summary": "Get available servers of anime",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "107257",
+                        "description": "Episode ID",
+                        "name": "ep",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Servers list",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing required query parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch servers",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/special": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/stream/fallback/{id}": {
             "get": {
                 "description": "Returns fallback streaming information when primary stream fails",
@@ -597,6 +1835,425 @@
                     }
                 }
             }
+        },
+        "/studio/{id}": {
+            "get": {
+                "description": "Returns paginated anime rows for a studio identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get anime of specific studios",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "1",
+                        "description": "Studio ID or slug",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Studio anime list",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Page out of range",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load studio data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/subbed-anime": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/top-airing": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/top-search": {
+            "get": {
+                "description": "Returns the list of top search keywords",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Get Top Search",
+                "responses": {
+                    "200": {
+                        "description": "Top search keywords",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch top search",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/top-ten": {
+            "get": {
+                "description": "Returns the Top 10 anime lists for today, week and month",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get Top 10 anime's info",
+                "responses": {
+                    "200": {
+                        "description": "Top 10 anime data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch top ten",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/top-upcoming": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tv": {
+            "get": {
+                "description": "Returns paginated anime rows for a given category or genre route (e.g. /api/genre/action, /api/top-airing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category or genre listing",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category results",
+                        "schema": {
+                            "$ref": "#/definitions/handler.CategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Requested page exceeds total available pages",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to load category data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/watchlist/{userId}": {
+            "get": {
+                "description": "Returns a paginated watchlist for a specific user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Watchlist"
+                ],
+                "summary": "Get user watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "user123",
+                        "description": "User identifier",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Watchlist data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid parameters",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch watchlist",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/watchlist/{userId}/{page}": {
+            "get": {
+                "description": "Returns a paginated watchlist for a specific user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Watchlist"
+                ],
+                "summary": "Get user watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "user123",
+                        "description": "User identifier",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "example": 1,
+                        "description": "Page number (must be \u003e= 1)",
+                        "name": "page",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Watchlist data",
+                        "schema": {
+                            "$ref": "#/definitions/handler.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid parameters",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch watchlist",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -608,6 +2265,25 @@
                 },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "handler.CategoryResponse": {
+            "type": "object",
+            "properties": {
+                "results": {
+                    "type": "object",
+                    "properties": {
+                        "data": {},
+                        "totalPages": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -683,6 +2359,21 @@
                         }
                     }
                 },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "handler.SuccessResponse": {
+            "description": "Standard success response",
+            "type": "object",
+            "properties": {
+                "cached": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "results": {},
                 "success": {
                     "type": "boolean",
                     "example": true

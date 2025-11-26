@@ -24,6 +24,16 @@ func NewServersHandler() *ServersHandler {
 }
 
 // GetServers returns available streaming servers for an episode.
+// @Summary      Get available servers of anime
+// @Description  Returns the list of available streaming servers for an episode
+// @Tags         Streaming
+// @Accept       json
+// @Produce      json
+// @Param        ep   query     string  true  "Episode ID"  example(107257)
+// @Success      200  {object}  SuccessResponse  "Servers list"
+// @Failure      400  {object}  ErrorResponse    "Missing required query parameter"
+// @Failure      502  {object}  ErrorResponse    "Failed to fetch servers"
+// @Router       /servers [get]
 func (h *ServersHandler) GetServers(c *fiber.Ctx) error {
 	episodeID := strings.TrimSpace(c.Query("ep"))
 	if episodeID == "" {

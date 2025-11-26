@@ -24,6 +24,16 @@ func NewNextEpisodeScheduleHandler() *NextEpisodeScheduleHandler {
 }
 
 // GetNextEpisodeSchedule returns the next episode schedule for an anime.
+// @Summary      Get schedule of next episode of anime
+// @Description  Returns next-episode schedule information for a given anime
+// @Tags         Schedule
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Anime ID or slug"  example(frieren-beyond-journeys-end-18542)
+// @Success      200  {object}  SuccessResponse  "Next episode schedule"
+// @Failure      400  {object}  ErrorResponse    "Missing path parameter"
+// @Failure      502  {object}  ErrorResponse    "Failed to fetch next episode schedule"
+// @Router       /schedule/{id} [get]
 func (h *NextEpisodeScheduleHandler) GetNextEpisodeSchedule(c *fiber.Ctx) error {
 	id := strings.TrimSpace(c.Params("id"))
 	if id == "" {

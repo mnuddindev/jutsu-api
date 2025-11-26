@@ -25,11 +25,35 @@ func NewCreatorHandler() *CreatorHandler {
 }
 
 // GetProducer returns paginated anime rows for a producer slug.
+// @Summary      Get anime of specific producers
+// @Description  Returns paginated anime rows for a producer identifier
+// @Tags         Categories
+// @Accept       json
+// @Produce      json
+// @Param        id     path      string  true  "Producer ID or slug"  example(1)
+// @Param        page   query     int     false "Page number (must be >= 1)"  default(1)  example(1)
+// @Success      200    {object}  CategoryResponse  "Producer anime list"
+// @Failure      400    {object}  ErrorResponse     "Invalid parameters"
+// @Failure      404    {object}  ErrorResponse     "Page out of range"
+// @Failure      502    {object}  ErrorResponse     "Failed to load producer data"
+// @Router       /producer/{id} [get]
 func (h *CreatorHandler) GetProducer(c *fiber.Ctx) error {
 	return h.handleCreatorRequest(c, "producer")
 }
 
 // GetStudio returns paginated anime rows for a studio slug.
+// @Summary      Get anime of specific studios
+// @Description  Returns paginated anime rows for a studio identifier
+// @Tags         Categories
+// @Accept       json
+// @Produce      json
+// @Param        id     path      string  true  "Studio ID or slug"  example(1)
+// @Param        page   query     int     false "Page number (must be >= 1)"  default(1)  example(1)
+// @Success      200    {object}  CategoryResponse  "Studio anime list"
+// @Failure      400    {object}  ErrorResponse     "Invalid parameters"
+// @Failure      404    {object}  ErrorResponse     "Page out of range"
+// @Failure      502    {object}  ErrorResponse     "Failed to load studio data"
+// @Router       /studio/{id} [get]
 func (h *CreatorHandler) GetStudio(c *fiber.Ctx) error {
 	return h.handleCreatorRequest(c, "studio")
 }

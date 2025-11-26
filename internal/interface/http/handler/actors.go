@@ -24,6 +24,17 @@ func NewActorsHandler() *ActorsHandler {
 }
 
 // GetVoiceActor returns voice actor details with roles.
+// @Summary      Get voice actor details
+// @Description  Returns detailed information about a specific voice actor and their roles
+// @Tags         Characters
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Voice actor ID"  example(gakuto-kajiwara-534)
+// @Success      200  {object}  SuccessResponse  "Voice actor details"
+// @Failure      400  {object}  ErrorResponse    "Missing path parameter"
+// @Failure      404  {object}  ErrorResponse    "No voice actor found"
+// @Failure      502  {object}  ErrorResponse    "Failed to fetch voice actor"
+// @Router       /actors/{id} [get]
 func (h *ActorsHandler) GetVoiceActor(c *fiber.Ctx) error {
 	id := strings.TrimSpace(c.Params("id"))
 	if id == "" {

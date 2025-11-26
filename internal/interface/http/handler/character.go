@@ -24,6 +24,17 @@ func NewCharacterHandler() *CharacterHandler {
 }
 
 // GetCharacter returns character details with voice actors and animeography.
+// @Summary      Get character details
+// @Description  Returns detailed information about a specific character including voice actors and animeography
+// @Tags         Characters
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Character ID"  example(asta-340)
+// @Success      200  {object}  SuccessResponse  "Character details"
+// @Failure      400  {object}  ErrorResponse    "Missing path parameter"
+// @Failure      404  {object}  ErrorResponse    "Character not found"
+// @Failure      502  {object}  ErrorResponse    "Failed to fetch character"
+// @Router       /character/{id} [get]
 func (h *CharacterHandler) GetCharacter(c *fiber.Ctx) error {
 	id := strings.TrimSpace(c.Params("id"))
 	if id == "" {
