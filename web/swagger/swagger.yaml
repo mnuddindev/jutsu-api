@@ -1,0 +1,1640 @@
+openapi: 3.0.3
+info:
+  title: Jutsu API
+  description: |
+    ## Welcome to Jutsu API 🎌
+    
+    A high-performance anime streaming backend built with Go (Golang). Designed for speed, 
+    scalability, and clean architecture, Jutsu powers seamless anime discovery, streaming, 
+    and metadata management.
+    
+    ### Features
+    - 🏠 Home info – spotlights, trending lists, top-ten, schedule and category previews
+    - 📺 Anime info – seasons, related shows, recommendations, characters
+    - 🎬 Episodes & streaming – episode lists, servers, primary + fallback streaming
+    - 🔍 Search & filter – keyword search, advanced filters, suggestions
+    - 👥 People & studios – character details, voice actors, producers
+    - 📅 Schedule & random – daily schedule and random anime endpoints
+    - ⚡ Caching & observability – Redis caching and structured logging
+    
+    ### Base URL
+    ```
+    http://localhost:8080/api
+    ```
+    
+    ### Response Format
+    All responses are returned in JSON format with appropriate HTTP status codes.
+    
+    ### Error Handling
+    Error responses follow this structure:
+    ```json
+    {
+      "success": false,
+      "message": "Error description"
+    }
+    ```
+    
+    ### Support
+    - 📖 [Documentation](https://github.com/mnuddindev/jutsu-api/blob/main/docs/API.md)
+    - 🐛 [Report Issues](https://github.com/mnuddindev/jutsu-api/issues)
+    - 💬 [Discussions](https://github.com/mnuddindev/jutsu-api/discussions)
+  version: 1.0.0
+  contact:
+    name: Jutsu API Support
+    url: https://github.com/mnuddindev/jutsu-api
+    email: support@jutsuapi.com
+  license:
+    name: MIT
+    url: https://github.com/mnuddindev/jutsu-api/blob/main/LICENSE
+
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+  - url: https://api.jutsu.com
+    description: Production Server (if available)
+
+tags:
+  - name: Home
+    description: Home page endpoints including spotlights, trending, and category previews
+  - name: Anime
+    description: Anime information, seasons, and recommendations
+  - name: Episodes
+    description: Episode lists and streaming information
+  - name: Search
+    description: Search functionality with filters and suggestions
+  - name: Schedule
+    description: Anime schedule and upcoming episodes
+  - name: Characters
+    description: Character information and voice actors
+  - name: Studios
+    description: Studio and producer information
+  - name: Watchlist
+    description: User watchlist management
+  - name: Random
+    description: Random anime discovery
+  - name: Health
+    description: API health check endpoints
+  - name: Categories
+    description: Genre and category listings
+
+paths:
+  /api:
+    get:
+      tags:
+        - Home
+      summary: Get home page data
+      description: Returns complete home page data including spotlights, trending anime, top ten lists, schedule, and category previews
+      operationId: getHome
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  results:
+                    type: object
+                    properties:
+                      spotlights:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Spotlight'
+                      trending:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/AnimeCard'
+                      topTen:
+                        type: object
+                        properties:
+                          today:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/TopTenItem'
+                          week:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/TopTenItem'
+                          month:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/TopTenItem'
+                      today:
+                        type: object
+                        properties:
+                          schedule:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ScheduleItem'
+                      genres:
+                        type: array
+                        items:
+                          type: string
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/info:
+    get:
+      tags:
+        - Anime
+      summary: Get anime information
+      description: Returns detailed information about a specific anime including synopsis, genres, rating, seasons, and related content
+      operationId: getAnimeInfo
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Anime ID or slug
+          example: "frieren-beyond-journeys-end-18542"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnimeDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/top-ten:
+    get:
+      tags:
+        - Home
+      summary: Get top 10 anime
+      description: Returns top 10 anime lists for today, week, and month
+      operationId: getTopTen
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: object
+                    properties:
+                      today:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TopTenItem'
+                      week:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TopTenItem'
+                      month:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TopTenItem'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/search:
+    get:
+      tags:
+        - Search
+      summary: Search anime
+      description: Search for anime with optional filters for type, status, season, language, genres, and more
+      operationId: searchAnime
+      parameters:
+        - name: keyword
+          in: query
+          schema:
+            type: string
+          description: Search keyword
+          example: "naruto"
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [tv, movie, ova, ona, special]
+          description: Anime type filter
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ongoing, completed]
+          description: Airing status filter
+        - name: rated
+          in: query
+          schema:
+            type: string
+          description: Rating filter
+        - name: score
+          in: query
+          schema:
+            type: string
+          description: Minimum score
+        - name: season
+          in: query
+          schema:
+            type: string
+          description: Season filter
+        - name: language
+          in: query
+          schema:
+            type: string
+            enum: [sub, dub]
+          description: Language filter
+        - name: genres
+          in: query
+          schema:
+            type: string
+          description: Comma-separated genre IDs
+          example: "1,2,3"
+        - name: sort
+          in: query
+          schema:
+            type: string
+          description: Sort order
+        - name: sy
+          in: query
+          schema:
+            type: string
+          description: Start year
+        - name: sm
+          in: query
+          schema:
+            type: string
+          description: Start month
+        - name: sd
+          in: query
+          schema:
+            type: string
+          description: Start day
+        - name: ey
+          in: query
+          schema:
+            type: string
+          description: End year
+        - name: em
+          in: query
+          schema:
+            type: string
+          description: End month
+        - name: ed
+          in: query
+          schema:
+            type: string
+          description: End day
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/search/suggest:
+    get:
+      tags:
+        - Search
+      summary: Get search suggestions
+      description: Returns search suggestions based on a keyword
+      operationId: getSearchSuggestions
+      parameters:
+        - name: keyword
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Search keyword
+          example: "nar"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SuggestionItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/top-search:
+    get:
+      tags:
+        - Search
+      summary: Get top search keywords
+      description: Returns the most popular search keywords
+      operationId: getTopSearch
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        link:
+                          type: string
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/filter:
+    get:
+      tags:
+        - Search
+      summary: Filter anime
+      description: Filter anime with various criteria including type, status, genres, dates, and more
+      operationId: filterAnime
+      parameters:
+        - name: keyword
+          in: query
+          schema:
+            type: string
+          description: Search keyword
+        - name: type
+          in: query
+          schema:
+            type: string
+          description: Anime type
+        - name: status
+          in: query
+          schema:
+            type: string
+          description: Airing status
+        - name: rated
+          in: query
+          schema:
+            type: string
+          description: Rating filter
+        - name: score
+          in: query
+          schema:
+            type: string
+          description: Minimum score
+        - name: season
+          in: query
+          schema:
+            type: string
+          description: Season filter
+        - name: language
+          in: query
+          schema:
+            type: string
+          description: Language filter
+        - name: genres
+          in: query
+          schema:
+            type: string
+          description: Comma-separated genre IDs
+        - name: sort
+          in: query
+          schema:
+            type: string
+          description: Sort order
+        - name: sy
+          in: query
+          schema:
+            type: string
+          description: Start year
+        - name: sm
+          in: query
+          schema:
+            type: string
+          description: Start month
+        - name: sd
+          in: query
+          schema:
+            type: string
+          description: Start day
+        - name: ey
+          in: query
+          schema:
+            type: string
+          description: End year
+        - name: em
+          in: query
+          schema:
+            type: string
+          description: End month
+        - name: ed
+          in: query
+          schema:
+            type: string
+          description: End day
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/episodes/{id}:
+    get:
+      tags:
+        - Episodes
+      summary: Get episode list
+      description: Returns the list of episodes for a specific anime
+      operationId: getEpisodes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Anime ID
+          example: "frieren-beyond-journeys-end-18542"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: object
+                    properties:
+                      episodes:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Episode'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/servers:
+    get:
+      tags:
+        - Episodes
+      summary: Get available servers
+      description: Returns available streaming servers for an episode
+      operationId: getServers
+      parameters:
+        - name: ep
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Episode ID
+          example: "107257"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ServerItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/stream/{id}:
+    get:
+      tags:
+        - Episodes
+      summary: Get streaming information
+      description: Returns streaming links and available servers for a specific episode
+      operationId: getStream
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Anime ID
+          example: "frieren-beyond-journeys-end-18542"
+        - name: ep
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Episode ID
+          example: "107257"
+        - name: server
+          in: query
+          schema:
+            type: string
+            default: "hd-1"
+          description: Streaming server name
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [sub, dub]
+            default: "sub"
+          description: Subtitle type
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreamInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/stream/fallback/{id}:
+    get:
+      tags:
+        - Episodes
+      summary: Get fallback streaming information
+      description: Returns fallback streaming information when primary stream fails
+      operationId: getStreamFallback
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Anime ID
+        - name: ep
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Episode ID
+        - name: server
+          in: query
+          schema:
+            type: string
+          description: Streaming server name
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [sub, dub]
+          description: Subtitle type
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StreamInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/schedule:
+    get:
+      tags:
+        - Schedule
+      summary: Get daily schedule
+      description: Returns the anime schedule for a specific date
+      operationId: getSchedule
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Date in YYYY-MM-DD format (default: today)
+          example: "2025-01-18"
+        - name: tzOffset
+          in: query
+          schema:
+            type: integer
+            default: -330
+          description: Timezone offset in minutes
+          example: -330
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ScheduleItem'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/schedule/{id}:
+    get:
+      tags:
+        - Schedule
+      summary: Get next episode schedule
+      description: Returns the schedule for the next episode of a specific anime
+      operationId: getNextEpisodeSchedule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Anime ID
+          example: "frieren-beyond-journeys-end-18542"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: object
+                    properties:
+                      nextEpisodeSchedule:
+                        $ref: '#/components/schemas/ScheduleItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/random:
+    get:
+      tags:
+        - Random
+      summary: Get random anime
+      description: Returns full information for a randomly selected anime
+      operationId: getRandomAnime
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    $ref: '#/components/schemas/AnimeDetail'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/random/{id}:
+    get:
+      tags:
+        - Random
+      summary: Get random anime ID
+      description: Returns a random anime identifier
+      operationId: getRandomAnimeID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Must be "id"
+          example: "id"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /api/qtip/{id}:
+    get:
+      tags:
+        - Anime
+      summary: Get Qtip info
+      description: Returns Qtip information for an anime
+      operationId: getQtip
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Anime ID
+          example: "frieren-beyond-journeys-end-18542"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/producer/{id}:
+    get:
+      tags:
+        - Studios
+      summary: Get producer anime list
+      description: Returns paginated list of anime by a specific producer
+      operationId: getProducer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Producer ID
+          example: "1"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/studio/{id}:
+    get:
+      tags:
+        - Studios
+      summary: Get studio anime list
+      description: Returns paginated list of anime by a specific studio
+      operationId: getStudio
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Studio ID
+          example: "1"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/character/list/{id}:
+    get:
+      tags:
+        - Characters
+      summary: Get character list with voice actors
+      description: Returns paginated list of characters with their voice actors for an anime
+      operationId: getCharacterList
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Anime ID
+          example: "frieren-beyond-journeys-end-18542"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                      totalPages:
+                        type: integer
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CharacterVoiceActor'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/character/{id}:
+    get:
+      tags:
+        - Characters
+      summary: Get character details
+      description: Returns detailed information about a specific character including voice actors and animeography
+      operationId: getCharacter
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Character ID
+          example: "frieren-18542"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CharacterDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/actors/{id}:
+    get:
+      tags:
+        - Characters
+      summary: Get voice actor details
+      description: Returns detailed information about a voice actor including their roles
+      operationId: getVoiceActor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Voice actor ID
+          example: "gakuto-kajiwara-534"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/VoiceActorDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/watchlist/{userId}:
+    get:
+      tags:
+        - Watchlist
+      summary: Get user watchlist
+      description: Returns a user's watchlist with pagination
+      operationId: getWatchlist
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID
+          example: "user123"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchlistResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/watchlist/{userId}/{page}:
+    get:
+      tags:
+        - Watchlist
+      summary: Get user watchlist (paginated)
+      description: Returns a user's watchlist for a specific page
+      operationId: getWatchlistPage
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID
+        - name: page
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Page number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchlistResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/genre/{slug}:
+    get:
+      tags:
+        - Categories
+      summary: Get genre listing
+      description: Returns paginated list of anime for a specific genre
+      operationId: getGenre
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Genre slug (e.g., action, adventure, comedy)
+          example: "action"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/top-airing:
+    get:
+      tags:
+        - Categories
+      summary: Get top airing anime
+      description: Returns paginated list of top airing anime
+      operationId: getTopAiring
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /api/most-popular:
+    get:
+      tags:
+        - Categories
+      summary: Get most popular anime
+      description: Returns paginated list of most popular anime
+      operationId: getMostPopular
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Returns API health status including cache and external sources
+      operationId: healthCheck
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /ready:
+    get:
+      tags:
+        - Health
+      summary: Readiness check
+      description: Check if the application is ready to serve traffic
+      operationId: readyCheck
+      responses:
+        '200':
+          description: Application is ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ready"
+
+  /live:
+    get:
+      tags:
+        - Health
+      summary: Liveness check
+      description: Check if the application is alive
+      operationId: liveCheck
+      responses:
+        '200':
+          description: Application is alive
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "alive"
+
+components:
+  schemas:
+    Spotlight:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "frieren-beyond-journeys-end-18542"
+        data_id:
+          type: string
+        title:
+          type: string
+          example: "Frieren: Beyond Journey's End"
+        japanese_title:
+          type: string
+        poster:
+          type: string
+          format: uri
+        description:
+          type: string
+        tvInfo:
+          type: object
+          properties:
+            showType:
+              type: string
+            duration:
+              type: string
+            releaseDate:
+              type: string
+            quality:
+              type: string
+            episodeInfo:
+              type: array
+              items:
+                type: object
+    
+    AnimeCard:
+      type: object
+      properties:
+        id:
+          type: string
+        data_id:
+          type: string
+        title:
+          type: string
+        japanese_title:
+          type: string
+        poster:
+          type: string
+          format: uri
+        duration:
+          type: string
+        type:
+          type: string
+        rating:
+          type: string
+        episodes:
+          type: object
+          properties:
+            sub:
+              type: integer
+            dub:
+              type: integer
+    
+    TopTenItem:
+      type: object
+      properties:
+        id:
+          type: string
+        data_id:
+          type: string
+        number:
+          type: integer
+        name:
+          type: string
+        poster:
+          type: string
+          format: uri
+        tvInfo:
+          type: object
+    
+    AnimeDetail:
+      type: object
+      properties:
+        success:
+          type: boolean
+        results:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                japanese_title:
+                  type: string
+                poster:
+                  type: string
+                  format: uri
+                description:
+                  type: string
+                stats:
+                  type: object
+                genres:
+                  type: array
+                  items:
+                    type: string
+            seasons:
+              type: array
+              items:
+                type: object
+            relatedAnime:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnimeCard'
+            recommended:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnimeCard'
+    
+    Episode:
+      type: object
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        episodeId:
+          type: string
+        isFiller:
+          type: boolean
+    
+    ServerItem:
+      type: object
+      properties:
+        type:
+          type: string
+        data_id:
+          type: string
+        server_id:
+          type: string
+        serverName:
+          type: string
+    
+    StreamInfo:
+      type: object
+      properties:
+        success:
+          type: boolean
+        results:
+          type: object
+          properties:
+            streamingLink:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  type:
+                    type: string
+                  link:
+                    type: object
+                    properties:
+                      file:
+                        type: string
+                        format: uri
+                      type:
+                        type: string
+                  tracks:
+                    type: array
+                    items:
+                      type: object
+                  intro:
+                    type: object
+                  outro:
+                    type: object
+                  server:
+                    type: string
+            servers:
+              type: array
+              items:
+                $ref: '#/components/schemas/ServerItem'
+    
+    ScheduleItem:
+      type: object
+      properties:
+        id:
+          type: string
+        data_id:
+          type: string
+        title:
+          type: string
+        japanese_title:
+          type: string
+        releaseDate:
+          type: string
+        time:
+          type: string
+        episode_no:
+          type: integer
+    
+    SearchResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        results:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnimeCard'
+            totalPage:
+              type: integer
+            page:
+              type: integer
+            hasNext:
+              type: boolean
+    
+    FilterResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        results:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnimeCard'
+            totalPage:
+              type: integer
+            page:
+              type: integer
+            hasNext:
+              type: boolean
+    
+    SuggestionItem:
+      type: object
+      properties:
+        title:
+          type: string
+        link:
+          type: string
+    
+    CategoryResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        results:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnimeCard'
+            totalPages:
+              type: integer
+    
+    CharacterVoiceActor:
+      type: object
+      properties:
+        character:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            poster:
+              type: string
+            cast:
+              type: string
+        voiceActors:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              poster:
+                type: string
+    
+    CharacterDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        japaneseName:
+          type: string
+        profile:
+          type: string
+        about:
+          type: object
+          properties:
+            description:
+              type: string
+            style:
+              type: string
+        voiceActors:
+          type: array
+          items:
+            type: object
+        animeography:
+          type: array
+          items:
+            type: object
+    
+    VoiceActorDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        japaneseName:
+          type: string
+        profile:
+          type: string
+        about:
+          type: object
+          properties:
+            description:
+              type: string
+            style:
+              type: string
+        roles:
+          type: array
+          items:
+            type: object
+    
+    WatchlistResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        results:
+          type: object
+          properties:
+            totalPages:
+              type: integer
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  poster:
+                    type: string
+                  type:
+                    type: string
+                  subCount:
+                    type: integer
+                  dubCount:
+                    type: integer
+    
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "ok"
+        service:
+          type: string
+          example: "Jutsu API"
+        version:
+          type: string
+          example: "1.0.0"
+        uptime:
+          type: string
+        timestamp:
+          type: string
+        checks:
+          type: object
+          properties:
+            cache:
+              type: object
+              properties:
+                status:
+                  type: string
+                response_time_ms:
+                  type: integer
+            external_sources:
+              type: object
+              properties:
+                anime_provider:
+                  type: object
+    
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "An error occurred"
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: "Invalid request parameters"
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: "Resource not found"
+    
+    BadGateway:
+      description: Bad gateway
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: "Failed to fetch data from upstream service"
+    
+    ServiceUnavailable:
+      description: Service unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            message: "Service temporarily unavailable"
+

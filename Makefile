@@ -40,6 +40,8 @@ swagger:
 	@echo "Generating Swagger documentation..."
 	@swag init -g cmd/api/main.go -o docs
 	@echo "Swagger documentation generated"
+	@echo "Access docs at: http://localhost:8080/docs"
+	@echo "Swagger UI at: http://localhost:8080/swagger/index.html"
 
 # Docker compose up
 docker-up:

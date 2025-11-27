@@ -1,6 +1,8 @@
 package router
 
 import (
+	"path/filepath"
+
 	"github.com/gofiber/fiber/v2"
 	fiberSwagger "github.com/swaggo/fiber-swagger"
 
@@ -15,12 +17,17 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/ready", healthHandler.Ready)
 	app.Get("/live", healthHandler.Live)
 
-	// Swagger documentation
-	// fiberSwagger.WrapHandler already ships a nice, responsive UI; we just
-	// mount it under /swagger for convenience.
+	// Swagger documentation JSON (served via swaggo)
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
-	// API routes (matching the Node.js API structure)
+	// Custom modern documentation shell
+	swaggerUIDir := "./web/swagger"
+	app.Static("/docs/assets", swaggerUIDir)
+	app.Get("/docs", func(c *fiber.Ctx) error {
+		return c.SendFile(filepath.Join(swaggerUIDir, "index.html"))
+	})
+
+	// API routes
 	homeHandler := handler.NewHomeHandler()
 	categoryHandler := handler.NewCategoryHandler()
 	topTenHandler := handler.NewTopTenHandler()

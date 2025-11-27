@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jutsu API Documentation</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: #f8f9fa;
+            color: #1d1c1d;
+        }
+
+        /* Header Styles */
+        .custom-header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #611f69 0%, #8b4d95 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .version-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #616061;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #1d1c1d;
+        }
+
+        .github-button {
+            background: #1d1c1d;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .github-button:hover {
+            background: #350d36;
+            transform: translateY(-1px);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            height: fit-content;
+            position: sticky;
+            top: 88px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #616061;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-links {
+            list-style: none;
+        }
+
+        .sidebar-links li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-links a {
+            color: #1d1c1d;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-links a:hover {
+            background: #f8f9fa;
+            color: #611f69;
+        }
+
+        /* Content Area */
+        .content-area {
+            background: #fff;
+            border-radius: 8px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .intro-section {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .intro-section h1 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            color: #1d1c1d;
+        }
+
+        .intro-section p {
+            font-size: 16px;
+            color: #616061;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .quick-start {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .quick-start-card {
+            background: #f8f9fa;
+            padding: 16px 20px;
+            border-radius: 6px;
+            border-left: 3px solid #611f69;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .quick-start-card strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #1d1c1d;
+            font-size: 14px;
+        }
+
+        .quick-start-card code {
+            background: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #611f69;
+            display: inline-block;
+        }
+
+        /* Swagger UI Customization */
+        .swagger-ui {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+        }
+
+        .swagger-ui .topbar {
+            display: none;
+        }
+
+        .swagger-ui .info {
+            margin: 0;
+        }
+
+        .swagger-ui .scheme-container {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 24px 0;
+            box-shadow: none;
+        }
+
+        .swagger-ui .opblock {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            box-shadow: none;
+        }
+
+        .swagger-ui .opblock .opblock-summary {
+            border-radius: 6px;
+        }
+
+        .swagger-ui .opblock.opblock-get {
+            border-color: #007a5a;
+        }
+
+        .swagger-ui .opblock.opblock-get .opblock-summary {
+            background: #f0fdf4;
+            border-color: #007a5a;
+        }
+
+        .swagger-ui .opblock.opblock-post {
+            border-color: #1264a3;
+        }
+
+        .swagger-ui .opblock.opblock-post .opblock-summary {
+            background: #eff6ff;
+            border-color: #1264a3;
+        }
+
+        .swagger-ui .opblock.opblock-put {
+            border-color: #f59e0b;
+        }
+
+        .swagger-ui .opblock.opblock-put .opblock-summary {
+            background: #fffbeb;
+            border-color: #f59e0b;
+        }
+
+        .swagger-ui .opblock.opblock-delete {
+            border-color: #e01e5a;
+        }
+
+        .swagger-ui .opblock.opblock-delete .opblock-summary {
+            background: #fef2f2;
+            border-color: #e01e5a;
+        }
+
+        .swagger-ui .btn {
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .swagger-ui .btn.execute {
+            background: #611f69;
+            color: #fff;
+            border: none;
+        }
+
+        .swagger-ui .btn.execute:hover {
+            background: #350d36;
+            transform: translateY(-1px);
+        }
+
+        .swagger-ui .response-col_status {
+            font-weight: 700;
+        }
+
+        .swagger-ui .model-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .header-nav {
+                flex-wrap: wrap;
+            }
+
+            .main-container {
+                padding: 16px;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .intro-section h1 {
+                font-size: 28px;
+            }
+
+            .quick-start {
+                flex-direction: column;
+            }
+
+            .quick-start-card {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-content {
+                padding: 12px 16px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .main-container {
+                padding: 12px;
+            }
+
+            .content-area {
+                padding: 16px;
+            }
+
+            .intro-section h1 {
+                font-size: 24px;
+            }
+
+            .sidebar {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Header -->
+    <div class="custom-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">⚡ Jutsu API</div>
+                <span class="version-badge">v1.0.0</span>
+            </div>
+            <nav class="header-nav">
+                <a href="#introduction" class="nav-link">Documentation</a>
+                <a href="#swagger-ui" class="nav-link">API Reference</a>
+                <a href="https://github.com/mnuddindev/jutsu-api" class="github-button" target="_blank" rel="noopener noreferrer">
+                    View on GitHub
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Getting Started</h3>
+                <ul class="sidebar-links">
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#base-url">Base URL</a></li>
+                    <li><a href="#response-format">Response Format</a></li>
+                    <li><a href="#error-handling">Error Handling</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Resources</h3>
+                <ul class="sidebar-links">
+                    <li><a href="#tag/Home">Home</a></li>
+                    <li><a href="#tag/Anime">Anime</a></li>
+                    <li><a href="#tag/Episodes">Episodes</a></li>
+                    <li><a href="#tag/Search">Search</a></li>
+                    <li><a href="#tag/Schedule">Schedule</a></li>
+                    <li><a href="#tag/Characters">Characters</a></li>
+                    <li><a href="#tag/Studios">Studios</a></li>
+                    <li><a href="#tag/Categories">Categories</a></li>
+                    <li><a href="#tag/Random">Random</a></li>
+                    <li><a href="#tag/Watchlist">Watchlist</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Endpoints</h3>
+                <ul class="sidebar-links">
+                    <li><a href="#operation/getHome">Get Home</a></li>
+                    <li><a href="#operation/getAnimeInfo">Get Anime Info</a></li>
+                    <li><a href="#operation/searchAnime">Search Anime</a></li>
+                    <li><a href="#operation/getEpisodes">Get Episodes</a></li>
+                    <li><a href="#operation/getStream">Get Stream</a></li>
+                    <li><a href="#operation/getSchedule">Get Schedule</a></li>
+                    <li><a href="#operation/getRandomAnime">Random Anime</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Support</h3>
+                <ul class="sidebar-links">
+                    <li><a href="https://github.com/mnuddindev/jutsu-api/blob/main/docs/API.md" target="_blank" rel="noopener noreferrer">Full Documentation</a></li>
+                    <li><a href="https://github.com/mnuddindev/jutsu-api/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
+                    <li><a href="https://github.com/mnuddindev/jutsu-api/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <div class="intro-section" id="introduction">
+                <h1>Jutsu API Documentation</h1>
+                <p>
+                    A blazing-fast, production-ready RESTful API for anime streaming platforms. 
+                    Built with Go and Fiber for maximum performance and scalability. This API provides 
+                    comprehensive anime data including episodes, metadata, streaming sources, characters, 
+                    voice actors, schedules, and more.
+                </p>
+                <div class="quick-start">
+                    <div class="quick-start-card" id="base-url">
+                        <strong>Base URL</strong>
+                        <code>http://localhost:8080/api</code>
+                    </div>
+                    <div class="quick-start-card">
+                        <strong>Current Version</strong>
+                        <code>v1.0.0</code>
+                    </div>
+                    <div class="quick-start-card" id="response-format">
+                        <strong>Format</strong>
+                        <code>JSON</code>
+                    </div>
+                </div>
+                <div style="margin-top: 24px; padding: 16px; background: #f0f7ff; border-radius: 6px; border-left: 3px solid #1264a3;" id="error-handling">
+                    <strong style="display: block; margin-bottom: 8px; color: #1264a3;">Error Handling</strong>
+                    <p style="margin: 0; font-size: 14px; color: #616061;">
+                        All error responses follow a consistent format:
+                    </p>
+                    <pre style="margin-top: 8px; padding: 12px; background: #fff; border-radius: 4px; font-size: 13px; overflow-x: auto;"><code>{
+  "success": false,
+  "message": "Error description"
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Swagger UI Container -->
+            <div id="swagger-ui"></div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.min.js"></script>
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: "/swagger/doc.json", // Swagger JSON endpoint from swaggo
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "BaseLayout",
+                defaultModelsExpandDepth: 1,
+                defaultModelExpandDepth: 1,
+                docExpansion: "list",
+                filter: true,
+                showRequestHeaders: true,
+                syntaxHighlight: {
+                    activate: true,
+                    theme: "agate"
+                },
+                tryItOutEnabled: true,
+                requestInterceptor: function(request) {
+                    // Add any default headers if needed
+                    return request;
+                },
+                responseInterceptor: function(response) {
+                    // Handle responses if needed
+                    return response;
+                }
+            });
+
+            window.ui = ui;
+
+            // Smooth scroll for sidebar links
+            document.querySelectorAll('.sidebar-links a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('#tag/') || href.startsWith('#operation/')) {
+                        // Let Swagger UI handle these
+                        return;
+                    }
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        };
+    </script>
+</body>
+</html>
