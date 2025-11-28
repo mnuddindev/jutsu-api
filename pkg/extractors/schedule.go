@@ -61,7 +61,7 @@ func ExtractSchedule(date string, tzOffset int, baseURL string) ([]ScheduleItem,
 	return items, nil
 }
 
-// ExtractNextEpisodeSchedule mirrors getNextEpisodeSchedule.extractor.js.
+// ExtractNextEpisodeSchedule extracts next episode schedule information.
 // It loads the watch page and reads `.schedule-alert > .alert.small > span:last`
 // data-value attribute, which contains the next episode timestamp.
 func ExtractNextEpisodeSchedule(id string, baseURL string) (string, error) {

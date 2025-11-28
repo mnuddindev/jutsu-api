@@ -21,7 +21,7 @@ func NewRandomHandler() *RandomHandler {
 	}
 }
 
-// GetRandomID returns only the random anime identifier (matching the Node API behavior).
+// GetRandomID returns only the random anime identifier.
 // @Summary      Get random anime ID
 // @Description  Returns a random anime identifier
 // @Tags         Random

@@ -91,7 +91,7 @@ func (h *StreamHandler) handleStreamRequest(c *fiber.Ctx, fallback bool) error {
 		})
 	}
 
-	// Build full ID format: anime-id?ep=episode-id (matching Node.js format)
+	// Build full ID format: anime-id?ep=episode-id
 	// The extractor will extract just the episode ID for servers, but use full format for decryption
 	fullID := fmt.Sprintf("%s?ep=%s", animeID, episodeID)
 

@@ -50,7 +50,7 @@ func (h *HomeHandler) GetHomeInfo(c *fiber.Ctx) error {
 	dateStr := now.Format("2006-01-02")
 
 	// Extract genres from route types (first 41 are genres)
-	// These match the Node.js routeTypes array
+	// Route types array
 	routeTypes := []string{
 		"genre/action", "genre/adventure", "genre/cars", "genre/comedy", "genre/dementia",
 		"genre/demons", "genre/drama", "genre/ecchi", "genre/fantasy", "genre/game",

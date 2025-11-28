@@ -8,7 +8,7 @@ import (
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
-// Cache helpers (mirror cache.helper.js using the app Redis cache)
+// Cache helpers using the app Redis cache
 
 // GetCachedData retrieves a cached value by key into dest.
 // If the key does not exist, dest is left untouched and nil is returned.
@@ -33,27 +33,27 @@ func SetCachedData(key string, value interface{}, ttl time.Duration) error {
 
 // Scraping helpers – thin wrappers around existing Go implementations.
 
-// CountPages mirrors countPages.helper.js.
+// CountPages counts the number of pages for a given URL.
 func CountPages(url string) (int, error) {
 	return scrape.CountPages(url)
 }
 
-// ExtractPage mirrors extractPages.helper.js.
+// ExtractPage extracts page data.
 func ExtractPage(page int, params string, baseURL string) (interface{}, int, error) {
 	return scrape.ExtractPage(page, params, baseURL)
 }
 
-// FetchScript mirrors fetchScript.helper.js.
+// FetchScript fetches script content from a URL.
 func FetchScript(url string) (string, error) {
 	return scrape.FetchScript(url)
 }
 
-// FormatTitle mirrors formatTitle.helper.js.
+// FormatTitle formats anime title.
 func FormatTitle(title, dataID string) string {
 	return utils.FormatTitle(title, dataID)
 }
 
-// ExtractToken mirrors token.helper.js.
+// ExtractToken extracts token from URL.
 func ExtractToken(url string, baseURL string) (string, error) {
 	return scrape.ExtractToken(url, baseURL)
 }

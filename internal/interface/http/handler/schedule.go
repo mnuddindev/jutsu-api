@@ -39,7 +39,7 @@ func NewScheduleHandler() *ScheduleHandler {
 func (h *ScheduleHandler) GetSchedule(c *fiber.Ctx) error {
 	date := strings.TrimSpace(c.Query("date"))
 	if date == "" {
-		// Default to today's date (same as Node.js)
+		// Default to today's date
 		date = time.Now().Format("2006-01-02")
 	}
 

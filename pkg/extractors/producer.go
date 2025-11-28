@@ -18,13 +18,13 @@ var ErrCreatorPageOutOfRange = errors.New("creator page exceeds available pages"
 // ErrCreatorIDRequired is returned when no producer/studio identifier is provided.
 var ErrCreatorIDRequired = errors.New("creator id is required")
 
-// ExtractProducer mirrors the Node.js producer extractor, returning the paginated
+// ExtractProducer extracts producer information, returning the paginated
 // list of anime for a given producer slug.
 func ExtractProducer(id string, page int, baseURL string) (CategoryResult, error) {
 	return extractCreatorList("producer", id, page, baseURL)
 }
 
-// ExtractStudio mirrors the Node.js studio extractor (same layout as producer pages).
+// ExtractStudio extracts studio information (same layout as producer pages).
 func ExtractStudio(id string, page int, baseURL string) (CategoryResult, error) {
 	return extractCreatorList("studio", id, page, baseURL)
 }

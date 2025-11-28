@@ -80,7 +80,7 @@ func decryptFallback(epID, id, name, typ string) (DecryptedSources, error) {
 func decryptPrimary(id, name, typ string) (DecryptedSources, error) {
 	baseURL := utils.GetV4BaseURL()
 	sourceEndpoint := fmt.Sprintf("%s/ajax/episode/sources?id=%s", baseURL, id)
-	// Add Referer header to match original Node.js implementation
+	// Add Referer header
 	raw, err := httpclient.GetWithHeaders(sourceEndpoint, map[string]string{
 		"Referer": baseURL + "/",
 	})

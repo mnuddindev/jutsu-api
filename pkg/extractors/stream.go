@@ -113,7 +113,7 @@ func ExtractStreamingInfo(fullID, name, typ string, fallback bool, baseURL strin
 		return StreamingInfo{Servers: servers}, fmt.Errorf("failed to extract episode ID from: %s", fullID)
 	}
 
-	// Use full ID format for decryption (matching Node.js behavior)
+	// Use full ID format for decryption
 	// For fallback, we need to pass just the episode ID, not the full format
 	stream, err := resolveStreamingLink(fullID, episodeIDOnly, serverID, serverName, streamType, fallback)
 	if err != nil {
@@ -146,7 +146,7 @@ func findServerMatch(servers []ServerItem, target string) *ServerItem {
 	return nil
 }
 
-// findServerMatchByType matches server by both name AND type (matching Node.js behavior)
+// findServerMatchByType matches server by both name AND type
 func findServerMatchByType(servers []ServerItem, name, typ string) *ServerItem {
 	normalizedName := strings.TrimSpace(strings.ToLower(name))
 	normalizedType := strings.TrimSpace(strings.ToLower(typ))
@@ -169,10 +169,10 @@ func resolveStreamingLink(fullEpisodeID, episodeIDOnly, serverID, serverName, ty
 		return parsers.DecryptedSources{}, fmt.Errorf("missing server id for %s", serverName)
 	}
 
-	// Use v1 decryptor (matching Node.js behavior exactly)
+	// Use v1 decryptor
 	// For fallback: epID should be just the episode ID (e.g., "107257"), serverID can be empty
 	// For primary: epID is not used, only the serverID (data_id) is used
-	// Node.js calls: decryptSources_v1(id, requestedServer[0].data_id, name, type, fallback)
+	// Calls: decryptSources_v1(id, requestedServer[0].data_id, name, type, fallback)
 	// where id is the full format (anime-id?ep=episode-id) for primary, but just episode ID for fallback
 	if useFallback {
 		return decryptSourcesV1Fn(episodeIDOnly, serverID, serverName, typ, useFallback)

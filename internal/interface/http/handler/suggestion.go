@@ -41,7 +41,7 @@ func (h *SuggestionHandler) GetSuggestions(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "query parameter 'keyword' is required")
 	}
 
-	// URL encode the keyword (same as Node.js)
+	// URL encode the keyword
 	encodedKeyword := url.QueryEscape(keyword)
 
 	// Generate cache key

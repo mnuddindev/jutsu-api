@@ -41,7 +41,7 @@ func (h *EpisodeListHandler) GetEpisodes(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "path parameter 'id' is required")
 	}
 
-	// URL encode the id (same as Node.js)
+	// URL encode the id
 	encodedID := url.QueryEscape(id)
 
 	cacheKey := fmt.Sprintf("episodes_%s", encodedID)

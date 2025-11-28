@@ -56,7 +56,7 @@ func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
 	// Extract route type from path (e.g., "/api/genre/action" -> "genre/action")
 	path := c.Path()
 	routeType := strings.TrimPrefix(path, "/api/")
-	// Handle martial-arts typo fix (same as Node.js)
+	// Handle martial-arts typo fix
 	if routeType == "genre/martial-arts" {
 		routeType = "genre/marial-arts"
 	}
