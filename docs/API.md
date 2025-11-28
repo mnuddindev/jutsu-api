@@ -282,18 +282,21 @@ curl http://localhost:8080/api/top-search
 
 ### Streaming
 
-#### `GET /api/stream`
+#### `GET /api/stream/{id}`
 
 Get streaming information for an episode.
 
+**Path Parameters:**
+- `id` (required) – Anime slug (e.g., `frieren-beyond-journeys-end-18542`)
+
 **Query Parameters:**
-- `id` (required) - Episode ID (format: `anime-id?ep=episode-id`)
-- `server` (optional) - Server name (e.g., `vidcloud`, `hd-1`)
-- `type` (optional) - Stream type (`sub` or `dub`)
+- `ep` (required) – Episode ID
+- `server` (optional) – Server name (e.g., `hd-1`)
+- `type` (optional) – Stream type (`sub` or `dub`)
 
 **Example Request:**
 ```bash
-curl "http://localhost:8080/api/stream?id=frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"
+curl "http://localhost:8080/api/stream/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"
 ```
 
 **Example Response:**
@@ -320,28 +323,25 @@ curl "http://localhost:8080/api/stream?id=frieren-beyond-journeys-end-18542?ep=1
 }
 ```
 
-#### `GET /api/stream/fallback`
+#### `GET /api/stream/fallback/{id}`
 
-Get fallback streaming information (same parameters as `/api/stream`).
+Get fallback streaming information (same parameters as `/api/stream/{id}`).
 
 **Example Request:**
 ```bash
-curl "http://localhost:8080/api/stream/fallback?id=frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"
+curl "http://localhost:8080/api/stream/fallback/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"
 ```
 
-#### `GET /api/servers/:id`
+#### `GET /api/servers`
 
 Get available streaming servers for an episode.
 
-**Path Parameters:**
-- `id` (required) - Episode ID or anime slug
-
 **Query Parameters:**
-- `ep` (required) - Episode ID
+- `ep` (required) – Episode ID
 
 **Example Request:**
 ```bash
-curl "http://localhost:8080/api/servers/demon-slayer-kimetsu-no-yaiba-hashira-training-arc-19107?ep=124260"
+curl "http://localhost:8080/api/servers?ep=124260"
 ```
 
 **Example Response:**
@@ -645,6 +645,59 @@ Get qtip (quick tip) information for an anime.
 **Example Request:**
 ```bash
 curl "http://localhost:8080/api/qtip/frieren-beyond-journeys-end-18542"
+```
+
+---
+
+### Health & Platform
+
+#### `GET /health`
+
+Comprehensive health report including cache and upstream dependency checks.
+
+**Example Response:**
+```json
+{
+  "status": "ok",
+  "service": "Jutsu API",
+  "version": "1.0.0",
+  "uptime": "72h34m",
+  "checks": {
+    "cache": {
+      "status": "ok",
+      "response_time_ms": 2
+    },
+    "external_sources": {
+      "anime_provider": {
+        "status": "ok"
+      }
+    }
+  }
+}
+```
+
+#### `GET /ready`
+
+Returns readiness state used by orchestrators / load balancers.
+
+**Example Response:**
+```json
+{
+  "status": "ready",
+  "timestamp": "2025-01-18T12:00:00Z"
+}
+```
+
+#### `GET /live`
+
+Simple liveness probe to confirm the process is running.
+
+**Example Response:**
+```json
+{
+  "status": "alive",
+  "timestamp": "2025-01-18T12:00:00Z"
+}
 ```
 
 ---
