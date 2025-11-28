@@ -36,671 +36,1207 @@ Currently, no authentication is required for public endpoints.
 
 ## Endpoints
 
-### Home Info
+## `GET` Home info
 
-#### `GET /api` or `GET /api/`
-
-Get home page data including spotlights, trending, top 10, schedule, and category previews.
-
-**Example Request:**
 ```bash
-curl http://localhost:8080/api
+GET /api
 ```
 
-**Example Response:**
-```json
+### Endpoint
+
+```bash
+/api
+```
+
+> #### No parameter required ❌
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api"
+```
+
+#### Sample Response
+
+```javascript
 {
   "success": true,
   "results": {
-    "spotlights": [...],
-    "trending": [...],
+    "spotlights": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "title": "Frieren: Beyond Journey's End",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "description": "string",
+        "tvInfo": {
+          "showType": "string",
+          "duration": "string",
+          "releaseDate": "string",
+          "quality": "string",
+          "episodeInfo": [
+            {}
+          ]
+        }
+      }
+    ],
+    "trending": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "title": "string",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "duration": "string",
+        "type": "string",
+        "rating": "string",
+        "episodes": {
+          "sub": 0,
+          "dub": 0
+        }
+      }
+    ],
     "topTen": {
-      "today": [...],
-      "week": [...],
-      "month": [...]
+      "today": [
+        {
+          "id": "string",
+          "data_id": "string",
+          "number": 0,
+          "name": "string",
+          "poster": "https://example.com/poster.jpg",
+          "tvInfo": {}
+        }
+      ],
+      "week": [
+        {
+          "id": "string",
+          "data_id": "string",
+          "number": 0,
+          "name": "string",
+          "poster": "https://example.com/poster.jpg",
+          "tvInfo": {}
+        }
+      ],
+      "month": [
+        {
+          "id": "string",
+          "data_id": "string",
+          "number": 0,
+          "name": "string",
+          "poster": "https://example.com/poster.jpg",
+          "tvInfo": {}
+        }
+      ]
     },
     "today": {
-      "schedule": [...]
+      "schedule": [
+        {
+          "id": "string",
+          "data_id": "string",
+          "title": "string",
+          "japanese_title": "string",
+          "releaseDate": "string",
+          "time": "string",
+          "episode_no": 0
+        }
+      ]
     },
-    "topAiring": {...},
-    "mostPopular": {...},
-    "genres": ["action", "adventure", ...]
+    "genres": [
+      "string"
+    ]
   }
 }
 ```
 
----
+## `GET` Top 10 anime's info
 
-### Anime Information
-
-#### `GET /api/info`
-
-Get detailed information about a specific anime including seasons.
-
-**Query Parameters:**
-- `id` (required) - Anime ID or slug
-
-**Example Request:**
 ```bash
-curl "http://localhost:8080/api/info?id=frieren-beyond-journeys-end-18542"
+GET /api/top-ten
 ```
 
-**Example Response:**
-```json
+### Endpoint
+
+```bash
+/api/top-ten
+```
+
+> #### No parameter required ❌
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/top-ten"
+```
+
+#### Sample Response
+
+```javascript
 {
   "success": true,
   "results": {
-    "data": {
-      "id": "frieren-beyond-journeys-end-18542",
-      "title": "Frieren: Beyond Journey's End",
-      "poster": "https://...",
-      "description": "...",
-      "genres": [...],
-      "episodes": [...]
-    },
-    "seasons": [...]
-  }
-}
-```
-
----
-
-### Categories & Genres
-
-#### `GET /api/{routeType}`
-
-Get paginated anime listings by category or genre.
-
-**Route Types:**
-- Genres: `genre/action`, `genre/adventure`, `genre/comedy`, etc.
-- Categories: `top-airing`, `most-popular`, `most-favorite`, `completed`, `recently-updated`, `top-upcoming`, `recently-added`
-- Types: `movie`, `tv`, `ova`, `ona`, `special`
-- A-Z Lists: `az-list`, `az-list/a`, `az-list/b`, etc.
-
-**Query Parameters:**
-- `page` (optional) - Page number (default: 1)
-
-**Example Request:**
-```bash
-curl "http://localhost:8080/api/genre/action?page=1"
-curl "http://localhost:8080/api/top-airing?page=1"
-```
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "results": {
-    "totalPages": 10,
-    "data": [
+    "today": [
       {
-        "id": "anime-id",
-        "title": "Anime Title",
-        "poster": "https://...",
-        "description": "...",
-        "tvInfo": {...}
+        "id": "string",
+        "data_id": "string",
+        "number": 0,
+        "name": "string",
+        "poster": "https://example.com/poster.jpg",
+        "tvInfo": {}
+      }
+    ],
+    "week": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "number": 0,
+        "name": "string",
+        "poster": "https://example.com/poster.jpg",
+        "tvInfo": {}
+      }
+    ],
+    "month": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "number": 0,
+        "name": "string",
+        "poster": "https://example.com/poster.jpg",
+        "tvInfo": {}
       }
     ]
   }
 }
 ```
 
-#### `GET /api/top-ten`
+## `GET` Top Search
 
-Get top 10 anime for today, week, and month.
-
-**Example Request:**
 ```bash
-curl http://localhost:8080/api/top-ten
+GET /api/top-search
 ```
 
-**Example Response:**
-```json
-{
-  "success": true,
-  "results": {
-    "today": [...],
-    "week": [...],
-    "month": [...]
-  }
-}
-```
+### Endpoint
 
-#### `GET /api/producer/:id`
-
-Get anime by producer with pagination.
-
-**Path Parameters:**
-- `id` (required) - Producer ID or slug
-
-**Query Parameters:**
-- `page` (optional) - Page number (default: 1)
-
-**Example Request:**
 ```bash
-curl "http://localhost:8080/api/producer/studio-pierrot?page=1"
+/api/top-search
 ```
 
-#### `GET /api/studio/:id`
+> #### No parameter required ❌
 
-Get anime by studio with pagination.
+#### Example of request
 
-**Path Parameters:**
-- `id` (required) - Studio ID or slug
-
-**Query Parameters:**
-- `page` (optional) - Page number (default: 1)
-
-**Example Request:**
 ```bash
-curl "http://localhost:8080/api/studio/studio-pierrot?page=1"
+curl -X GET "http://localhost:8080/api/top-search"
 ```
 
----
+#### Sample Response
 
-### Search & Filter
-
-#### `GET /api/search`
-
-Search anime with various filters.
-
-**Query Parameters:**
-- `keyword` (optional) - Search keyword
-- `type` (optional) - Anime type (tv, movie, ova, etc.)
-- `status` (optional) - Status (ongoing, completed, etc.)
-- `rated` (optional) - Rating filter
-- `score` (optional) - Minimum score
-- `season` (optional) - Season filter
-- `language` (optional) - Language (sub, dub)
-- `genres` (optional) - Comma-separated genre IDs
-- `sort` (optional) - Sort order
-- `sy`, `sm`, `sd` (optional) - Start year, month, day
-- `ey`, `em`, `ed` (optional) - End year, month, day
-- `page` (optional) - Page number (default: 1)
-
-**Example Request:**
-```bash
-curl "http://localhost:8080/api/search?keyword=naruto&type=tv&page=1"
-```
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "results": {
-    "data": [...],
-    "totalPage": 5
-  }
-}
-```
-
-#### `GET /api/filter`
-
-Filter anime with advanced criteria (same parameters as search).
-
-**Example Request:**
-```bash
-curl "http://localhost:8080/api/filter?type=tv&status=ongoing&genres=1,2,3&page=1"
-```
-
-#### `GET /api/search/suggest`
-
-Get search suggestions for a keyword.
-
-**Query Parameters:**
-- `keyword` (required) - Search keyword
-
-**Example Request:**
-```bash
-curl "http://localhost:8080/api/search/suggest?keyword=naru"
-```
-
-**Example Response:**
-```json
+```javascript
 {
   "success": true,
   "results": [
     {
-      "id": "naruto",
-      "title": "Naruto",
-      "poster": "https://..."
+      "title": "string",
+      "link": "string"
     }
   ]
 }
 ```
 
-#### `GET /api/top-search`
+## `GET` Specified anime's info
 
-Get top search keywords.
-
-**Example Request:**
 ```bash
-curl http://localhost:8080/api/top-search
+GET /api/info
 ```
 
----
+### Endpoint
 
-### Streaming
-
-#### `GET /api/stream/{id}`
-
-Get streaming information for an episode.
-
-**Path Parameters:**
-- `id` (required) – Anime slug (e.g., `frieren-beyond-journeys-end-18542`)
-
-**Query Parameters:**
-- `ep` (required) – Episode ID
-- `server` (optional) – Server name (e.g., `hd-1`)
-- `type` (optional) – Stream type (`sub` or `dub`)
-
-**Example Request:**
 ```bash
-curl "http://localhost:8080/api/stream/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"
+/api/info?id={string}
 ```
 
-**Example Response:**
-```json
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type | Description | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :---------: | :---------: | :-----: |
+|   `id`    |    `query`     |  string   |  anime-id   |   Yes ✔️    |   --    |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/info?id=frieren-beyond-journeys-end-18542"
+```
+
+#### Sample Response
+
+```javascript
 {
   "success": true,
   "results": {
-    "streamingLink": [
+    "data": {
+      "id": "string",
+      "title": "string",
+      "japanese_title": "string",
+      "poster": "https://example.com/poster.jpg",
+      "description": "string",
+      "stats": {},
+      "genres": [
+        "string"
+      ]
+    },
+    "seasons": [
+      {}
+    ],
+    "relatedAnime": [
       {
-        "id": 1,
-        "type": "sub",
-        "link": {
-          "file": "https://...",
-          "type": "hls"
-        },
-        "tracks": [...],
-        "intro": {...},
-        "outro": {...},
-        "server": "hd-1"
+        "id": "string",
+        "data_id": "string",
+        "title": "string",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "duration": "string",
+        "type": "string",
+        "rating": "string",
+        "episodes": {
+          "sub": 0,
+          "dub": 0
+        }
       }
     ],
-    "servers": [...]
+    "recommended": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "title": "string",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "duration": "string",
+        "type": "string",
+        "rating": "string",
+        "episodes": {
+          "sub": 0,
+          "dub": 0
+        }
+      }
+    ]
   }
 }
 ```
 
-#### `GET /api/stream/fallback/{id}`
+## `GET` Random anime's info
 
-Get fallback streaming information (same parameters as `/api/stream/{id}`).
-
-**Example Request:**
 ```bash
-curl "http://localhost:8080/api/stream/fallback/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"
+GET /api/random
 ```
 
-#### `GET /api/servers`
+### Endpoint
 
-Get available streaming servers for an episode.
-
-**Query Parameters:**
-- `ep` (required) – Episode ID
-
-**Example Request:**
 ```bash
-curl "http://localhost:8080/api/servers?ep=124260"
+/api/random
 ```
 
-**Example Response:**
-```json
+> #### No parameter required ❌
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/random"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "data": {
+      "id": "string",
+      "title": "string",
+      "japanese_title": "string",
+      "poster": "https://example.com/poster.jpg",
+      "description": "string",
+      "stats": {},
+      "genres": [
+        "string"
+      ]
+    },
+    "seasons": [
+      {}
+    ],
+    "relatedAnime": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "title": "string",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "duration": "string",
+        "type": "string",
+        "rating": "string",
+        "episodes": {
+          "sub": 0,
+          "dub": 0
+        }
+      }
+    ],
+    "recommended": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "title": "string",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "duration": "string",
+        "type": "string",
+        "rating": "string",
+        "episodes": {
+          "sub": 0,
+          "dub": 0
+        }
+      }
+    ]
+  }
+}
+```
+
+## `GET` Categories info
+
+```bash
+GET /api/{category}
+```
+
+### Endpoint
+
+```bash
+/api/{category}?page={number}
+```
+
+#### Parameters
+
+| Parameter  | Parameter-Type | Data-Type | Description | Mandatory ? | Default |
+| :--------: | :------------: | :-------: | :---------: | :---------: | :-----: |
+| `category` |     `path`     | `string`  | `Category`  |   Yes ✔️    |   --    |
+|   `page`   |    `query`     | `number`  | `Page-no.`  |    No ❌    |   `1`   |
+
+#### Available Categories
+
+- `/api/top-airing`
+- `/api/most-popular`
+- `/api/genre/{slug}` (e.g., action, adventure, comedy)
+- `/api/producer/{id}`
+- `/api/studio/{id}`
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/most-popular?page=1"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "data": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "title": "string",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "duration": "string",
+        "type": "string",
+        "rating": "string",
+        "episodes": {
+          "sub": 0,
+          "dub": 0
+        }
+      }
+    ],
+    "totalPages": 0
+  }
+}
+```
+
+## `GET` Anime of specific producers or studio
+
+```bash
+GET /api/producer/{id}
+```
+
+### Endpoint
+
+```bash
+/api/producer/{id}?page={number}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type |  Description  | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :-----------: | :---------: | :-----: |
+|   `id`    |     `path`     | `string`  | `Producer ID` |   Yes ✔️    |   --    |
+|  `page`   |    `query`     | `number`  |  `Page-no.`   |    No ❌    |   `1`   |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/producer/1?page=1"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "data": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "title": "string",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "duration": "string",
+        "type": "string",
+        "rating": "string",
+        "episodes": {
+          "sub": 0,
+          "dub": 0
+        }
+      }
+    ],
+    "totalPages": 0
+  }
+}
+```
+
+## `GET` Search result's info
+
+```bash
+GET /api/search
+```
+
+### Endpoint
+
+```bash
+/api/search?keyword={string}&page={number}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type | Description | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :---------: | :---------: | :-----: |
+| `keyword` |    `query`     | `string`  |  `keyword`  |    No ❌    |   --    |
+|  `page`   |    `query`     | `number`  | `Page-no.`  |    No ❌    |   `1`   |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/search?keyword=one%20punch%20man&page=1"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "data": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "title": "string",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "duration": "string",
+        "type": "string",
+        "rating": "string",
+        "episodes": {
+          "sub": 0,
+          "dub": 0
+        }
+      }
+    ],
+    "totalPage": 0,
+    "page": 0,
+    "hasNext": true
+  }
+}
+```
+
+## `GET` Search suggestions
+
+```bash
+GET /api/search/suggest
+```
+
+### Endpoint
+
+```bash
+/api/search/suggest?keyword={string}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type |   Type   | Description | Mandatory ? | Default |
+| :-------: | :------------: | :------: | :---------: | :---------: | :-----: |
+| `keyword` |    `query`     | `string` |  `keyword`  |   Yes ✔️    |   --    |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/search/suggest?keyword=demon"
+```
+
+#### Sample Response
+
+```javascript
 {
   "success": true,
   "results": [
     {
-      "type": "sub",
-      "data_id": 123,
-      "server_id": 456,
-      "serverName": "Vidcloud"
+      "title": "string",
+      "link": "string"
     }
   ]
 }
 ```
 
----
+## `GET` Filter Anime
 
-### Episodes
-
-#### `GET /api/episodes/:id`
-
-Get list of episodes for an anime.
-
-**Path Parameters:**
-- `id` (required) - Anime ID or slug
-
-**Example Request:**
 ```bash
-curl "http://localhost:8080/api/episodes/frieren-beyond-journeys-end-18542"
+GET /api/filter
 ```
 
-**Example Response:**
-```json
+### Endpoint
+
+```bash
+/api/filter?keyword={string}&type={string}&status={string}&rated={string}&score={string}&season={string}&language={string}&genres={string}&sort={string}&sy={string}&sm={string}&sd={string}&ey={string}&em={string}&ed={string}&page={number}
+```
+
+#### Parameters
+
+| Parameter  | Parameter-Type | Data-Type | Description                                                  | Mandatory ? |   Default   |
+| :--------: | :------------: | :-------: | :----------------------------------------------------------- | :---------: | :---------: |
+| `keyword`  |    `query`     |  string   | Search keyword                                               |    No ❌    | `undefined` |
+|   `type`   |    `query`     |  string   | Type of anime (e.g., `tv`, `movie`, `ova`, `ona`, `special`) |    No ❌    |    `ALL`    |
+|  `status`  |    `query`     |  string   | Status of anime (e.g., `ongoing`, `completed`)               |    No ❌    |    `ALL`    |
+|  `rated`   |    `query`     |  string   | Rating of anime                                              |    No ❌    |    `ALL`    |
+|  `score`   |    `query`     |  string   | Score rating                                                 |    No ❌    |    `ALL`    |
+|  `season`  |    `query`     |  string   | Season of anime                                              |    No ❌    |    `ALL`    |
+| `language` |    `query`     |  string   | Language of anime (e.g., `sub`, `dub`)                       |    No ❌    |    `ALL`    |
+|  `genres`  |    `query`     |  string   | Comma-separated list of genre IDs                            |    No ❌    |    `ALL`    |
+|   `sort`   |    `query`     |  string   | Sorting method                                               |    No ❌    |  `DEFAULT`  |
+|    `sy`    |    `query`     |  string   | Start year                                                   |    No ❌    | `undefined` |
+|    `sm`    |    `query`     |  string   | Start month                                                  |    No ❌    | `undefined` |
+|    `sd`    |    `query`     |  string   | Start day                                                    |    No ❌    | `undefined` |
+|    `ey`    |    `query`     |  string   | End year                                                     |    No ❌    | `undefined` |
+|    `em`    |    `query`     |  string   | End month                                                    |    No ❌    | `undefined` |
+|    `ed`    |    `query`     |  string   | End day                                                      |    No ❌    | `undefined` |
+|   `page`   |    `query`     |  number   | Page number for pagination                                   |    No ❌    |     `1`     |
+
+#### Example of Request
+
+```bash
+curl -X GET "http://localhost:8080/api/filter?type=tv&status=completed&rated=5&sort=default&page=1"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "data": [
+      {
+        "id": "string",
+        "data_id": "string",
+        "title": "string",
+        "japanese_title": "string",
+        "poster": "https://example.com/poster.jpg",
+        "duration": "string",
+        "type": "string",
+        "rating": "string",
+        "episodes": {
+          "sub": 0,
+          "dub": 0
+        }
+      }
+    ],
+    "totalPage": 0,
+    "page": 0,
+    "hasNext": true
+  }
+}
+```
+
+## `GET` Anime's episode list
+
+```bash
+GET /api/episodes/{id}
+```
+
+### Endpoint
+
+```bash
+/api/episodes/{id}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type | Description | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :---------: | :---------: | :-----: |
+|   `id`    |     `path`     |  string   |  anime-id   |   Yes ✔️    |   --    |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/episodes/one-piece-100"
+```
+
+#### Sample Response
+
+```javascript
 {
   "success": true,
   "results": {
     "episodes": [
       {
-        "id": "episode-id",
-        "number": 1,
-        "title": "Episode 1",
-        "url": "https://..."
+        "number": 0,
+        "title": "string",
+        "episodeId": "string",
+        "isFiller": true
       }
     ]
   }
 }
 ```
 
----
+## `GET` Schedule of upcoming anime
 
-### Schedule
-
-#### `GET /api/schedule`
-
-Get anime schedule for a specific date.
-
-**Query Parameters:**
-- `date` (optional) - Date in YYYY-MM-DD format (default: today)
-- `tzOffset` (optional) - Timezone offset in minutes (default: -330)
-
-**Example Request:**
 ```bash
-curl "http://localhost:8080/api/schedule?date=2025-01-18"
+GET /api/schedule
 ```
 
-**Example Response:**
-```json
+### Endpoint
+
+```bash
+/api/schedule?date={string}&tzOffset={number}
+```
+
+#### Parameters
+
+| Parameter  | Parameter-Type | Data-Type |   Description   | Mandatory ? | Default |
+| :--------: | :------------: | :-------: | :-------------: | :---------: | :-----: |
+|   `date`   |     query      |  string   |      date       |    No ❌    |  today  |
+| `tzOffset` |     query      |  number   | timezone offset |    No ❌    | `-330`  |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/schedule?date=2024-09-23"
+```
+
+#### Sample Response
+
+```javascript
 {
   "success": true,
   "results": [
     {
-      "id": "anime-id",
-      "title": "Anime Title",
-      "episode": "Episode 1",
-      "time": "12:00",
-      "poster": "https://..."
+      "id": "string",
+      "data_id": "string",
+      "title": "string",
+      "japanese_title": "string",
+      "releaseDate": "string",
+      "time": "string",
+      "episode_no": 0
     }
   ]
 }
 ```
 
-#### `GET /api/schedule/:id`
+## `GET` Schedule of next episode of Anime
 
-Get next episode schedule for a specific anime.
-
-**Path Parameters:**
-- `id` (required) - Anime ID or slug
-
-**Example Request:**
 ```bash
-curl "http://localhost:8080/api/schedule/frieren-beyond-journeys-end-18542"
+GET /api/schedule/{id}
 ```
 
-**Example Response:**
-```json
+### Endpoint
+
+```bash
+/api/schedule/{id}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type | Description | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :---------: | :---------: | :-----: |
+|   `id`    |     param      |  string   |  anime-id   |   Yes ✔️    |   --    |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/schedule/one-piece-100"
+```
+
+#### Sample Response
+
+```javascript
 {
   "success": true,
   "results": {
-    "nextEpisodeSchedule": "2025-01-25 12:00"
-  }
-}
-```
-
----
-
-### Characters & Voice Actors
-
-#### `GET /api/character/list/:id`
-
-Get paginated list of characters with voice actors for an anime.
-
-**Path Parameters:**
-- `id` (required) - Anime ID or slug
-
-**Query Parameters:**
-- `page` (optional) - Page number (default: 1)
-
-**Example Request:**
-```bash
-curl "http://localhost:8080/api/character/list/frieren-beyond-journeys-end-18542?page=1"
-```
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "results": {
-    "currentPage": 1,
-    "totalPages": 5,
-    "data": [
-      {
-        "character": {
-          "id": "character-id",
-          "poster": "https://...",
-          "name": "Character Name",
-          "cast": "Main"
-        },
-        "voiceActors": [...]
-      }
-    ]
-  }
-}
-```
-
-#### `GET /api/character/:id`
-
-Get detailed information about a character.
-
-**Path Parameters:**
-- `id` (required) - Character ID or slug
-
-**Example Request:**
-```bash
-curl "http://localhost:8080/api/character/asta-340"
-```
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "results": {
-    "data": [{
-      "id": "asta-340",
-      "name": "Asta",
-      "profile": "https://...",
-      "japaneseName": "アスタ",
-      "about": {
-        "description": "...",
-        "style": "<p>...</p>"
-      },
-      "voiceActors": [...],
-      "animeography": [...]
-    }]
-  }
-}
-```
-
-#### `GET /api/actors/:id`
-
-Get detailed information about a voice actor.
-
-**Path Parameters:**
-- `id` (required) - Voice actor ID or slug
-
-**Example Request:**
-```bash
-curl "http://localhost:8080/api/actors/gakuto-kajiwara-534"
-```
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "results": {
-    "data": [{
-      "id": "gakuto-kajiwara-534",
-      "name": "Kajiwara, Gakuto",
-      "profile": "https://...",
-      "japaneseName": "梶原岳人",
-      "about": {...},
-      "roles": [...]
-    }]
-  }
-}
-```
-
----
-
-### Random
-
-#### `GET /api/random`
-
-Get a random anime with full details.
-
-**Example Request:**
-```bash
-curl http://localhost:8080/api/random
-```
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "results": {
-    "id": "random-anime-id",
-    "title": "Random Anime",
-    "poster": "https://...",
-    ...
-  }
-}
-```
-
-#### `GET /api/random/id`
-
-Get only a random anime ID.
-
-**Example Request:**
-```bash
-curl http://localhost:8080/api/random/id
-```
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "results": {
-    "id": "random-anime-id"
-  }
-}
-```
-
----
-
-### Watchlist
-
-#### `GET /api/watchlist/:userId` or `GET /api/watchlist/:userId/:page`
-
-Get user's watchlist with pagination.
-
-**Path Parameters:**
-- `userId` (required) - User ID
-- `page` (optional) - Page number (default: 1)
-
-**Example Request:**
-```bash
-curl "http://localhost:8080/api/watchlist/user123?page=1"
-curl "http://localhost:8080/api/watchlist/user123/1"
-```
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "results": {
-    "totalPages": 3,
-    "data": [
-      {
-        "id": "anime-id",
-        "poster": "https://...",
-        "title": "Anime Title",
-        "tvInfo": {...}
-      }
-    ]
-  }
-}
-```
-
----
-
-### Additional Endpoints
-
-#### `GET /api/qtip/:id`
-
-Get qtip (quick tip) information for an anime.
-
-**Path Parameters:**
-- `id` (required) - Anime ID or slug
-
-**Example Request:**
-```bash
-curl "http://localhost:8080/api/qtip/frieren-beyond-journeys-end-18542"
-```
-
----
-
-### Health & Platform
-
-#### `GET /health`
-
-Comprehensive health report including cache and upstream dependency checks.
-
-**Example Response:**
-```json
-{
-  "status": "ok",
-  "service": "Jutsu API",
-  "version": "1.0.0",
-  "uptime": "72h34m",
-  "checks": {
-    "cache": {
-      "status": "ok",
-      "response_time_ms": 2
-    },
-    "external_sources": {
-      "anime_provider": {
-        "status": "ok"
-      }
+    "nextEpisodeSchedule": {
+      "id": "string",
+      "data_id": "string",
+      "title": "string",
+      "japanese_title": "string",
+      "releaseDate": "string",
+      "time": "string",
+      "episode_no": 0
     }
   }
 }
 ```
 
-#### `GET /ready`
+## `GET` Qtip info
 
-Returns readiness state used by orchestrators / load balancers.
+```bash
+GET /api/qtip/{id}
+```
 
-**Example Response:**
-```json
+### Endpoint
+
+```bash
+/api/qtip/{id}
+```
+
+#### Parameters
+
+| Parameter | Data-Type | Description | Mandatory ? | Default |
+| :-------: | :-------: | :---------: | :---------: | :-----: |
+|   `id`    | `string`  |  anime-id   |   Yes ✔️    |   --    |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/qtip/frieren-beyond-journeys-end-18542"
+```
+
+#### Sample Response
+
+```javascript
 {
-  "status": "ready",
-  "timestamp": "2025-01-18T12:00:00Z"
+  "success": true,
+  "results": {}
 }
 ```
 
-#### `GET /live`
+## `GET` Characters
 
-Simple liveness probe to confirm the process is running.
+```bash
+GET /api/character/list/{id}
+```
 
-**Example Response:**
-```json
+### Endpoint
+
+```bash
+/api/character/list/{id}?page={number}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type | Description | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :---------: | :---------: | :-----: |
+|   `id`    |     `path`     | `string`  |  anime-id   |   Yes ✔️    |   --    |
+|  `page`   |    `query`     | `number`  | `Page-no.`  |    No ❌    |   `1`   |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/character/list/one-piece-100?page=1"
+```
+
+#### Sample Response
+
+```javascript
 {
-  "status": "alive",
-  "timestamp": "2025-01-18T12:00:00Z"
+  "success": true,
+  "results": {
+    "currentPage": 0,
+    "totalPages": 0,
+    "data": [
+      {
+        "character": {
+          "id": "string",
+          "name": "string",
+          "poster": "string",
+          "cast": "string"
+        },
+        "voiceActors": [
+          {
+            "id": "string",
+            "name": "string",
+            "poster": "string"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
----
+## `GET` Streaming info
+
+```bash
+GET /api/stream/{id}
+```
+
+### Endpoint
+
+```bash
+/api/stream/{id}?ep={string}&server={string}&type={string}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type |   Type   | Mandatory ? | Default |
+| :-------: | :------------: | :------: | :---------: | :-----: |
+|   `id`    |     `path`     | `string` |   Yes ✔️    |   --    |
+|   `ep`    |    `query`     | `string` |   Yes ✔️    |   --    |
+| `server`  |    `query`     | `string` |    No ❌    | `hd-1`  |
+|  `type`   |    `query`     | `string` |    No ❌    |  `sub`  |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/stream/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "streamingLink": [
+      {
+        "id": "string",
+        "type": "sub",
+        "link": {
+          "file": "https://example.com/stream.m3u8",
+          "type": "string"
+        },
+        "tracks": [
+          {}
+        ],
+        "intro": {},
+        "outro": {},
+        "server": "string"
+      }
+    ],
+    "servers": [
+      {
+        "type": "string",
+        "data_id": "string",
+        "server_id": "string",
+        "serverName": "string"
+      }
+    ]
+  }
+}
+```
+
+## `GET` Fallback Streaming info
+
+```bash
+GET /api/stream/fallback/{id}
+```
+
+### Endpoint
+
+```bash
+/api/stream/fallback/{id}?ep={string}&server={string}&type={string}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type |   Type   | Mandatory ? | Default |
+| :-------: | :------------: | :------: | :---------: | :-----: |
+|   `id`    |     `path`     | `string` |   Yes ✔️    |   --    |
+|   `ep`    |    `query`     | `string` |   Yes ✔️    |   --    |
+| `server`  |    `query`     | `string` |    No ❌    |   --    |
+|  `type`   |    `query`     | `string` |    No ❌    |   --    |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/stream/fallback/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "streamingLink": [
+      {
+        "id": "string",
+        "type": "sub",
+        "link": {
+          "file": "https://example.com/stream.m3u8",
+          "type": "string"
+        },
+        "tracks": [
+          {}
+        ],
+        "intro": {},
+        "outro": {},
+        "server": "string"
+      }
+    ],
+    "servers": [
+      {
+        "type": "string",
+        "data_id": "string",
+        "server_id": "string",
+        "serverName": "string"
+      }
+    ]
+  }
+}
+```
+
+## `GET` Available servers of anime
+
+```bash
+GET /api/servers
+```
+
+### Endpoint
+
+```bash
+/api/servers?ep={string}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type | Description | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :---------: | :---------: | :-----: |
+|   `ep`    |    `query`     | `string`  | episode ID  |   Yes ✔️    |   --    |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/servers?ep=124260"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": [
+    {
+      "type": "string",
+      "data_id": "string",
+      "server_id": "string",
+      "serverName": "string"
+    }
+  ]
+}
+```
+
+## `GET` Character Details
+
+```bash
+GET /api/character/{id}
+```
+
+### Endpoint
+
+```bash
+/api/character/{id}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type | Description  | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :----------: | :---------: | :-----: |
+|   `id`    |     `path`     | `string`  | character-id |   Yes ✔️    |   --    |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/character/asta-340"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "data": [
+      {
+        "id": "string",
+        "name": "string",
+        "japaneseName": "string",
+        "profile": "string",
+        "about": {
+          "description": "string",
+          "style": "string"
+        },
+        "voiceActors": [
+          {}
+        ],
+        "animeography": [
+          {}
+        ]
+      }
+    ]
+  }
+}
+```
+
+## `GET` Voice Actor Details
+
+```bash
+GET /api/actors/{id}
+```
+
+### Endpoint
+
+```bash
+/api/actors/{id}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type |  Description   | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :------------: | :---------: | :-----: |
+|   `id`    |     `path`     | `string`  | voice-actor-id |   Yes ✔️    |   --    |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/actors/gakuto-kajiwara-534"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "data": [
+      {
+        "id": "string",
+        "name": "string",
+        "japaneseName": "string",
+        "profile": "string",
+        "about": {
+          "description": "string",
+          "style": "string"
+        },
+        "roles": [
+          {}
+        ]
+      }
+    ]
+  }
+}
+```
+
+## `GET` User Watchlist
+
+```bash
+GET /api/watchlist/{userId}
+```
+
+### Endpoint
+
+```bash
+/api/watchlist/{userId}
+/api/watchlist/{userId}/{page}
+```
+
+#### Parameters
+
+| Parameter | Parameter-Type | Data-Type | Description | Mandatory ? | Default |
+| :-------: | :------------: | :-------: | :---------: | :---------: | :-----: |
+| `userId`  |     `path`     | `string`  |   User ID   |   Yes ✔️    |   --    |
+|  `page`   |     `path`     | `integer` | Page number |    No ❌    |   `1`   |
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/api/watchlist/user123"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "success": true,
+  "results": {
+    "totalPages": 0,
+    "data": [
+      {
+        "id": "string",
+        "title": "string",
+        "poster": "string",
+        "type": "string",
+        "subCount": 0,
+        "dubCount": 0
+      }
+    ]
+  }
+}
+```
+
+## `GET` Health Check
+
+```bash
+GET /health
+```
+
+### Endpoint
+
+```bash
+/health
+```
+
+> #### No parameter required ❌
+
+#### Example of request
+
+```bash
+curl -X GET "http://localhost:8080/health"
+```
+
+#### Sample Response
+
+```javascript
+{
+  "status": "ok",
+  "service": "Jutsu API",
+  "version": "1.0.0",
+  "uptime": "string",
+  "timestamp": "string",
+  "checks": {
+    "cache": {
+      "status": "string",
+      "response_time_ms": 0
+    },
+    "external_sources": {
+      "anime_provider": {}
+    }
+  }
+}
+```
 
 ## Error Responses
 
@@ -714,6 +1250,7 @@ All endpoints return errors in the following format:
 ```
 
 **HTTP Status Codes:**
+
 - `200` - Success
 - `400` - Bad Request (missing/invalid parameters)
 - `404` - Not Found
@@ -749,4 +1286,3 @@ For issues, questions, or contributions, please open an issue on GitHub.
 ---
 
 **Made with ❤️ using Go**
-
