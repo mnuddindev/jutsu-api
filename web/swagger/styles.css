@@ -344,6 +344,10 @@ pre code.hljs {
     padding: 0;
 }
 
+.hljs {
+	background: var(--code-bg) !important;
+}
+
 .code-inline {
     background: var(--surface-muted);
     color: var(--text-primary);
