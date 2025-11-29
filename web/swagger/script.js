@@ -1,7 +1,7 @@
-// JsonSchemaViewer Component - Fixed
+// JsonSchemaViewer Component - Fixed (jQuery version)
 class JsonSchemaViewer {
     constructor(containerElement) {
-        this.container = containerElement;
+        this.container = $(containerElement);
         this.endpointId = containerElement.getAttribute('data-endpoint');
         this.init();
     }
@@ -15,7 +15,7 @@ class JsonSchemaViewer {
             console.log('Looking for endpoint:', this.endpointId);
 
             // Find the endpoint card - FIXED: Use the actual ID format
-            const endpointCard = document.getElementById(`endpoint-${this.endpointId}`);
+            const endpointCard = $(`#endpoint-${this.endpointId}`)[0];
             console.log('Found endpoint card:', endpointCard);
 
             if (!endpointCard) {
@@ -25,7 +25,7 @@ class JsonSchemaViewer {
             }
 
             // Find the code block with JSON
-            const codeBlock = endpointCard.querySelector('.code-block code.language-json');
+            const codeBlock = $(endpointCard).find('.code-block code.language-json')[0];
             console.log('Found code block:', codeBlock);
 
             if (!codeBlock) {
@@ -33,7 +33,7 @@ class JsonSchemaViewer {
                 return;
             }
 
-            const jsonText = codeBlock.textContent.trim();
+            const jsonText = $(codeBlock).text().trim();
             console.log('Raw JSON text:', jsonText);
 
             // Use the JSON directly since it's already valid
@@ -141,11 +141,11 @@ class JsonSchemaViewer {
         console.log('Rendering schema with data:', jsonData);
 
         const schemaHTML = this.generateSchemaHTML(jsonData);
-        this.container.innerHTML = `
+        this.container.html(`
             <div class="json-schema-viewer">
                 ${schemaHTML}
             </div>
-        `;
+        `);
 
         console.log('Schema rendered successfully');
         this.attachEventListeners();
@@ -153,11 +153,11 @@ class JsonSchemaViewer {
 
     renderError(message) {
         console.error('Rendering error:', message);
-        this.container.innerHTML = `
+        this.container.html(`
             <div class="json-schema-viewer error">
                 <div class="schema-error">${message}</div>
             </div>
-        `;
+        `);
     }
 
     generateSchemaHTML(data, level = 0) {
@@ -304,43 +304,47 @@ class JsonSchemaViewer {
     }
 
     attachEventListeners() {
-        this.container.addEventListener('click', (e) => {
-            const field = e.target.closest('.schema-field');
-            if (field) {
-                const schemaItem = field.closest('.expandable');
-                if (schemaItem) {
-                    const children = schemaItem.querySelector('.schema-children');
-                    if (children) {
-                        schemaItem.classList.toggle('expanded');
-                        children.classList.toggle('hidden');
-                    }
+        // FIXED: Use proper event delegation with jQuery
+        this.container.on('click', '.schema-field', (e) => {
+            e.stopPropagation();
+            const $field = $(e.currentTarget);
+            const $schemaItem = $field.closest('.schema-item.expandable');
+
+            if ($schemaItem.length) {
+                const $children = $schemaItem.find('> .schema-children');
+                if ($children.length) {
+                    $schemaItem.toggleClass('expanded');
+                    $children.toggleClass('hidden');
                 }
             }
         });
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+$(document).ready(function () {
     hljs.highlightAll();
-    const searchInput = document.getElementById('sidebar-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', (event) => {
-            const term = event.target.value.toLowerCase();
-            document.querySelectorAll('.docs-sidebar a').forEach((link) => {
-                const text = link.textContent.toLowerCase();
+
+    const $searchInput = $('#sidebar-search');
+    if ($searchInput.length) {
+        $searchInput.on('input', function () {
+            const term = $(this).val().toLowerCase();
+            $('.docs-sidebar a').each(function () {
+                const text = $(this).text().toLowerCase();
                 const match = text.includes(term);
-                link.parentElement.style.display = match ? 'block' : 'none';
+                $(this).parent().toggle(match);
             });
         });
     }
 
-    document.querySelectorAll('.copy-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const target = document.getElementById(btn.dataset.target);
-            if (!target) return;
-            navigator.clipboard.writeText(target.textContent.trim()).then(() => {
-                btn.textContent = 'Copied';
-                setTimeout(() => (btn.textContent = 'Copy'), 1500);
+    $('.copy-btn').each(function () {
+        $(this).on('click', function () {
+            const $target = $('#' + $(this).data('target'));
+            if (!$target.length) return;
+
+            navigator.clipboard.writeText($target.text().trim()).then(() => {
+                const $btn = $(this);
+                $btn.text('Copied');
+                setTimeout(() => $btn.text('Copy'), 1500);
             });
         });
     });
@@ -348,99 +352,100 @@ document.addEventListener('DOMContentLoaded', () => {
     // Json Schema Viewer Initialization
     console.log('DOM loaded, initializing JsonSchemaViewer...');
 
-    const containers = document.querySelectorAll('.json-schema-viewer-container');
-    console.log('Found containers:', containers.length);
+    const $containers = $('.json-schema-viewer-container');
+    console.log('Found containers:', $containers.length);
 
-    containers.forEach(container => {
-        console.log('Initializing container:', container);
-        new JsonSchemaViewer(container);
+    $containers.each(function () {
+        console.log('Initializing container:', this);
+        new JsonSchemaViewer(this);
     });
 
     // Send Request functionality
-    document.querySelectorAll('.send-request-btn').forEach(button => {
-        button.addEventListener('click', async function () {
-            const endpoint = this.getAttribute('data-endpoint');
-            const endpointCard = this.closest('.endpoint-card');
-            const responseCard = endpointCard.querySelector('.response-card');
-            const responseOutput = endpointCard.querySelector('.response-output');
-            const responseStatus = endpointCard.querySelector('.response-status');
-            const responseContent = endpointCard.querySelector('.response-content');
+    $('.send-request-btn').each(function () {
+        $(this).on('click', async function () {
+            const endpoint = $(this).data('endpoint');
+            const $endpointCard = $(this).closest('.endpoint-card');
+            const $responseCard = $endpointCard.find('.response-card');
+            const $responseOutput = $endpointCard.find('.response-output');
+            const $responseStatus = $endpointCard.find('.response-status');
+            const $responseContent = $endpointCard.find('.response-content');
 
-            this.classList.add('loading');
-            this.textContent = 'Loading...';
+            const $button = $(this);
+            $button.addClass('loading');
+            $button.text('Loading...');
 
             try {
                 const response = await fetch(`http://localhost:8080${endpoint}`);
                 const data = await response.json();
 
-                responseStatus.textContent = `${response.status} ${response.statusText}`;
-                responseStatus.className = 'response-status';
-                responseOutput.textContent = JSON.stringify(data, null, 2);
+                $responseStatus.text(`${response.status} ${response.statusText}`);
+                $responseStatus.removeClass().addClass('response-status');
+                $responseOutput.text(JSON.stringify(data, null, 2));
 
                 // Make sure the card is visible
-                responseCard.classList.remove('hidden');
-                responseStatus.classList.remove('hidden');
-                responseContent.classList.remove('hidden');
+                $responseCard.removeClass('hidden');
+                $responseStatus.removeClass('hidden');
+                $responseContent.removeClass('hidden');
 
                 // Update collapse button to minus since content is visible
-                const collapseBtn = responseCard.querySelector('.collapse-btn');
-                collapseBtn.textContent = '−';
+                const $collapseBtn = $responseCard.find('.collapse-btn');
+                $collapseBtn.text('−');
 
                 // Remove the highlighted flag and re-highlight
-                delete responseOutput.dataset.highlighted;
+                delete $responseOutput[0].dataset.highlighted;
                 setTimeout(() => {
-                    hljs.highlightElement(responseOutput);
+                    hljs.highlightElement($responseOutput[0]);
                 }, 50);
 
             } catch (error) {
-                responseStatus.textContent = `Error: ${error.message}`;
-                responseStatus.className = 'response-status error';
-                responseOutput.textContent = JSON.stringify({
+                $responseStatus.text(`Error: ${error.message}`);
+                $responseStatus.removeClass().addClass('response-status error');
+                $responseOutput.text(JSON.stringify({
                     error: 'Failed to fetch data',
                     message: error.message
-                }, null, 2);
+                }, null, 2));
 
                 // Make sure the card is visible
-                responseCard.classList.remove('hidden');
-                responseStatus.classList.remove('hidden');
-                responseContent.classList.remove('hidden');
+                $responseCard.removeClass('hidden');
+                $responseStatus.removeClass('hidden');
+                $responseContent.removeClass('hidden');
 
                 // Update collapse button to minus since content is visible
-                const collapseBtn = responseCard.querySelector('.collapse-btn');
-                collapseBtn.textContent = '−';
+                const $collapseBtn = $responseCard.find('.collapse-btn');
+                $collapseBtn.text('−');
 
                 // Remove the highlighted flag and re-highlight
-                delete responseOutput.dataset.highlighted;
+                delete $responseOutput[0].dataset.highlighted;
                 setTimeout(() => {
-                    hljs.highlightElement(responseOutput);
+                    hljs.highlightElement($responseOutput[0]);
                 }, 50);
             } finally {
-                this.classList.remove('loading');
-                this.textContent = 'Send Request';
+                $button.removeClass('loading');
+                $button.text('Send Request');
             }
         });
     });
 
     // Collapse/Expand response cards
-    document.querySelectorAll('.collapse-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const responseCard = this.closest('.response-card');
-            const responseStatus = responseCard.querySelector('.response-status');
-            const responseContent = responseCard.querySelector('.response-content');
+    $('.collapse-btn').each(function () {
+        $(this).on('click', function () {
+            const $responseCard = $(this).closest('.response-card');
+            const $responseStatus = $responseCard.find('.response-status');
+            const $responseContent = $responseCard.find('.response-content');
 
             // Check if content is currently visible
-            const isContentVisible = !responseContent.classList.contains('hidden');
+            const isContentVisible = !$responseContent.hasClass('hidden');
 
             if (isContentVisible) {
                 // Hide status and content
-                responseStatus.classList.add('hidden');
-                responseContent.classList.add('hidden');
-                this.textContent = '+';
+                $responseStatus.addClass('hidden');
+                $responseContent.addClass('hidden');
+                $(this).text('+');
             } else {
                 // Show status and content
-                responseStatus.classList.remove('hidden');
-                responseContent.classList.remove('hidden');
-                this.textContent = '−';
+                $responseStatus.removeClass('hidden');
+                $responseContent.removeClass('hidden');
+                $(this).text('−');
             }
         });
     });
