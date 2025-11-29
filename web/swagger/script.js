@@ -143,7 +143,6 @@ class JsonSchemaViewer {
         const schemaHTML = this.generateSchemaHTML(jsonData);
         this.container.innerHTML = `
             <div class="json-schema-viewer">
-                <div class="schema-header">Response Schema</div>
                 ${schemaHTML}
             </div>
         `;
@@ -387,11 +386,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const collapseBtn = responseCard.querySelector('.collapse-btn');
                 collapseBtn.textContent = '−';
 
-                responseOutput.className = 'language-json response-output';
-                console.log(responseOutput);
+                // Remove the highlighted flag and re-highlight
+                delete responseOutput.dataset.highlighted;
                 setTimeout(() => {
                     hljs.highlightElement(responseOutput);
-                }, 100);
+                }, 50);
 
             } catch (error) {
                 responseStatus.textContent = `Error: ${error.message}`;
@@ -410,10 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const collapseBtn = responseCard.querySelector('.collapse-btn');
                 collapseBtn.textContent = '−';
 
-                // Re-highlight syntax - FIXED: Use setTimeout to ensure DOM is updated
+                // Remove the highlighted flag and re-highlight
+                delete responseOutput.dataset.highlighted;
                 setTimeout(() => {
                     hljs.highlightElement(responseOutput);
-                }, 0);
+                }, 50);
             } finally {
                 this.classList.remove('loading');
                 this.textContent = 'Send Request';
