@@ -630,7 +630,7 @@
                         <p>Primary streaming sources, captions, intros/outros, and server metadata.</p>
                         <div class="example-grid">
                             <div class="interactive-panel">
-                                <button class="send-request-btn" data-endpoint="/api/stream/12352">Send Request</button>
+                                <button class="send-request-btn" data-endpoint="/api/stream/677?ep=12352&server=hd-1&type=sub">Send Request</button>
 
                                 <div class="response-card hidden">
                                     <div class="response-header">
@@ -693,19 +693,56 @@
                         <h3>Stream fallback</h3>
                         <p>Graceful fallback streams when the primary CDN fails.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/stream/fallback/677?ep=12352&server=hd-1&type=sub">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="stream-fallback"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/stream/fallback/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/stream/fallback/677?ep=12352&server=hd-1&type=sub' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "streamingLink": [...], 
-        "servers": [...] 
-    } 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "streamingLink": [
+            {
+                "id": "string",
+                "type": "string",
+                "link": {
+                    "file": "http://example.com",
+                    "type": "string"
+                },
+                "tracks": [
+                    {}
+                ],
+                "intro": {},
+                "outro": {},
+                "server": "string"
+            }
+        ],
+        "servers": [
+            {
+                "type": "string",
+                "data_id": "string",
+                "server_id": "string",
+                "serverName": "string"
+            }
+        ]
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -721,21 +758,51 @@
                         <p>Keyword search with optional filters for type, status, rating, language, season, and date
                             ranges.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/search">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="search"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/search?keyword=naruto&type=tv&page=1"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/search?keyword=one piece' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{
-  "success": true,
-  "results": {
-    "data": [...],
-    "page": 1,
-    "totalPage": 5,
-    "hasNext": true
-  }
+    "success": true,
+    "results": {
+        "data": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "poster": "http://example.com",
+                "duration": "string",
+                "type": "string",
+                "rating": "string",
+                "episodes": {
+                    "sub": 0,
+                    "dub": 0
+                }
+            }
+        ],
+        "totalPage": 0,
+        "page": 0,
+        "hasNext": true
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -750,20 +817,40 @@
                         <h3>Search suggestions</h3>
                         <p>Autocomplete suggestions for instant search boxes.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/search?keyword=Naruto">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="suggest"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/search/suggest?keyword=naru"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/search/suggest?keyword=nar' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
     "results": [
-        { 
-            "id": "naruto", 
-            "title": "Naruto", 
-            "poster": "https://..." 
+        {
+            "id":"string",
+            "data_id": "number",
+            "poster": "string",
+            "title": "string",
+            "japanese_title": "string",
+            "releaseDate": "string",
+            "showType": "string",
+            "duration": "string"
         }
     ]
 }</code></pre>
@@ -780,21 +867,36 @@
                         <h3>Top search keywords</h3>
                         <p>Trending search phrases surfaced from upstream analytics.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/top-search">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="top-search"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/top-search"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/top-search' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
     "results": [
-        { 
-            "title": "One Piece", 
-            "link": "/anime/one-piece" 
+        {
+        "title": "string",
+        "link": "string"
         }
-    ] 
+    ]
 }</code></pre>
                             </div>
                         </div>
@@ -809,20 +911,50 @@
                         <h3>Filter</h3>
                         <p>Advanced catalogue filtering with identical parameters to search for builder-style UIs.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/filter">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="filter"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/filter?type=tv&status=ongoing&genres=1,2,3&page=1"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/filter' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "data": [...], 
-        "page": 1, 
-        "hasNext": true 
-    } 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "totalPages": "number",
+        "data": [
+            {
+                "id": "string",
+                "data_id": "number",
+                "poster": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "description": "string",
+                "tvInfo": {
+                    "showType": "string",
+                    "duration": "string",
+                    "sub": "number",
+                    "dub": "number"
+                },
+                "adultContent": "boolean"
+            }
+        ]
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -837,22 +969,41 @@
                         <h3>Daily schedule</h3>
                         <p>Timezone-aware airing schedule for the requested date.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/schedule?date=2025-12-01&tzOffset=-330">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="schedule"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/schedule?date=2025-01-18&tzOffset=-330"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/schedule?date=2025-12-01&tzOffset=-330' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
     "results": [
-        { 
-            "id": "anime-id", 
-            "time": "12:00", 
-            "episode": 12 
+        {
+            "id": "string",
+            "data_id": "string",
+            "title": "string",
+            "japanese_title": "string",
+            "releaseDate": "string",
+            "time": "string",
+            "episode_no": 0
         }
-    ] 
+    ]
 }</code></pre>
                             </div>
                         </div>
@@ -867,18 +1018,41 @@
                         <h3>Next episode schedule</h3>
                         <p>Returns the next airing time for a specific series.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/schedule/bleach-806">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="next-schedule"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/schedule/frieren-beyond-journeys-end-18542"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/schedule/bleach-806' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "nextEpisodeSchedule": "2025-01-25T12:00:00Z" 
-    } 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "nextEpisodeSchedule": {
+            "id": "string",
+            "data_id": "string",
+            "title": "string",
+            "japanese_title": "string",
+            "releaseDate": "string",
+            "time": "string",
+            "episode_no": 0
+        }
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -893,25 +1067,51 @@
                         <h3>Character list + voice actors</h3>
                         <p>Paginated characters with their corresponding voice actors.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/character/list/677?page=1">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="character-list"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/character/list/frieren-beyond-journeys-end-18542?page=1"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/character/list/677' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{
-  "success": true,
-  "results": {
-    "currentPage": 1,
-    "totalPages": 5,
-    "data": [
-        { 
-            "character": {...}, 
-            "voiceActors": [...] 
-        }
-    ]
-  }
+    "success": true,
+    "results": {
+        "currentPage": 0,
+        "totalPages": 0,
+        "data": [
+            {
+                "character": {
+                    "id": "string",
+                    "name": "string",
+                    "poster": "string",
+                    "cast": "string"
+                },
+                "voiceActors": [
+                    {
+                        "id": "string",
+                        "name": "string",
+                        "poster": "string"
+                    }
+                ]
+            }
+        ]
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -926,24 +1126,50 @@
                         <h3>Character detail</h3>
                         <p>Biography, about text, voice actors, and animeography.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/character/asta-340">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="character"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/character/asta-340"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/character/asta-340' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
         "data": [
-            { 
-                "id": "asta-340", 
-                "name": "Asta", 
-                ... 
+            {
+                "id": "string",
+                "name": "string",
+                "japaneseName": "string",
+                "profile": "string",
+                "about": {
+                    "description": "string",
+                    "style": "string"
+                },
+                "voiceActors": [
+                    {}
+                ],
+                "animeography": [
+                    {}
+                ]
             }
-        ] 
-    } 
+        ]
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -959,23 +1185,47 @@
                         <h3>Voice actor detail</h3>
                         <p>Profile, biography, and roleography for a voice actor.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/actors/gakuto-kajiwara-534">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="actor"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/actors/gakuto-kajiwara-534"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/actors/gakuto-kajiwara-534' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
         "data": [
-            { 
-                "id": "gakuto-kajiwara-534", 
-                "roles": [...] 
+            {
+                "id": "string",
+                "name": "string",
+                "japaneseName": "string",
+                "profile": "string",
+                "about": {
+                    "description": "string",
+                    "style": "string"
+                },
+                "roles": [
+                    {}
+                ]
             }
-        ] 
-    } 
+        ]
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -990,21 +1240,51 @@
                         <h3>Producer catalogue</h3>
                         <p>Paginated listing of anime associated with a producer.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/producer/studio-pierrot">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="producer"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/producer/studio-pierrot?page=1"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/producer/studio-pierrot' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "totalPages": 5, 
-        "data": [...] 
-    } 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "data": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "poster": "http://example.com",
+                "duration": "string",
+                "type": "string",
+                "rating": "string",
+                "episodes": {
+                    "sub": 0,
+                    "dub": 0
+                }
+            }
+        ],
+        "totalPages": 0
+    }
 }</code></pre>
-                            </div>
+                            </di>
                         </div>
                     </article>
 
@@ -1017,19 +1297,49 @@
                         <h3>Studio catalogue</h3>
                         <p>Studio-specific anime listings with pagination identical to producer endpoint.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/studio/studio-pierrot">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="studio"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/studio/studio-pierrot?page=1"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/studio/studio-pierrot' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "totalPages": 5, 
-        "data": [...] 
-    } 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "data": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "poster": "http://example.com",
+                "duration": "string",
+                "type": "string",
+                "rating": "string",
+                "episodes": {
+                    "sub": 0,
+                    "dub": 0
+                }
+            }
+        ],
+        "totalPages": 0
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -1044,23 +1354,42 @@
                         <h3>User watchlist</h3>
                         <p>Fetch the first page of a user's watchlist.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/watchlist/user123">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="watchlist"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/watchlist/user123"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/watchlist/user123' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "totalPages": 3, 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "totalPages": 0,
         "data": [
-            { 
-                "title": "Anime Title", 
-                ... 
+            {
+                "id": "string",
+                "title": "string",
+                "poster": "string",
+                "type": "string",
+                "subCount": 0,
+                "dubCount": 0
             }
-        ] 
+        ]
     }
 }</code></pre>
                             </div>
@@ -1076,19 +1405,43 @@
                         <h3>User watchlist (paginated)</h3>
                         <p>Access specific pages beyond the first.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/watchlist/user123/1">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="watchlist-page"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/watchlist/user123/2"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/watchlist/{userId}/{page}' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "page": 2, 
-        "data": [...] 
-    } 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "totalPages": 0,
+        "data": [
+            {
+                "id": "string",
+                "title": "string",
+                "poster": "string",
+                "type": "string",
+                "subCount": 0,
+                "dubCount": 0
+            }
+        ]
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -1104,20 +1457,81 @@
                         <h3>Random anime</h3>
                         <p>Full <code>AnimeDetail</code> payload chosen at random.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/random">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="random"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/random"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/random' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "id": "random-anime-id", 
-        "title": "Random Anime", 
-        ... 
-    } 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "success": true,
+        "results": {
+            "data": {
+                "id": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "poster": "http://example.com",
+                "description": "string",
+                "stats": {},
+                "genres": [
+                    "string"
+                ]
+            },
+            "seasons": [
+                {}
+            ],
+            "relatedAnime": [
+                {
+                    "id": "string",
+                    "data_id": "string",
+                    "title": "string",
+                    "japanese_title": "string",
+                    "poster": "http://example.com",
+                    "duration": "string",
+                    "type": "string",
+                    "rating": "string",
+                    "episodes": {
+                        "sub": 0,
+                        "dub": 0
+                    }
+                }
+            ],
+            "recommended": [
+                {
+                    "id": "string",
+                    "data_id": "string",
+                    "title": "string",
+                    "japanese_title": "string",
+                    "poster": "http://example.com",
+                    "duration": "string",
+                    "type": "string",
+                    "rating": "string",
+                    "episodes": {
+                        "sub": 0,
+                        "dub": 0
+                    }
+                }
+            ]
+        }
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -1132,18 +1546,33 @@
                         <h3>Random anime ID</h3>
                         <p>Lightweight variant returning only the identifier.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/random/677">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="random-id"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/random/id"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/random/677' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "id": "random-anime-id" 
-    } 
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "id": "string"
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -1158,20 +1587,43 @@
                         <h3>Health</h3>
                         <p>Detailed health status including cache and external source checks.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/health">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="health"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel"
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/health"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/health' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{
-  "status": "ok",
-  "service": "Jutsu API",
-  "checks": {
-    "cache": {"status": "ok"},
-    "external_sources": {"anime_provider": {"status": "ok"}}
-  }
+    "status": "ok",
+    "service": "Jutsu API",
+    "version": "1.0.0",
+    "uptime": "string",
+    "timestamp": "string",
+    "checks": {
+        "cache": {
+            "status": "string",
+            "response_time_ms": 0
+        },
+        "external_sources": {
+            "anime_provider": {}
+        }
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -1186,16 +1638,30 @@
                         <h3>Ready</h3>
                         <p>Signals when the service is ready to receive traffic.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/ready">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="ready"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/ready"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/ready' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "status": "ready", 
-    "timestamp": "2025-01-18T12:00:00Z" 
+                                <pre class="code-block"><code class="language-json">{
+    "status": "ready"
 }</code></pre>
                             </div>
                         </div>
@@ -1210,16 +1676,30 @@
                         <h3>Live</h3>
                         <p>Basic liveness probe for container orchestrators.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/live">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="live"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
                                     style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/live"</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{ 
-    "status": "alive", 
-    "timestamp": "2025-01-18T12:00:00Z" 
+    "status": "alive"
 }</code></pre>
                             </div>
                         </div>
@@ -1237,26 +1717,49 @@
                             `movie`, `tv`, `ova`, `ona`, `special`, and `az-list/*` routes.
                         </p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/top-airing">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="categories"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/genre/action?page=1"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/top-airing' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{
-  "success": true,
-  "results": {
-    "totalPages": 10,
-    "data": [
-      {
-        "id": "anime-id",
-        "title": "Anime Title",
-        "poster": "https://...",
-        "tvInfo": {...}
-      }
-    ]
-  }
+    "success": true,
+    "results": {
+        "data": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "poster": "http://example.com",
+                "duration": "string",
+                "type": "string",
+                "rating": "string",
+                "episodes": {
+                    "sub": 0,
+                    "dub": 0
+                }
+            }
+        ],
+        "totalPages": 0
+    }
 }</code></pre>
                             </div>
                         </div>
