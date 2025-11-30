@@ -12,61 +12,38 @@ class JsonSchemaViewer {
 
     extractJsonFromExample() {
         try {
-            console.log('Looking for endpoint with data-endpoint:', this.endpointId);
-
-            // FIXED: Find the parent endpoint card directly
             const endpointCard = this.container.closest('.endpoint-card')[0];
-            console.log('Found endpoint card:', endpointCard);
-
             if (!endpointCard) {
-                console.error('Endpoint card not found for container');
                 this.renderError('Endpoint not found');
                 return;
             }
 
-            // Find the code block with JSON in the examples-panel
             const codeBlock = $(endpointCard).find('.examples-panel .code-block code.language-json')[0];
-            console.log('Found code block:', codeBlock);
-
             if (!codeBlock) {
                 this.renderError('No example JSON found');
                 return;
             }
 
             const jsonText = $(codeBlock).text().trim();
-            console.log('Raw JSON text:', jsonText);
-
-            // Use the JSON directly since it's already valid
             const jsonData = JSON.parse(jsonText);
-            console.log('Parsed JSON successfully:', jsonData);
-
             this.render(jsonData);
 
         } catch (error) {
-            console.error('Error processing JSON:', error);
-            // REMOVED: Don't use fallback data
             this.renderError('Failed to parse JSON example: ' + error.message);
         }
     }
 
-    // REMOVED: createValidExampleJson() method
-
     render(jsonData) {
-        console.log('Rendering schema with data:', jsonData);
-
         const schemaHTML = this.generateSchemaHTML(jsonData);
         this.container.html(`
             <div class="json-schema-viewer">
                 ${schemaHTML}
             </div>
         `);
-
-        console.log('Schema rendered successfully');
         this.attachEventListeners();
     }
 
     renderError(message) {
-        console.error('Rendering error:', message);
         this.container.html(`
             <div class="json-schema-viewer error">
                 <div class="schema-error">${message}</div>
@@ -175,11 +152,8 @@ class JsonSchemaViewer {
 
     getExample(value, key) {
         const type = this.getType(value);
-
-        // Use ACTUAL values from the parsed JSON
         switch (type) {
             case 'string':
-                // Show actual string value, truncate if too long
                 return value.length > 50 ? value.substring(0, 50) + '...' : value;
             case 'number':
             case 'boolean':
@@ -198,7 +172,6 @@ class JsonSchemaViewer {
             e.stopPropagation();
             const $field = $(e.currentTarget);
             const $schemaItem = $field.closest('.schema-item.expandable');
-
             if ($schemaItem.length) {
                 const $children = $schemaItem.find('> .schema-children');
                 if ($children.length) {
@@ -210,133 +183,272 @@ class JsonSchemaViewer {
     }
 }
 
-$(document).ready(function () {
-    hljs.highlightAll();
+// Parameter Input Generator
+class ParameterInputs {
+    static generateInputs($endpointCard) {
+        const $curlCode = $endpointCard.find('.examples-panel .code-block code.language-bash');
+        if ($curlCode.length === 0) {
+            return '';
+        }
 
-    const $searchInput = $('#sidebar-search');
-    if ($searchInput.length) {
-        $searchInput.on('input', function () {
-            const term = $(this).val().toLowerCase();
-            $('.docs-sidebar a').each(function () {
-                const text = $(this).text().toLowerCase();
-                const match = text.includes(term);
-                $(this).parent().toggle(match);
-            });
+        const curlExample = $curlCode.text().trim();
+        const params = this.extractParametersFromCurl(curlExample);
+
+        if (params.length === 0) {
+            return `
+                <div class="parameter-inputs">
+                    <div class="parameter-header">
+                        <h4>Request Parameters</h4>
+                        <div class="parameter-subtitle">No parameters required for this endpoint</div>
+                    </div>
+                    <div class="no-parameters">
+                        This endpoint doesn't require any parameters
+                    </div>
+                </div>
+            `;
+        }
+
+        let inputsHTML = `
+            <div class="parameter-inputs">
+                <div class="parameter-header">
+                    <h4>Request Parameters</h4>
+                </div>
+        `;
+
+        params.forEach(param => {
+            inputsHTML += `
+                <div class="parameter-field ${param.required ? 'required' : 'optional'}">
+                    <label for="param-${param.name}">
+                        ${param.name}
+                        <span class="parameter-badge ${param.required ? 'required' : 'optional'}">${param.required ? 'Required' : 'Optional'}</span>
+                    </label>
+                    <input type="text" 
+                           id="param-${param.name}" 
+                           class="parameter-input" 
+                           data-param="${param.name}"
+                           placeholder="${param.example || 'Enter value'}"
+                           value="${param.example || ''}">
+                    ${param.example ? `<div class="parameter-example">Example: ${param.example}</div>` : ''}
+                </div>
+            `;
         });
+
+        inputsHTML += '</div>';
+        return inputsHTML;
     }
 
-    $('.copy-btn').each(function () {
-        $(this).on('click', function () {
-            const $target = $('#' + $(this).data('target'));
-            if (!$target.length) return;
+    static extractParametersFromCurl(curlExample) {
+        const params = [];
 
-            navigator.clipboard.writeText($target.text().trim()).then(() => {
-                const $btn = $(this);
-                $btn.text('Copied');
-                setTimeout(() => $btn.text('Copy'), 1500);
-            });
-        });
+        let url = '';
+        const urlMatch1 = curlExample.match(/--url '([^']+)'/);
+        if (urlMatch1) {
+            url = urlMatch1[1];
+        } else {
+            const urlMatch2 = curlExample.match(/curl '([^']+)'/);
+            if (urlMatch2) {
+                url = urlMatch2[1];
+            } else {
+                const urlMatch3 = curlExample.match(/curl "([^"]+)"/);
+                if (urlMatch3) {
+                    url = urlMatch3[1];
+                }
+            }
+        }
+
+        if (!url) {
+            return params;
+        }
+
+        try {
+            const urlObj = new URL(url);
+            const urlParams = new URLSearchParams(urlObj.search);
+
+            for (const [name, value] of urlParams) {
+                params.push({
+                    name: name,
+                    example: value,
+                    required: true,
+                    description: `Parameter for ${name}`
+                });
+            }
+        } catch (error) {
+            console.log('Error parsing URL:', error);
+        }
+
+        return params;
+    }
+}
+
+// Main jQuery code
+$(document).ready(function () {
+    // Initialize syntax highlighting
+    hljs.highlightAll();
+
+    // Generate parameter inputs for each endpoint
+    $('.endpoint-card').each(function () {
+        const $endpointCard = $(this);
+        const $sendButton = $endpointCard.find('.send-request-btn');
+        const parameterInputsHTML = ParameterInputs.generateInputs($endpointCard);
+
+        if (parameterInputsHTML) {
+            $sendButton.before(parameterInputsHTML);
+        }
     });
 
-    // Json Schema Viewer Initialization
-    console.log('DOM loaded, initializing JsonSchemaViewer...');
-
-    const $containers = $('.json-schema-viewer-container');
-    console.log('Found containers:', $containers.length);
-
-    $containers.each(function () {
-        console.log('Initializing container:', this);
+    // Initialize JsonSchemaViewer
+    $('.json-schema-viewer-container').each(function () {
         new JsonSchemaViewer(this);
     });
 
-    // Send Request functionality
-    $('.send-request-btn').each(function () {
-        $(this).on('click', async function () {
-            const endpoint = $(this).data('endpoint');
-            const $endpointCard = $(this).closest('.endpoint-card');
-            const $responseCard = $endpointCard.find('.response-card');
-            const $responseOutput = $endpointCard.find('.response-output');
-            const $responseStatus = $endpointCard.find('.response-status');
-            const $responseContent = $endpointCard.find('.response-content');
-
-            const $button = $(this);
-            $button.addClass('loading');
-            $button.text('Loading...');
-
-            try {
-                const response = await fetch(`http://localhost:8080${endpoint}`);
-                console.log(`http://localhost:8080${endpoint}`)
-                const data = await response.json();
-
-                $responseStatus.text(`${response.status} ${response.statusText}`);
-                $responseStatus.removeClass().addClass('response-status');
-                $responseOutput.text(JSON.stringify(data, null, 2));
-
-                // Make sure the card is visible
-                $responseCard.removeClass('hidden');
-                $responseStatus.removeClass('hidden');
-                $responseContent.removeClass('hidden');
-
-                // Update collapse button to minus since content is visible
-                const $collapseBtn = $responseCard.find('.collapse-btn');
-                $collapseBtn.text('−');
-
-                // Remove the highlighted flag and re-highlight
-                delete $responseOutput[0].dataset.highlighted;
-                setTimeout(() => {
-                    hljs.highlightElement($responseOutput[0]);
-                }, 50);
-
-            } catch (error) {
-                $responseStatus.text(`Error: ${error.message}`);
-                $responseStatus.removeClass().addClass('response-status error');
-                $responseOutput.text(JSON.stringify({
-                    error: 'Failed to fetch data',
-                    message: error.message
-                }, null, 2));
-
-                // Make sure the card is visible
-                $responseCard.removeClass('hidden');
-                $responseStatus.removeClass('hidden');
-                $responseContent.removeClass('hidden');
-
-                // Update collapse button to minus since content is visible
-                const $collapseBtn = $responseCard.find('.collapse-btn');
-                $collapseBtn.text('−');
-
-                // Remove the highlighted flag and re-highlight
-                delete $responseOutput[0].dataset.highlighted;
-                setTimeout(() => {
-                    hljs.highlightElement($responseOutput[0]);
-                }, 50);
-            } finally {
-                $button.removeClass('loading');
-                $button.text('Send Request');
-            }
+    // Search functionality
+    $('#sidebar-search').on('input', function () {
+        const term = $(this).val().toLowerCase();
+        $('.docs-sidebar a').each(function () {
+            const text = $(this).text().toLowerCase();
+            const match = text.includes(term);
+            $(this).parent().toggle(match);
         });
     });
 
-    // Collapse/Expand response cards
-    $('.collapse-btn').each(function () {
-        $(this).on('click', function () {
-            const $responseCard = $(this).closest('.response-card');
-            const $responseStatus = $responseCard.find('.response-status');
-            const $responseContent = $responseCard.find('.response-content');
+    // Copy button functionality
+    $('.copy-btn').on('click', function () {
+        const $target = $('#' + $(this).data('target'));
+        if (!$target.length) return;
+        navigator.clipboard.writeText($target.text().trim()).then(() => {
+            const $btn = $(this);
+            $btn.text('Copied');
+            setTimeout(() => $btn.text('Copy'), 1500);
+        });
+    });
 
-            // Check if content is currently visible
-            const isContentVisible = !$responseContent.hasClass('hidden');
+    // Send Request functionality with parameters
+    $(document).on('click', '.send-request-btn', async function () {
+        const $button = $(this);
+        const $endpointCard = $button.closest('.endpoint-card');
+        const endpoint = $button.data('endpoint');
+        const $responseCard = $endpointCard.find('.response-card');
+        const $responseOutput = $endpointCard.find('.response-output');
+        const $responseStatus = $endpointCard.find('.response-status');
+        const $responseContent = $endpointCard.find('.response-content');
 
-            if (isContentVisible) {
-                // Hide status and content
-                $responseStatus.addClass('hidden');
-                $responseContent.addClass('hidden');
-                $(this).text('+');
+        // Validate required parameters
+        let hasErrors = false;
+        $endpointCard.find('.parameter-field.required .parameter-input').each(function () {
+            const $input = $(this);
+            if (!$input.val().trim()) {
+                $input.css('border-color', '#ef4444');
+                hasErrors = true;
             } else {
-                // Show status and content
-                $responseStatus.removeClass('hidden');
-                $responseContent.removeClass('hidden');
-                $(this).text('−');
+                $input.css('border-color', '');
             }
         });
+
+        if (hasErrors) {
+            $responseStatus.text('Error: Missing required parameters');
+            $responseStatus.removeClass().addClass('response-status error');
+            $responseOutput.text(JSON.stringify({
+                error: 'Validation failed',
+                message: 'Please fill in all required parameters'
+            }, null, 2));
+
+            $responseCard.removeClass('hidden');
+            $responseStatus.removeClass('hidden');
+            $responseContent.removeClass('hidden');
+            return;
+        }
+
+        $button.addClass('loading');
+        $button.text('Loading...');
+
+        try {
+            let url = `http://localhost:8080${endpoint}`;
+            const params = new URLSearchParams();
+
+            $endpointCard.find('.parameter-input').each(function () {
+                const $input = $(this);
+                const paramName = $input.data('param');
+                const paramValue = $input.val().trim();
+
+                if (paramValue) {
+                    params.append(paramName, paramValue);
+                }
+            });
+
+            const queryString = params.toString();
+            if (queryString) {
+                url += '?' + queryString;
+            }
+
+            const response = await fetch(url, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            $responseStatus.text(`${response.status} ${response.statusText}`);
+            $responseStatus.removeClass().addClass('response-status');
+            $responseOutput.text(JSON.stringify(data, null, 2));
+
+            $responseCard.removeClass('hidden');
+            $responseStatus.removeClass('hidden');
+            $responseContent.removeClass('hidden');
+
+            const $collapseBtn = $responseCard.find('.collapse-btn');
+            $collapseBtn.text('−');
+
+            delete $responseOutput[0].dataset.highlighted;
+            setTimeout(() => {
+                hljs.highlightElement($responseOutput[0]);
+            }, 50);
+
+        } catch (error) {
+            $responseStatus.text(`Error: ${error.message}`);
+            $responseStatus.removeClass().addClass('response-status error');
+            $responseOutput.text(JSON.stringify({
+                error: 'Failed to fetch data',
+                message: error.message
+            }, null, 2));
+
+            $responseCard.removeClass('hidden');
+            $responseStatus.removeClass('hidden');
+            $responseContent.removeClass('hidden');
+
+            const $collapseBtn = $responseCard.find('.collapse-btn');
+            $collapseBtn.text('−');
+
+            delete $responseOutput[0].dataset.highlighted;
+            setTimeout(() => {
+                hljs.highlightElement($responseOutput[0]);
+            }, 50);
+        } finally {
+            $button.removeClass('loading');
+            $button.text('Send Request');
+        }
+    });
+
+    // Clear validation errors when typing
+    $(document).on('input', '.parameter-input', function () {
+        $(this).css('border-color', '');
+    });
+
+    // Collapse/Expand response cards
+    $('.collapse-btn').on('click', function () {
+        const $responseCard = $(this).closest('.response-card');
+        const $responseStatus = $responseCard.find('.response-status');
+        const $responseContent = $responseCard.find('.response-content');
+        const isContentVisible = !$responseContent.hasClass('hidden');
+
+        if (isContentVisible) {
+            $responseStatus.addClass('hidden');
+            $responseContent.addClass('hidden');
+            $(this).text('+');
+        } else {
+            $responseStatus.removeClass('hidden');
+            $responseContent.removeClass('hidden');
+            $(this).text('−');
+        }
     });
 });
