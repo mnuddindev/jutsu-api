@@ -1,4 +1,4 @@
-// JsonSchemaViewer Component - Fixed (jQuery version)
+// JsonSchemaViewer Component
 class JsonSchemaViewer {
     constructor(containerElement) {
         this.container = $(containerElement);
@@ -12,20 +12,20 @@ class JsonSchemaViewer {
 
     extractJsonFromExample() {
         try {
-            console.log('Looking for endpoint:', this.endpointId);
+            console.log('Looking for endpoint with data-endpoint:', this.endpointId);
 
-            // Find the endpoint card - FIXED: Use the actual ID format
-            const endpointCard = $(`#endpoint-${this.endpointId}`)[0];
+            // FIXED: Find the parent endpoint card directly
+            const endpointCard = this.container.closest('.endpoint-card')[0];
             console.log('Found endpoint card:', endpointCard);
 
             if (!endpointCard) {
-                console.error('Endpoint card not found for:', `endpoint-${this.endpointId}`);
+                console.error('Endpoint card not found for container');
                 this.renderError('Endpoint not found');
                 return;
             }
 
-            // Find the code block with JSON
-            const codeBlock = $(endpointCard).find('.code-block code.language-json')[0];
+            // Find the code block with JSON in the examples-panel
+            const codeBlock = $(endpointCard).find('.examples-panel .code-block code.language-json')[0];
             console.log('Found code block:', codeBlock);
 
             if (!codeBlock) {
@@ -44,98 +44,12 @@ class JsonSchemaViewer {
 
         } catch (error) {
             console.error('Error processing JSON:', error);
-            // Use fallback data
-            const fallbackData = this.createValidExampleJson();
-            this.render(fallbackData);
+            // REMOVED: Don't use fallback data
+            this.renderError('Failed to parse JSON example: ' + error.message);
         }
     }
 
-    createValidExampleJson() {
-        return {
-            "success": true,
-            "results": {
-                "spotlights": [
-                    {
-                        "id": "frieren-beyond-journeys-end-18542",
-                        "data_id": "string",
-                        "title": "Frieren: Beyond Journey's End",
-                        "japanese_title": "string",
-                        "poster": "http://example.com",
-                        "description": "string",
-                        "tvInfo": {
-                            "showType": "string",
-                            "duration": "string",
-                            "releaseDate": "string",
-                            "quality": "string",
-                            "episodeInfo": []
-                        }
-                    }
-                ],
-                "trending": [
-                    {
-                        "id": "string",
-                        "data_id": "string",
-                        "title": "string",
-                        "japanese_title": "string",
-                        "poster": "http://example.com",
-                        "duration": "string",
-                        "type": "string",
-                        "rating": "string",
-                        "episodes": {
-                            "sub": 0,
-                            "dub": 0
-                        }
-                    }
-                ],
-                "topTen": {
-                    "today": [
-                        {
-                            "id": "string",
-                            "data_id": "string",
-                            "number": 0,
-                            "name": "string",
-                            "poster": "http://example.com",
-                            "tvInfo": {}
-                        }
-                    ],
-                    "week": [
-                        {
-                            "id": "string",
-                            "data_id": "string",
-                            "number": 0,
-                            "name": "string",
-                            "poster": "http://example.com",
-                            "tvInfo": {}
-                        }
-                    ],
-                    "month": [
-                        {
-                            "id": "string",
-                            "data_id": "string",
-                            "number": 0,
-                            "name": "string",
-                            "poster": "http://example.com",
-                            "tvInfo": {}
-                        }
-                    ]
-                },
-                "today": {
-                    "schedule": [
-                        {
-                            "id": "string",
-                            "data_id": "string",
-                            "title": "string",
-                            "japanese_title": "string",
-                            "releaseDate": "string",
-                            "time": "string",
-                            "episode_no": 0
-                        }
-                    ]
-                },
-                "genres": ["string"]
-            }
-        };
-    }
+    // REMOVED: createValidExampleJson() method
 
     render(jsonData) {
         console.log('Rendering schema with data:', jsonData);
@@ -262,36 +176,12 @@ class JsonSchemaViewer {
     getExample(value, key) {
         const type = this.getType(value);
 
-        const specialExamples = {
-            'id': 'frieren-beyond-journeys-end-18542',
-            'data_id': '18542',
-            'title': 'Frieren: Beyond Journey\'s End',
-            'japanese_title': '葬送のフリーレン',
-            'poster': 'https://example.com/image.jpg',
-            'description': 'The story of an elf mage...',
-            'showType': 'TV',
-            'duration': '24m',
-            'releaseDate': '2024-01-01',
-            'quality': 'HD',
-            'type': 'TV',
-            'rating': '4.8',
-            'name': 'Episode 1',
-            'time': '12:00',
-            'episode_no': 1,
-            'number': 1,
-            'sub': 12,
-            'dub': 12
-        };
-
-        if (specialExamples[key]) {
-            return specialExamples[key];
-        }
-
+        // Use ACTUAL values from the parsed JSON
         switch (type) {
             case 'string':
-                return 'text';
+                // Show actual string value, truncate if too long
+                return value.length > 50 ? value.substring(0, 50) + '...' : value;
             case 'number':
-                return '123';
             case 'boolean':
                 return value.toString();
             case 'array':
@@ -304,7 +194,6 @@ class JsonSchemaViewer {
     }
 
     attachEventListeners() {
-        // FIXED: Use proper event delegation with jQuery
         this.container.on('click', '.schema-field', (e) => {
             e.stopPropagation();
             const $field = $(e.currentTarget);
@@ -376,6 +265,7 @@ $(document).ready(function () {
 
             try {
                 const response = await fetch(`http://localhost:8080${endpoint}`);
+                console.log(`http://localhost:8080${endpoint}`)
                 const data = await response.json();
 
                 $responseStatus.text(`${response.status} ${response.statusText}`);

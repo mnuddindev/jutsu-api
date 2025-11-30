@@ -355,9 +355,6 @@ pre code.hljs {
 }
 
 .copy-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.08);
     color: #fff;
@@ -777,4 +774,112 @@ pre code.hljs {
 /* Utility Classes */
 .hidden {
     display: none;
+}
+
+/* Parameter Inputs Styles */
+.parameter-inputs {
+    background: var(--surface-muted);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.parameter-header {
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+}
+
+.parameter-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.parameter-field {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--surface);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.parameter-field:last-child {
+    margin-bottom: 0;
+}
+
+.parameter-field.required {
+    border-left: 3px solid #ef4444;
+}
+
+.parameter-field.optional {
+    border-left: 3px solid var(--brand-primary);
+}
+
+.parameter-field label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.parameter-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+}
+
+.parameter-badge.required {
+    background: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+}
+
+.parameter-badge.optional {
+    background: #eff6ff;
+    color: var(--brand-primary);
+    border: 1px solid #dbeafe;
+}
+
+.parameter-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: var(--surface);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.parameter-input:focus {
+    outline: none;
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px rgba(41, 81, 170, 0.1);
+}
+
+.parameter-example {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--surface-muted);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.no-parameters {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+    font-style: italic;
 }

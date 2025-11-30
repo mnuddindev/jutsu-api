@@ -12,9 +12,7 @@
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <!-- YAML Parser -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
     <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -159,7 +157,7 @@
                         <code>make swagger</code>
                     </div>
                 </div>
-                <div class="code-block" style="margin-top: 15px;">
+                <div class="code-block" style="display: flex; justify-content: space-between; align-items: center; flex-direction: row-reverse; margin-top: 15px;">
                     <button type="button" class="copy-btn" data-target="home-request">Copy</button>
                     <pre id="home-request"><code class="language-bash">curl "http://localhost:8080/api/"</code></pre>
                 </div>
@@ -196,7 +194,6 @@
                             <div class="interactive-panel">
                                 <button class="send-request-btn" data-endpoint="/api">Send Request</button>
 
-                                <!-- Response Card -->
                                 <div class="response-card hidden">
                                     <div class="response-header">
                                         <h4>API Response</h4>
@@ -204,105 +201,105 @@
                                     </div>
                                     <div class="response-status hidden"></div>
                                     <div class="response-content hidden">
-                                        <pre class="code-block"><code class="language-json response-output"></code></pre>
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
                                     </div>
                                 </div>
 
-                                <!-- Dynamic Schema Viewer -->
                                 <div class="json-schema-viewer-container" data-endpoint="home"></div>
                             </div>
-                            <div class="example-panel">
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{
-  "success": true,
-  "results": {
-    "spotlights": [
-      {
-        "id": "frieren-beyond-journeys-end-18542",
-        "data_id": "string",
-        "title": "Frieren: Beyond Journey's End",
-        "japanese_title": "string",
-        "poster": "http://example.com",
-        "description": "string",
-        "tvInfo": {
-          "showType": "string",
-          "duration": "string",
-          "releaseDate": "string",
-          "quality": "string",
-          "episodeInfo": [
-            {}
-          ]
-        }
-      }
-    ],
-    "trending": [
-      {
-        "id": "string",
-        "data_id": "string",
-        "title": "string",
-        "japanese_title": "string",
-        "poster": "http://example.com",
-        "duration": "string",
-        "type": "string",
-        "rating": "string",
-        "episodes": {
-          "sub": 0,
-          "dub": 0
-        }
-      }
-    ],
-    "topTen": {
-      "today": [
-        {
-          "id": "string",
-          "data_id": "string",
-          "number": 0,
-          "name": "string",
-          "poster": "http://example.com",
-          "tvInfo": {}
-        }
-      ],
-      "week": [
-        {
-          "id": "string",
-          "data_id": "string",
-          "number": 0,
-          "name": "string",
-          "poster": "http://example.com",
-          "tvInfo": {}
-        }
-      ],
-      "month": [
-        {
-          "id": "string",
-          "data_id": "string",
-          "number": 0,
-          "name": "string",
-          "poster": "http://example.com",
-          "tvInfo": {}
-        }
-      ]
-    },
-    "today": {
-      "schedule": [
-        {
-          "id": "string",
-          "data_id": "string",
-          "title": "string",
-          "japanese_title": "string",
-          "releaseDate": "string",
-          "time": "string",
-          "episode_no": 0
-        }
-      ]
-    },
-    "genres": [
-      "string"
-    ]
-  }
+    "success": true,
+    "results": {
+        "spotlights": [
+            {
+                "id": "frieren-beyond-journeys-end-18542",
+                "data_id": "string",
+                "title": "Frieren: Beyond Journey's End",
+                "japanese_title": "string",
+                "poster": "http://example.com",
+                "description": "string",
+                "tvInfo": {
+                    "showType": "string",
+                    "duration": "string",
+                    "releaseDate": "string",
+                    "quality": "string",
+                    "episodeInfo": [
+                        {}
+                    ]
+                }
+            }
+        ],
+        "trending": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "poster": "http://example.com",
+                "duration": "string",
+                "type": "string",
+                "rating": "string",
+                "episodes": {
+                    "sub": 0,
+                    "dub": 0
+                }
+            }
+        ],
+        "topTen": {
+            "today": [
+                {
+                    "id": "string",
+                    "data_id": "string",
+                    "number": 0,
+                    "name": "string",
+                    "poster": "http://example.com",
+                    "tvInfo": {}
+                }
+            ],
+            "week": [
+                {
+                    "id": "string",
+                    "data_id": "string",
+                    "number": 0,
+                    "name": "string",
+                    "poster": "http://example.com",
+                    "tvInfo": {}
+                }
+            ],
+            "month": [
+                {
+                    "id": "string",
+                    "data_id": "string",
+                    "number": 0,
+                    "name": "string",
+                    "poster": "http://example.com",
+                    "tvInfo": {}
+                }
+            ]
+        },
+        "today": {
+            "schedule": [
+                {
+                "id": "string",
+                "data_id": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "releaseDate": "string",
+                "time": "string",
+                "episode_no": 0
+                }
+            ]
+        },
+        "genres": [
+            "string"
+        ]
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -320,66 +317,59 @@
                             <div class="interactive-panel">
                                 <button class="send-request-btn" data-endpoint="/api/top-ten">Send Request</button>
 
-                                <!-- Response Card (initially hidden) -->
                                 <div class="response-card hidden">
                                     <div class="response-header">
                                         <h4>API Response</h4>
-                                        <button class="collapse-btn">−</button>
+                                        <button class="collapse-btn">+</button>
                                     </div>
-                                    <div class="response-content">
-                                        <pre><code class="language-json response-output">Click "Send Request" to fetch data</code></pre>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
                                     </div>
                                 </div>
 
-                                <!-- Schema Viewer -->
-                                <div class="schema-viewer">
-                                    <div class="schema-item">
-                                        <div class="schema-field">
-                                            <span class="field-name">success</span>
-                                            <span class="field-type">boolean</span>
-                                        </div>
-                                    </div>
-                                    <div class="schema-item expandable">
-                                        <div class="schema-field" data-expand="results">
-                                            <div class="expand-icon">▶</div>
-                                            <span class="field-name">results</span>
-                                            <span class="field-type">object</span>
-                                        </div>
-                                        <div class="schema-children hidden">
-                                            <div class="schema-item">
-                                                <div class="schema-field">
-                                                    <span class="field-name">today</span>
-                                                    <span class="field-type">array</span>
-                                                </div>
-                                            </div>
-                                            <div class="schema-item">
-                                                <div class="schema-field">
-                                                    <span class="field-name">week</span>
-                                                    <span class="field-type">array</span>
-                                                </div>
-                                            </div>
-                                            <div class="schema-item">
-                                                <div class="schema-field">
-                                                    <span class="field-name">month</span>
-                                                    <span class="field-type">array</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div class="json-schema-viewer-container" data-endpoint="top-ten"></div>
                             </div>
                             <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl http://localhost:8080/api/top-ten</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/top-ten' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{
-  "success": true,
-  "results": {
-    "today": [...],
-    "week": [...],
-    "month": [...]
-  }
+    "success": true,
+    "results": {
+        "today": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "number": 0,
+                "name": "string",
+                "poster": "http://example.com",
+                "tvInfo": {}
+            }
+        ],
+        "week": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "number": 0,
+                "name": "string",
+                "poster": "http://example.com",
+                "tvInfo": {}
+            }
+        ],
+        "month": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "number": 0,
+                "name": "string",
+                "poster": "http://example.com",
+                "tvInfo": {}
+            }
+        ]
+    }
 }</code></pre>
                             </div>
                         </div>
@@ -394,26 +384,77 @@
                         <h3>Anime info</h3>
                         <p>Detailed synopsis, stats, seasons, related and recommended shows.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/info">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="info"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/info?id=frieren-beyond-journeys-end-18542"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/info?id=frieren-beyond-journeys-end-18542' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{
     "success": true,
     "results": {
-    "data": {
-        "id": "frieren-beyond-journeys-end-18542",
-        "title": "Frieren: Beyond Journey's End",
-        "poster": "https://...",
-        "description": "...",
-        "genres": [...]
-    },
-    "seasons": [...],
-    "relatedAnime": [...],
-    "recommended": [...]
+        "data": {
+            "id": "string",
+            "title": "string",
+            "japanese_title": "string",
+            "poster": "http://example.com",
+            "description": "string",
+            "stats": {},
+            "genres": [
+                "string"
+            ]
+        },
+        "seasons": [
+            {}
+        ],
+        "relatedAnime": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "poster": "http://example.com",
+                "duration": "string",
+                "type": "string",
+                "rating": "string",
+                "episodes": {
+                "sub": 0,
+                "dub": 0
+                }
+            }
+        ],
+        "recommended": [
+            {
+                "id": "string",
+                "data_id": "string",
+                "title": "string",
+                "japanese_title": "string",
+                "poster": "http://example.com",
+                "duration": "string",
+                "type": "string",
+                "rating": "string",
+                "episodes": {
+                    "sub": 0,
+                    "dub": 0
+                }
+            }
+        ]
     }
 }</code></pre>
                             </div>
@@ -1381,7 +1422,6 @@
         </main>
     </div>
 
-    <script src="https://unpkg.com/@stoplight/elements/web-components.min.js"></script>
     <script src="./script.js"></script>
 </body>
 

@@ -33,21 +33,41 @@ func NewTopTenHandler() *TopTenHandler {
 // @Router       /top-ten [get]
 func (h *TopTenHandler) GetTopTen(c *fiber.Ctx) error {
 	cacheKey := "topTen"
+
+	// Try to get from cache first
 	var cached extractors.TopTenResult
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil && len(cached) > 0 {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
+	if err := helper.GetCachedData(cacheKey, &cached); err == nil {
+		// Check if we have valid cached data
+		hasData := false
+		if cached != nil {
+			for _, items := range cached {
+				if len(items) > 0 {
+					hasData = true
+					break
+				}
+			}
+		}
+
+		if hasData {
+			return c.JSON(fiber.Map{
+				"success": true,
+				"results": cached,
+				"cached":  true,
+			})
+		}
 	}
 
+	// If no cache or invalid cache, fetch fresh data
 	topTen, err := extractors.ExtractTopTen(h.baseHost)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch top ten: %v", err))
 	}
 
-	_ = helper.SetCachedData(cacheKey, topTen, helper.TopTenCacheTTL)
+	// Cache the fresh data
+	if err := helper.SetCachedData(cacheKey, topTen, helper.TopTenCacheTTL); err != nil {
+		// Log but don't fail the request
+		fmt.Printf("Failed to cache top ten data: %v\n", err)
+	}
 
 	return c.JSON(fiber.Map{
 		"success": true,
