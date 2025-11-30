@@ -196,15 +196,7 @@ class ParameterInputs {
 
         if (params.length === 0) {
             return `
-                <div class="parameter-inputs">
-                    <div class="parameter-header">
-                        <h4>Request Parameters</h4>
-                        <div class="parameter-subtitle">No parameters required for this endpoint</div>
-                    </div>
-                    <div class="no-parameters">
-                        This endpoint doesn't require any parameters
-                    </div>
-                </div>
+                
             `;
         }
 

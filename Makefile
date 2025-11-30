@@ -1,8 +1,11 @@
-.PHONY: build run test clean install swagger docker-up docker-down
+.PHONY: build run test clean install swagger docker-up docker-down lint fmt vet install-tools dev-setup build-prod redis-start redis-stop
 
 # Application name
 APP_NAME=jutsu-api
 BINARY_NAME=bin/$(APP_NAME)
+
+# Redis
+REDIS_PORT=10120
 
 # Build the application
 build:
@@ -10,8 +13,20 @@ build:
 	@go build -o $(BINARY_NAME) ./cmd/api
 	@echo "Build complete: $(BINARY_NAME)"
 
-# Run the application
-run:
+# Start Redis in background (only if not already running)
+redis-start:
+	@echo "Starting Redis on port $(REDIS_PORT)..."
+	@redis-cli -p $(REDIS_PORT) ping > /dev/null 2>&1 || \
+	(redis-server --port $(REDIS_PORT) --daemonize yes && echo "Redis started")
+
+# Stop Redis
+redis-stop:
+	@echo "Stopping Redis on port $(REDIS_PORT)..."
+	@redis-cli -p $(REDIS_PORT) shutdown || true
+	@echo "Redis stopped"
+
+# Run the application (with Redis)
+run: redis-start
 	@echo "Running $(APP_NAME)..."
 	@air
 
@@ -89,4 +104,3 @@ build-prod: clean
 	@echo "Building for production..."
 	@CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o $(BINARY_NAME) ./cmd/api
 	@echo "Production build complete: $(BINARY_NAME)"
-

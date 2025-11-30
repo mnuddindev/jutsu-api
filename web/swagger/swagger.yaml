@@ -774,7 +774,7 @@ paths:
           schema:
             type: string
           description: Anime ID
-          example: "frieren-beyond-journeys-end-18542"
+          example: "100"
       responses:
         '200':
           description: Successful response
@@ -785,8 +785,62 @@ paths:
                 properties:
                   success:
                     type: boolean
+                    example: true
                   results:
                     type: object
+                    properties:
+                      title:
+                        type: string
+                        example: "One Piece"
+                      rating:
+                        type: string
+                        example: "8.62"
+                      quality:
+                        type: string
+                        example: "HD"
+                      subCount:
+                        type: string
+                        example: "1150"
+                      dubCount:
+                        type: string
+                        example: "1143"
+                      episodeCount:
+                        type: string
+                        example: ""
+                      type:
+                        type: string
+                        example: "TV"
+                      description:
+                        type: string
+                        example: "Gold Roger was known as the \"Pirate King,\" the strongest and most infamous being to have sailed the Grand Line. The capture and..."
+                      japaneseTitle:
+                        type: string
+                        example: "ONE PIECE"
+                      Synonyms:
+                        type: string
+                        example: "OP"
+                      airedDate:
+                        type: string
+                        example: "Oct 20, 1999"
+                      status:
+                        type: string
+                        example: "Currently Airing"
+                      genres:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                          - Action
+                          - Adventure
+                          - Comedy
+                          - Drama
+                          - Fantasy
+                          - Shounen
+                          - Super Power
+                      watchLink:
+                        type: string
+                        example: "/watch/one-piece-100"
+
         '400':
           $ref: '#/components/responses/BadRequest'
         '502':
