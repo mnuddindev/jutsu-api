@@ -59,34 +59,36 @@
                 <div class="nav-group" id="endpoint-nav">
                     <p class="nav-title">Endpoints</p>
                     <ul>
-                        <li><a data-method="GET" href="#endpoint-home">GET /api</a></li>
-                        <li><a data-method="GET" href="#endpoint-top-ten">GET /api/top-ten</a></li>
-                        <li><a data-method="GET" href="#endpoint-info">GET /api/info</a></li>
-                        <li><a data-method="GET" href="#endpoint-categories">GET /api/{routeType}</a></li>
-                        <li><a data-method="GET" href="#endpoint-producer">GET /api/producer/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-studio">GET /api/studio/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-search">GET /api/search</a></li>
-                        <li><a data-method="GET" href="#endpoint-filter">GET /api/filter</a></li>
-                        <li><a data-method="GET" href="#endpoint-suggest">GET /api/search/suggest</a></li>
-                        <li><a data-method="GET" href="#endpoint-top-search">GET /api/top-search</a></li>
-                        <li><a data-method="GET" href="#endpoint-episodes">GET /api/episodes/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-servers">GET /api/servers</a></li>
-                        <li><a data-method="GET" href="#endpoint-stream">GET /api/stream/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-stream-fallback">GET /api/stream/fallback/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-qtip">GET /api/qtip/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-schedule">GET /api/schedule</a></li>
-                        <li><a data-method="GET" href="#endpoint-next-schedule">GET /api/schedule/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-random">GET /api/random</a></li>
-                        <li><a data-method="GET" href="#endpoint-random-id">GET /api/random/id</a></li>
-                        <li><a data-method="GET" href="#endpoint-character-list">GET /api/character/list/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-character">GET /api/character/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-actor">GET /api/actors/:id</a></li>
-                        <li><a data-method="GET" href="#endpoint-watchlist">GET /api/watchlist/:userId</a></li>
-                        <li><a data-method="GET" href="#endpoint-watchlist-page">GET /api/watchlist/:userId/:page</a>
+                        <li><a data-method="GET" href="#endpoint-home">Home Page Data</a></li>
+                        <li><a data-method="GET" href="#endpoint-top-ten">Top Ten Anime</a></li>
+                        <li><a data-method="GET" href="#endpoint-info">Anime Information</a></li>
+                        <li><a data-method="GET" href="#endpoint-qtip">QTIP Information</a></li>
+                        <li><a data-method="GET" href="#endpoint-episodes">Episode List</a></li>
+                        <li><a data-method="GET" href="#endpoint-servers">Available Server</a></li>
+                        <li><a data-method="GET" href="#endpoint-stream">Streaming Information</a></li>
+                        <li><a data-method="GET" href="#endpoint-stream-fallback">Fallback Streaming Info</a></li>
+                        <li><a data-method="GET" href="#endpoint-search">Search Anime</a></li>
+                        <li><a data-method="GET" href="#endpoint-suggest">Search Suggestion</a></li>
+                        <li><a data-method="GET" href="#endpoint-top-search">Top Search Keywords</a></li>
+                        <li><a data-method="GET" href="#endpoint-filter">Anime Filter</a></li>
+                        <li><a data-method="GET" href="#endpoint-schedule">Daily Schedule</a></li>
+                        <li><a data-method="GET" href="#endpoint-next-schedule">Next Episode Schedule</a></li>
+                        <li><a data-method="GET" href="#endpoint-character-list">Character List with VA</a></li>
+                        <li><a data-method="GET" href="#endpoint-character">Character Details</a></li>
+                        <li><a data-method="GET" href="#endpoint-actor">Voice Actor Details</a></li>
+                        <li><a data-method="GET" href="#endpoint-producer">Producer Anime List</a></li>
+                        <li><a data-method="GET" href="#endpoint-studio">Studio Anime List</a></li>
+                        <li><a data-method="GET" href="#endpoint-watchlist">User Watchlist</a></li>
+                        <li><a data-method="GET" href="#endpoint-watchlist-page">User Watchlist paginated</a>
+                        <li><a data-method="GET" href="#endpoint-random">Random Anime</a></li>
+                        <li><a data-method="GET" href="#endpoint-random-id">Random Anime ID</a></li>
+                        <li><a data-method="GET" href="#endpoint-health">Health Check</a></li>
+                        <li><a data-method="GET" href="#endpoint-ready">Readiness Check</a></li>
+                        <li><a data-method="GET" href="#endpoint-live">Liveness Check</a></li>
+                        <li><a data-method="GET" href="#endpoint-categories">Genre Listing</a></li>
+                        <li><a data-method="GET" href="#endpoint-categories">Top Airing Anime</a></li>
+                        <li><a data-method="GET" href="#endpoint-categories">Most Popular Anime</a></li>
                         </li>
-                        <li><a data-method="GET" href="#endpoint-health">GET /health</a></li>
-                        <li><a data-method="GET" href="#endpoint-ready">GET /ready</a></li>
-                        <li><a data-method="GET" href="#endpoint-live">GET /live</a></li>
                     </ul>
                 </div>
 
@@ -157,7 +159,8 @@
                         <code>make swagger</code>
                     </div>
                 </div>
-                <div class="code-block" style="display: flex; justify-content: space-between; align-items: center; flex-direction: row-reverse; margin-top: 15px;">
+                <div class="code-block"
+                    style="display: flex; justify-content: space-between; align-items: center; flex-direction: row-reverse; margin-top: 15px;">
                     <button type="button" class="copy-btn" data-target="home-request">Copy</button>
                     <pre id="home-request"><code class="language-bash">curl "http://localhost:8080/api/"</code></pre>
                 </div>
@@ -461,91 +464,247 @@
                         </div>
                     </article>
 
-                    <article id="endpoint-categories" class="endpoint-card">
+                    <article id="endpoint-qtip" class="endpoint-card">
                         <div class="endpoint-meta">
                             <span class="method get">GET</span>
-                            <span class="path">/api/{routeType}</span>
-                            <span class="tag">Categories</span>
+                            <span class="path">/api/qtip/:id</span>
+                            <span class="tag">Anime</span>
                         </div>
-                        <h3>Categories & genres</h3>
-                        <p>
-                            Supports `genre/*`, `top-airing`, `most-popular`, `completed`, `recently-updated`,
-                            `movie`, `tv`, `ova`, `ona`, `special`, and `az-list/*` routes.
-                        </p>
+                        <h3>Qtip sidebar data</h3>
+                        <p>Sidebar metadata used for tooltip/preview blocks.</p>
                         <div class="example-grid">
-                            <div>
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/qtip/677">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="qtip"></div>
                             </div>
-                            <div>
+                            <div class="examples-panel">
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/genre/action?page=1"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/qtip/677' --header 'Accept: application/json'</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{
-  "success": true,
-  "results": {
-    "totalPages": 10,
-    "data": [
-      {
-        "id": "anime-id",
-        "title": "Anime Title",
-        "poster": "https://...",
-        "tvInfo": {...}
-      }
+    "cached": true,
+    "success": true,
+    "results": {
+        "Synonyms": "NARUTO",
+        "airedDate": "Oct 3, 2002",
+        "description": "Moments prior to Naruto Uzumaki's birth, a huge demon known as the Kyuubi, the Nine-Tailed Fox, attacked Konohagakure, the Hidden...",
+        "dubCount": "220",
+        "episodeCount": "220",
+        "genres": [
+            "Action",
+            "Adventure",
+            "Comedy",
+            "Martial Arts",
+            "Shounen",
+            "Super Power"
+        ],
+        "japaneseTitle": "ナルト",
+        "quality": "HD",
+        "rating": "7.89",
+        "status": "Finished Airing",
+        "subCount": "220",
+        "title": "Naruto",
+        "type": "TV",
+        "watchLink": "/watch/naruto-677"
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article id="endpoint-episodes" class="endpoint-card">
+                        <div class="endpoint-meta">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/episodes/:id</span>
+                            <span class="tag">Episodes</span>
+                        </div>
+                        <h3>Episode list</h3>
+                        <p>Returns ordered episodes with filler flags for a show.</p>
+                        <div class="example-grid">
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/episodes/677">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="episodes"></div>
+                            </div>
+                            <div class="examples-panel">
+                                <p class="label">Example request</p>
+                                <pre class="code-block"
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/episodes/677' --header 'Accept: application/json'</code></pre>
+                                <p class="label">Example response</p>
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "episodes": [
+            {
+                "number": 0,
+                "title": "string",
+                "episodeId": "string",
+                "isFiller": true
+            }
+        ]
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article id="endpoint-servers" class="endpoint-card">
+                        <div class="endpoint-meta">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/servers</span>
+                            <span class="tag">Streaming</span>
+                        </div>
+                        <h3>Servers</h3>
+                        <p>Lists available streaming servers for a given episode.</p>
+                        <div class="example-grid">
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/servers">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="servers"></div>
+                            </div>
+                            <div class="examples-panel">
+                                <p class="label">Example request</p>
+                                <pre class="code-block"
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/servers?ep=107257' --header 'Accept: application/json'</code></pre>
+                                <p class="label">Example response</p>
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": [
+        {
+            "type": "string",
+            "data_id": "string",
+            "server_id": "string",
+            "serverName": "string"
+        }
     ]
-  }
 }</code></pre>
                             </div>
                         </div>
                     </article>
 
-                    <article id="endpoint-producer" class="endpoint-card">
+                    <article id="endpoint-stream" class="endpoint-card">
                         <div class="endpoint-meta">
                             <span class="method get">GET</span>
-                            <span class="path">/api/producer/:id</span>
-                            <span class="tag">Studios</span>
+                            <span class="path">/api/stream/:id</span>
+                            <span class="tag">Streaming</span>
                         </div>
-                        <h3>Producer catalogue</h3>
-                        <p>Paginated listing of anime associated with a producer.</p>
+                        <h3>Stream</h3>
+                        <p>Primary streaming sources, captions, intros/outros, and server metadata.</p>
+                        <div class="example-grid">
+                            <div class="interactive-panel">
+                                <button class="send-request-btn" data-endpoint="/api/stream/12352">Send Request</button>
+
+                                <div class="response-card hidden">
+                                    <div class="response-header">
+                                        <h4>API Response</h4>
+                                        <button class="collapse-btn">+</button>
+                                    </div>
+                                    <div class="response-status hidden"></div>
+                                    <div class="response-content hidden">
+                                        <pre
+                                            class="code-block"><code class="language-json response-output"></code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="json-schema-viewer-container" data-endpoint="stream"></div>
+                            </div>
+                            <div class="examples-panel">
+                                <p class="label">Example request</p>
+                                <pre class="code-block"
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl --request GET --url 'http://localhost:8080/api/stream/677?ep=12352&server=hd-1&type=sub' --header 'Accept: application/json'</code></pre>
+                                <p class="label">Example response</p>
+                                <pre class="code-block"><code class="language-json">{
+    "success": true,
+    "results": {
+        "streamingLink": [
+            {
+                "id": "string",
+                "type": "string",
+                "link": {
+                    "file": "http://example.com",
+                    "type": "string"
+                },
+                "tracks": [
+                    {}
+                ],
+                "intro": {},
+                "outro": {},
+                "server": "string"
+            }
+        ],
+        "servers": [
+            {
+                "type": "string",
+                "data_id": "string",
+                "server_id": "string",
+                "serverName": "string"
+            }
+        ]
+    }
+}</code></pre>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article id="endpoint-stream-fallback" class="endpoint-card">
+                        <div class="endpoint-meta">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/stream/fallback/:id</span>
+                            <span class="tag">Streaming</span>
+                        </div>
+                        <h3>Stream fallback</h3>
+                        <p>Graceful fallback streams when the primary CDN fails.</p>
                         <div class="example-grid">
                             <div>
                             </div>
                             <div>
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/producer/studio-pierrot?page=1"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/stream/fallback/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{ 
     "success": true, 
     "results": { 
-        "totalPages": 5, 
-        "data": [...] 
-    } 
-}</code></pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="endpoint-studio" class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method get">GET</span>
-                            <span class="path">/api/studio/:id</span>
-                            <span class="tag">Studios</span>
-                        </div>
-                        <h3>Studio catalogue</h3>
-                        <p>Studio-specific anime listings with pagination identical to producer endpoint.</p>
-                        <div class="example-grid">
-                            <div>
-                            </div>
-                            <div>
-                                <p class="label">Example request</p>
-                                <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/studio/studio-pierrot?page=1"</code></pre>
-                                <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "totalPages": 5, 
-        "data": [...] 
+        "streamingLink": [...], 
+        "servers": [...] 
     } 
 }</code></pre>
                             </div>
@@ -577,34 +736,6 @@
     "totalPage": 5,
     "hasNext": true
   }
-}</code></pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="endpoint-filter" class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method get">GET</span>
-                            <span class="path">/api/filter</span>
-                            <span class="tag">Search</span>
-                        </div>
-                        <h3>Filter</h3>
-                        <p>Advanced catalogue filtering with identical parameters to search for builder-style UIs.</p>
-                        <div class="example-grid">
-                            <div>
-                            </div>
-                            <div>
-                                <p class="label">Example request</p>
-                                <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/filter?type=tv&status=ongoing&genres=1,2,3&page=1"</code></pre>
-                                <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "data": [...], 
-        "page": 1, 
-        "hasNext": true 
-    } 
 }</code></pre>
                             </div>
                         </div>
@@ -669,143 +800,29 @@
                         </div>
                     </article>
 
-                    <article id="endpoint-episodes" class="endpoint-card">
+                    <article id="endpoint-filter" class="endpoint-card">
                         <div class="endpoint-meta">
                             <span class="method get">GET</span>
-                            <span class="path">/api/episodes/:id</span>
-                            <span class="tag">Episodes</span>
+                            <span class="path">/api/filter</span>
+                            <span class="tag">Search</span>
                         </div>
-                        <h3>Episode list</h3>
-                        <p>Returns ordered episodes with filler flags for a show.</p>
+                        <h3>Filter</h3>
+                        <p>Advanced catalogue filtering with identical parameters to search for builder-style UIs.</p>
                         <div class="example-grid">
                             <div>
                             </div>
                             <div>
                                 <p class="label">Example request</p>
                                 <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/episodes/frieren-beyond-journeys-end-18542"</code></pre>
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/filter?type=tv&status=ongoing&genres=1,2,3&page=1"</code></pre>
                                 <p class="label">Example response</p>
                                 <pre class="code-block"><code class="language-json">{ 
     "success": true, 
     "results": { 
-        "episodes": [
-            { 
-                "number": 1, 
-                "title": "Episode 1", 
-                "isFiller": false 
-            }
-        ] 
+        "data": [...], 
+        "page": 1, 
+        "hasNext": true 
     } 
-}</code></pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="endpoint-servers" class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method get">GET</span>
-                            <span class="path">/api/servers</span>
-                            <span class="tag">Streaming</span>
-                        </div>
-                        <h3>Servers</h3>
-                        <p>Lists available streaming servers for a given episode.</p>
-                        <div class="example-grid">
-                            <div>
-                            </div>
-                            <div>
-                                <p class="label">Example request</p>
-                                <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/servers?ep=107257"</code></pre>
-                                <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": [
-        { 
-            "type": "sub", 
-            "serverName": "Vidcloud", 
-            "server_id": 123 
-        }
-    ] 
-}</code></pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="endpoint-stream" class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method get">GET</span>
-                            <span class="path">/api/stream/:id</span>
-                            <span class="tag">Streaming</span>
-                        </div>
-                        <h3>Stream</h3>
-                        <p>Primary streaming sources, captions, intros/outros, and server metadata.</p>
-                        <div class="example-grid">
-                            <div>
-                            </div>
-                            <div>
-                                <p class="label">Example request</p>
-                                <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/stream/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"</code></pre>
-                                <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{
-  "success": true,
-  "results": {
-    "streamingLink": [{ "type": "sub", "link": { "file": "https://..." }, "tracks": [...] }],
-    "servers": [...]
-  }
-}</code></pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="endpoint-stream-fallback" class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method get">GET</span>
-                            <span class="path">/api/stream/fallback/:id</span>
-                            <span class="tag">Streaming</span>
-                        </div>
-                        <h3>Stream fallback</h3>
-                        <p>Graceful fallback streams when the primary CDN fails.</p>
-                        <div class="example-grid">
-                            <div>
-                            </div>
-                            <div>
-                                <p class="label">Example request</p>
-                                <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/stream/fallback/frieren-beyond-journeys-end-18542?ep=107257&server=hd-1&type=sub"</code></pre>
-                                <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "streamingLink": [...], 
-        "servers": [...] 
-    } 
-}</code></pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="endpoint-qtip" class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method get">GET</span>
-                            <span class="path">/api/qtip/:id</span>
-                            <span class="tag">Anime</span>
-                        </div>
-                        <h3>Qtip sidebar data</h3>
-                        <p>Sidebar metadata used for tooltip/preview blocks.</p>
-                        <div class="example-grid">
-                            <div>
-                            </div>
-                            <div>
-                                <p class="label">Example request</p>
-                                <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/qtip/frieren-beyond-journeys-end-18542"</code></pre>
-                                <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        ...sidebar fields... 
-    }
 }</code></pre>
                             </div>
                         </div>
@@ -861,60 +878,6 @@
     "success": true, 
     "results": { 
         "nextEpisodeSchedule": "2025-01-25T12:00:00Z" 
-    } 
-}</code></pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="endpoint-random" class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method get">GET</span>
-                            <span class="path">/api/random</span>
-                            <span class="tag">Random</span>
-                        </div>
-                        <h3>Random anime</h3>
-                        <p>Full <code>AnimeDetail</code> payload chosen at random.</p>
-                        <div class="example-grid">
-                            <div>
-                            </div>
-                            <div>
-                                <p class="label">Example request</p>
-                                <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/random"</code></pre>
-                                <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "id": "random-anime-id", 
-        "title": "Random Anime", 
-        ... 
-    } 
-}</code></pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="endpoint-random-id" class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method get">GET</span>
-                            <span class="path">/api/random/id</span>
-                            <span class="tag">Random</span>
-                        </div>
-                        <h3>Random anime ID</h3>
-                        <p>Lightweight variant returning only the identifier.</p>
-                        <div class="example-grid">
-                            <div>
-                            </div>
-                            <div>
-                                <p class="label">Example request</p>
-                                <pre class="code-block"
-                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/random/id"</code></pre>
-                                <p class="label">Example response</p>
-                                <pre class="code-block"><code class="language-json">{ 
-    "success": true, 
-    "results": { 
-        "id": "random-anime-id" 
     } 
 }</code></pre>
                             </div>
@@ -1018,6 +981,60 @@
                         </div>
                     </article>
 
+                    <article id="endpoint-producer" class="endpoint-card">
+                        <div class="endpoint-meta">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/producer/:id</span>
+                            <span class="tag">Studios</span>
+                        </div>
+                        <h3>Producer catalogue</h3>
+                        <p>Paginated listing of anime associated with a producer.</p>
+                        <div class="example-grid">
+                            <div>
+                            </div>
+                            <div>
+                                <p class="label">Example request</p>
+                                <pre class="code-block"
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/producer/studio-pierrot?page=1"</code></pre>
+                                <p class="label">Example response</p>
+                                <pre class="code-block"><code class="language-json">{ 
+    "success": true, 
+    "results": { 
+        "totalPages": 5, 
+        "data": [...] 
+    } 
+}</code></pre>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article id="endpoint-studio" class="endpoint-card">
+                        <div class="endpoint-meta">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/studio/:id</span>
+                            <span class="tag">Studios</span>
+                        </div>
+                        <h3>Studio catalogue</h3>
+                        <p>Studio-specific anime listings with pagination identical to producer endpoint.</p>
+                        <div class="example-grid">
+                            <div>
+                            </div>
+                            <div>
+                                <p class="label">Example request</p>
+                                <pre class="code-block"
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/studio/studio-pierrot?page=1"</code></pre>
+                                <p class="label">Example response</p>
+                                <pre class="code-block"><code class="language-json">{ 
+    "success": true, 
+    "results": { 
+        "totalPages": 5, 
+        "data": [...] 
+    } 
+}</code></pre>
+                            </div>
+                        </div>
+                    </article>
+
                     <article id="endpoint-watchlist" class="endpoint-card">
                         <div class="endpoint-meta">
                             <span class="method get">GET</span>
@@ -1076,6 +1093,60 @@
                             </div>
                         </div>
 
+                    </article>
+
+                    <article id="endpoint-random" class="endpoint-card">
+                        <div class="endpoint-meta">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/random</span>
+                            <span class="tag">Random</span>
+                        </div>
+                        <h3>Random anime</h3>
+                        <p>Full <code>AnimeDetail</code> payload chosen at random.</p>
+                        <div class="example-grid">
+                            <div>
+                            </div>
+                            <div>
+                                <p class="label">Example request</p>
+                                <pre class="code-block"
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/random"</code></pre>
+                                <p class="label">Example response</p>
+                                <pre class="code-block"><code class="language-json">{ 
+    "success": true, 
+    "results": { 
+        "id": "random-anime-id", 
+        "title": "Random Anime", 
+        ... 
+    } 
+}</code></pre>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article id="endpoint-random-id" class="endpoint-card">
+                        <div class="endpoint-meta">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/random/id</span>
+                            <span class="tag">Random</span>
+                        </div>
+                        <h3>Random anime ID</h3>
+                        <p>Lightweight variant returning only the identifier.</p>
+                        <div class="example-grid">
+                            <div>
+                            </div>
+                            <div>
+                                <p class="label">Example request</p>
+                                <pre class="code-block"
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/random/id"</code></pre>
+                                <p class="label">Example response</p>
+                                <pre class="code-block"><code class="language-json">{ 
+    "success": true, 
+    "results": { 
+        "id": "random-anime-id" 
+    } 
+}</code></pre>
+                            </div>
+                        </div>
                     </article>
 
                     <article id="endpoint-health" class="endpoint-card">
@@ -1149,6 +1220,43 @@
                                 <pre class="code-block"><code class="language-json">{ 
     "status": "alive", 
     "timestamp": "2025-01-18T12:00:00Z" 
+}</code></pre>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article id="endpoint-categories" class="endpoint-card">
+                        <div class="endpoint-meta">
+                            <span class="method get">GET</span>
+                            <span class="path">/api/{routeType}</span>
+                            <span class="tag">Categories</span>
+                        </div>
+                        <h3>Categories & genres</h3>
+                        <p>
+                            Supports `genre/*`, `top-airing`, `most-popular`, `completed`, `recently-updated`,
+                            `movie`, `tv`, `ova`, `ona`, `special`, and `az-list/*` routes.
+                        </p>
+                        <div class="example-grid">
+                            <div>
+                            </div>
+                            <div>
+                                <p class="label">Example request</p>
+                                <pre class="code-block"
+                                    style="margin-bottom: 15px;"><code class="language-bash">curl "http://localhost:8080/api/genre/action?page=1"</code></pre>
+                                <p class="label">Example response</p>
+                                <pre class="code-block"><code class="language-json">{
+  "success": true,
+  "results": {
+    "totalPages": 10,
+    "data": [
+      {
+        "id": "anime-id",
+        "title": "Anime Title",
+        "poster": "https://...",
+        "tvInfo": {...}
+      }
+    ]
+  }
 }</code></pre>
                             </div>
                         </div>

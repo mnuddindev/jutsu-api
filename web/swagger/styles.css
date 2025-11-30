@@ -883,3 +883,36 @@ pre code.hljs {
     color: var(--text-secondary);
     font-style: italic;
 }
+
+.parameter-description {
+	font-size: 11px;
+	padding: 4px 8px;
+}
+
+.parameter-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-weight: normal;
+}
+
+.parameter-field.additional {
+    background: rgba(41, 81, 170, 0.05);
+    border-left: 3px solid #8b5cf6;
+}
+
+.parameter-badge.info {
+    background: #f3e8ff;
+    color: #8b5cf6;
+    border: 1px solid #ddd6fe;
+    margin-left: 6px;
+}
+
+.parameter-field.additional .parameter-input {
+    background: rgba(41, 81, 170, 0.02);
+}
+
+.parameter-field.additional .parameter-description {
+    color: #7c3aed;
+    font-weight: 500;
+}

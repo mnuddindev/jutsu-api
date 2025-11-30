@@ -183,44 +183,305 @@ class JsonSchemaViewer {
     }
 }
 
-// Parameter Input Generator
+// Extended Parameter Configuration
+class ParameterConfig {
+    static getEndpointParameters(endpointPath) {
+        // Define additional parameters for each endpoint that aren't in curl examples
+        const endpointConfigs = {
+            '/api/info': {
+                additionalParams: [
+                    {
+                        name: 'fields',
+                        example: 'title,poster,description',
+                        required: false,
+                        description: 'Comma-separated list of fields to include in response (optional)'
+                    }
+                ]
+            },
+            '/api/search': {
+                additionalParams: [
+                    {
+                        name: 'type',
+                        example: 'tv',
+                        required: false,
+                        description: 'Filter by anime type: tv, movie, ova, ona, special (optional)'
+                    },
+                    {
+                        name: 'status',
+                        example: 'ongoing',
+                        required: false,
+                        description: 'Filter by status: ongoing, completed (optional)'
+                    },
+                    {
+                        name: 'genre',
+                        example: 'action,adventure',
+                        required: false,
+                        description: 'Comma-separated genre IDs (optional)'
+                    },
+                    {
+                        name: 'year',
+                        example: '2024',
+                        required: false,
+                        description: 'Filter by release year (optional)'
+                    },
+                    {
+                        name: 'season',
+                        example: 'winter',
+                        required: false,
+                        description: 'Filter by season: winter, spring, summer, fall (optional)'
+                    },
+                    {
+                        name: 'sort',
+                        example: 'popularity',
+                        required: false,
+                        description: 'Sort by: popularity, rating, latest, title (optional)'
+                    },
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number for pagination (optional)'
+                    }
+                ]
+            },
+            '/api/filter': {
+                additionalParams: [
+                    {
+                        name: 'type',
+                        example: 'tv',
+                        required: false,
+                        description: 'Filter by anime type (optional)'
+                    },
+                    {
+                        name: 'status',
+                        example: 'ongoing',
+                        required: false,
+                        description: 'Filter by status (optional)'
+                    },
+                    {
+                        name: 'genre',
+                        example: '1,2,3',
+                        required: false,
+                        description: 'Comma-separated genre IDs (optional)'
+                    },
+                    {
+                        name: 'rating',
+                        example: '7.5',
+                        required: false,
+                        description: 'Minimum rating score (optional)'
+                    },
+                    {
+                        name: 'year',
+                        example: '2024',
+                        required: false,
+                        description: 'Release year (optional)'
+                    },
+                    {
+                        name: 'language',
+                        example: 'sub',
+                        required: false,
+                        description: 'Language: sub or dub (optional)'
+                    },
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number (optional)'
+                    }
+                ]
+            },
+            '/api/stream/:id': {
+                additionalParams: [
+                    {
+                        name: 'server',
+                        example: 'hd-1',
+                        required: false,
+                        description: 'Preferred streaming server (optional)'
+                    },
+                    {
+                        name: 'type',
+                        example: 'sub',
+                        required: false,
+                        description: 'Content type: sub or dub (optional)'
+                    },
+                    {
+                        name: 'quality',
+                        example: '1080p',
+                        required: false,
+                        description: 'Video quality preference (optional)'
+                    }
+                ]
+            },
+            '/api/episodes/:id': {
+                additionalParams: [
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number for episode list (optional)'
+                    }
+                ]
+            },
+            '/api/schedule': {
+                additionalParams: [
+                    {
+                        name: 'date',
+                        example: '2024-01-18',
+                        required: false,
+                        description: 'Date in YYYY-MM-DD format (optional, defaults to today)'
+                    },
+                    {
+                        name: 'tzOffset',
+                        example: '-330',
+                        required: false,
+                        description: 'Timezone offset in minutes (optional)'
+                    }
+                ]
+            },
+            '/api/top-airing': {
+                additionalParams: [
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number (optional)'
+                    }
+                ]
+            },
+            '/api/most-popular': {
+                additionalParams: [
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number (optional)'
+                    }
+                ]
+            },
+            '/api/genre/:slug': {
+                additionalParams: [
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number (optional)'
+                    }
+                ]
+            },
+            '/api/producer/:id': {
+                additionalParams: [
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number (optional)'
+                    }
+                ]
+            },
+            '/api/studio/:id': {
+                additionalParams: [
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number (optional)'
+                    }
+                ]
+            },
+            '/api/character/list/:id': {
+                additionalParams: [
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number for character list (optional)'
+                    }
+                ]
+            },
+            '/api/watchlist/:userId': {
+                additionalParams: [
+                    {
+                        name: 'page',
+                        example: '1',
+                        required: false,
+                        description: 'Page number for watchlist (optional)'
+                    }
+                ]
+            }
+        };
+
+        // Find matching endpoint configuration
+        for (const [configPath, config] of Object.entries(endpointConfigs)) {
+            if (this.pathsMatch(configPath, endpointPath)) {
+                return config.additionalParams || [];
+            }
+        }
+
+        return [];
+    }
+
+    static pathsMatch(configPath, endpointPath) {
+        // Convert both paths to regex patterns to handle dynamic segments
+        const configPattern = configPath.replace(/:[^/]+/g, '([^/]+)').replace(/\{([^}]+)\}/g, '([^/]+)');
+        const regex = new RegExp(`^${configPattern}$`);
+        return regex.test(endpointPath);
+    }
+}
+
+// Updated Parameter Input Generator
 class ParameterInputs {
     static generateInputs($endpointCard) {
         const $curlCode = $endpointCard.find('.examples-panel .code-block code.language-bash');
-        if ($curlCode.length === 0) {
-            return '';
+        const endpointPath = $endpointCard.find('.path').text().trim();
+
+        let params = [];
+
+        // Extract parameters from curl example
+        if ($curlCode.length > 0) {
+            const curlExample = $curlCode.text().trim();
+            params = this.extractParametersFromCurl(curlExample, $endpointCard);
         }
 
-        const curlExample = $curlCode.text().trim();
-        const params = this.extractParametersFromCurl(curlExample);
+        // Add additional configured parameters
+        const additionalParams = ParameterConfig.getEndpointParameters(endpointPath);
+        params = [...params, ...additionalParams];
 
-        if (params.length === 0) {
-            return `
-                
-            `;
+        // Remove duplicates (in case curl already has some of the additional params)
+        const uniqueParams = this.removeDuplicateParams(params);
+
+        if (uniqueParams.length === 0) {
+            return '';
         }
 
         let inputsHTML = `
             <div class="parameter-inputs">
                 <div class="parameter-header">
                     <h4>Request Parameters</h4>
+                    <div class="parameter-subtitle">
+                        ${this.getParameterSummary(uniqueParams)}
+                    </div>
                 </div>
         `;
 
-        params.forEach(param => {
+        uniqueParams.forEach(param => {
+            const isAdditional = additionalParams.some(p => p.name === param.name && !params.some(ep => ep.name === p.name));
+
             inputsHTML += `
-                <div class="parameter-field ${param.required ? 'required' : 'optional'}">
+                <div class="parameter-field ${param.required ? 'required' : 'optional'} ${isAdditional ? 'additional' : ''}">
                     <label for="param-${param.name}">
                         ${param.name}
                         <span class="parameter-badge ${param.required ? 'required' : 'optional'}">${param.required ? 'Required' : 'Optional'}</span>
+                        ${isAdditional ? '<span class="parameter-badge info">Documentation</span>' : ''}
                     </label>
                     <input type="text" 
                            id="param-${param.name}" 
                            class="parameter-input" 
                            data-param="${param.name}"
                            placeholder="${param.example || 'Enter value'}"
-                           value="${param.example || ''}">
+                           value="${param.example || ''}"
+                           ${param.required ? 'required' : ''}>
                     ${param.example ? `<div class="parameter-example">Example: ${param.example}</div>` : ''}
+                    ${param.description ? `<div class="parameter-description">${param.description}</div>` : ''}
                 </div>
             `;
         });
@@ -229,7 +490,29 @@ class ParameterInputs {
         return inputsHTML;
     }
 
-    static extractParametersFromCurl(curlExample) {
+    static removeDuplicateParams(params) {
+        const seen = new Set();
+        return params.filter(param => {
+            if (seen.has(param.name)) {
+                return false;
+            }
+            seen.add(param.name);
+            return true;
+        });
+    }
+
+    static getParameterSummary(params) {
+        const requiredCount = params.filter(p => p.required).length;
+        const optionalCount = params.filter(p => !p.required).length;
+
+        const parts = [];
+        if (requiredCount > 0) parts.push(`${requiredCount} required`);
+        if (optionalCount > 0) parts.push(`${optionalCount} optional`);
+
+        return parts.join(', ') + ` parameter${params.length > 1 ? 's' : ''}`;
+    }
+
+    static extractParametersFromCurl(curlExample, $endpointCard) {
         const params = [];
 
         let url = '';
@@ -256,12 +539,30 @@ class ParameterInputs {
             const urlObj = new URL(url);
             const urlParams = new URLSearchParams(urlObj.search);
 
+            // Extract path parameters from endpoint path
+            const endpointPath = $endpointCard.find('.path').text().trim();
+            const pathParams = this.extractPathParameters(endpointPath, urlObj.pathname);
+
+            // Add path parameters first (they're always required)
+            pathParams.forEach(param => {
+                params.push({
+                    name: param.name,
+                    example: param.value,
+                    required: true,
+                    description: `Path parameter - ${param.name}`,
+                    type: 'path'
+                });
+            });
+
+            // Add query parameters with smart required detection
             for (const [name, value] of urlParams) {
+                const isRequired = this.isParameterRequired(name, value, endpointPath);
                 params.push({
                     name: name,
                     example: value,
-                    required: true,
-                    description: `Parameter for ${name}`
+                    required: isRequired,
+                    description: this.getParameterDescription(name),
+                    type: 'query'
                 });
             }
         } catch (error) {
@@ -269,6 +570,96 @@ class ParameterInputs {
         }
 
         return params;
+    }
+
+    static extractPathParameters(endpointPath, actualPath) {
+        const params = [];
+
+        // Check if endpoint path has placeholders like :id, {id}, etc.
+        const pathSegments = endpointPath.split('/');
+        const actualSegments = actualPath.split('/');
+
+        for (let i = 0; i < pathSegments.length; i++) {
+            const segment = pathSegments[i];
+            if ((segment.startsWith(':') ||
+                (segment.startsWith('{') && segment.endsWith('}'))) &&
+                i < actualSegments.length) {
+
+                const paramName = segment.replace(/[:{}]/g, '');
+                const paramValue = actualSegments[i];
+
+                params.push({
+                    name: paramName,
+                    value: paramValue,
+                    required: true
+                });
+            }
+        }
+
+        return params;
+    }
+
+    static isParameterRequired(name, exampleValue, endpointPath) {
+        // Core parameters that are always required
+        const alwaysRequired = ['id', 'ep', 'episode', 'slug', 'key'];
+
+        // Pagination/sorting parameters that are usually optional
+        const usuallyOptional = ['page', 'limit', 'offset', 'sort', 'order', 'per_page'];
+
+        // Streaming/media parameters that are usually optional
+        const streamingOptional = ['server', 'type', 'quality', 'sub', 'dub', 'language'];
+
+        // Filter parameters that are usually optional
+        const filterOptional = ['genre', 'status', 'year', 'season', 'rating'];
+
+        if (alwaysRequired.includes(name.toLowerCase())) {
+            return true;
+        }
+
+        if (usuallyOptional.includes(name.toLowerCase()) ||
+            streamingOptional.includes(name.toLowerCase()) ||
+            filterOptional.includes(name.toLowerCase())) {
+            return false;
+        }
+
+        // If the parameter appears in multiple endpoints with different values, it's likely optional
+        if (exampleValue && exampleValue.includes('...')) {
+            return false;
+        }
+
+        // Default to required for safety
+        return true;
+    }
+
+    static getParameterDescription(name) {
+        const descriptions = {
+            // Path parameters
+            'id': 'Unique identifier for the resource',
+            'slug': 'URL-friendly identifier',
+
+            // Required query parameters
+            'ep': 'Episode number or identifier',
+            'episode': 'Episode number or identifier',
+
+            // Optional query parameters
+            'page': 'Page number for pagination (optional)',
+            'limit': 'Number of items per page (optional)',
+            'offset': 'Number of items to skip (optional)',
+            'sort': 'Field to sort by (optional)',
+            'order': 'Sort order: asc or desc (optional)',
+            'server': 'Streaming server name',
+            'type': 'Content type: sub or dub (optional)',
+            'quality': 'Video quality preference (optional)',
+            'language': 'Language preference (optional)',
+            'genre': 'Filter by genre (optional)',
+            'status': 'Filter by status: ongoing, completed (optional)',
+            'year': 'Filter by release year (optional)',
+            'season': 'Filter by season (optional)',
+            'rating': 'Filter by minimum rating (optional)',
+            'keyword': 'Search keyword (optional)'
+        };
+
+        return descriptions[name.toLowerCase()] || `Parameter for ${name}`;
     }
 }
 
@@ -318,7 +709,7 @@ $(document).ready(function () {
     $(document).on('click', '.send-request-btn', async function () {
         const $button = $(this);
         const $endpointCard = $button.closest('.endpoint-card');
-        const endpoint = $button.data('endpoint');
+        let endpoint = $button.data('endpoint');
         const $responseCard = $endpointCard.find('.response-card');
         const $responseOutput = $endpointCard.find('.response-output');
         const $responseStatus = $endpointCard.find('.response-status');
@@ -354,7 +745,8 @@ $(document).ready(function () {
         $button.text('Loading...');
 
         try {
-            let url = `http://localhost:8080${endpoint}`;
+            // Replace path parameters in the endpoint
+            let finalEndpoint = endpoint;
             const params = new URLSearchParams();
 
             $endpointCard.find('.parameter-input').each(function () {
@@ -363,14 +755,25 @@ $(document).ready(function () {
                 const paramValue = $input.val().trim();
 
                 if (paramValue) {
-                    params.append(paramName, paramValue);
+                    // Check if this is a path parameter (replace in endpoint)
+                    if (finalEndpoint.includes(`:${paramName}`) || finalEndpoint.includes(`{${paramName}}`)) {
+                        finalEndpoint = finalEndpoint.replace(`:${paramName}`, paramValue)
+                            .replace(`{${paramName}}`, paramValue);
+                    } else {
+                        // It's a query parameter
+                        params.append(paramName, paramValue);
+                    }
                 }
             });
 
+            // Build final URL
+            let url = `http://localhost:8080${finalEndpoint}`;
             const queryString = params.toString();
             if (queryString) {
                 url += '?' + queryString;
             }
+
+            console.log('Making request to:', url);
 
             const response = await fetch(url, {
                 headers: {
