@@ -98,7 +98,6 @@ func SetupRoutes(app *fiber.App) {
 
 	// Producer
 	app.Get("/api/producer/:id", creatorHandler.GetProducer)
-	app.Get("/api/studio/:id", creatorHandler.GetStudio)
 
 	// Character and voice actors
 	app.Get("/api/character/list/:id", characterListHandler.GetVoiceActors)

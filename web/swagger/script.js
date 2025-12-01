@@ -412,9 +412,41 @@ $(document).on('input', '.parameter-input', function () {
     ParameterInputs.updateCurlExample($endpointCard);
 });
 
+function headerHideHandler() {
+    let lastScrollTop = 0;
+    const $header = $('.docs-header');
+
+    $header.css({
+        'transition': 'all 0.3s ease-in-out',
+        'position': 'sticky',
+        'top': '0'
+    });
+
+    $(window).scroll(function () {
+        const scrollTop = $(this).scrollTop();
+
+        if (scrollTop > lastScrollTop && scrollTop > 50) {
+            $header.css({
+                'opacity': '0',
+                'transform': 'translateY(-20px)',
+                'pointer-events': 'none'
+            });
+        } else {
+            $header.css({
+                'opacity': '1',
+                'transform': 'translateY(0)',
+                'pointer-events': 'auto'
+            });
+        }
+
+        lastScrollTop = scrollTop;
+    });
+}
+
 // Main jQuery code
 $(document).ready(function () {
     hljs.highlightAll();
+    headerHideHandler();
 
     $('.endpoint-meta .endpoint-path .path').each(function () {
         $('<span class="server">http://localhost:8080</span>').insertBefore($(this));
