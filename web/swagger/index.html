@@ -28,11 +28,14 @@
                 </div>
             </div>
             <nav class="header-nav">
-                <a href="#intro">Overview</a>
-                <a href="#endpoints">Endpoints</a>
-                <a href="#schemas">Schemas</a>
-                <a href="#reference">API Reference</a>
-                <a href="https://github.com/mnuddindev/jutsu-api" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="#intro">📖 Overview</a>
+                <a href="#endpoints">🚀 Endpoints</a>
+                <a href="https://github.com/mnuddindev/jutsu-api" class="github-button" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    View on GitHub
+                </a>
             </nav>
         </div>
     </header>
@@ -48,11 +51,11 @@
                 <div class="nav-group">
                     <p class="nav-title">Getting Started</p>
                     <ul>
-                        <li><a href="#intro">Introduction</a></li>
-                        <li><a href="#base-url">Base URL</a></li>
-                        <li><a href="#quick-start">Quick start</a></li>
-                        <li><a href="#error-model">Error handling</a></li>
-                        <li><a href="#support">Support</a></li>
+                        <li><a href="#intro">📘 Introduction</a></li>
+                        <li><a href="#base-url">⚓ Base URL</a></li>
+                        <li><a href="#quick-start">✨ Quick start</a></li>
+                        <li><a href="#error-model">❌ Error handling</a></li>
+                        <li><a href="#support">🛟 Support</a></li>
                     </ul>
                 </div>
 
@@ -89,18 +92,6 @@
                         <li><a data-method="GET" href="#endpoint-categories">Top Airing Anime</a></li>
                         <li><a data-method="GET" href="#endpoint-categories">Most Popular Anime</a></li>
                         </li>
-                    </ul>
-                </div>
-
-                <div class="nav-group">
-                    <p class="nav-title">Schemas</p>
-                    <ul>
-                        <li><a href="#schema-spotlight">Spotlight</a></li>
-                        <li><a href="#schema-anime-card">AnimeCard</a></li>
-                        <li><a href="#schema-anime-detail">AnimeDetail</a></li>
-                        <li><a href="#schema-stream">StreamInfo</a></li>
-                        <li><a href="#schema-schedule">ScheduleItem</a></li>
-                        <li><a href="#schema-search">SearchResult</a></li>
                     </ul>
                 </div>
             </div>
@@ -1806,249 +1797,6 @@
                 </div>
             </section>
 
-            <section id="schemas" class="panel">
-                <div class="panel-header">
-                    <h2>Schema primer</h2>
-                    <p>Key payloads surfaced most frequently across the API.</p>
-                </div>
-                <div class="schema-stack">
-                    <article id="schema-spotlight" class="schema-card">
-                        <div class="schema-head">
-                            <h3>Spotlight</h3>
-                            <p>Used in home responses for hero tiles.</p>
-                        </div>
-                        <div class="schema-body">
-                            <div class="schema-fields">
-                                <dl>
-                                    <div>
-                                        <dt>id</dt>
-                                        <dd>string · example: <code>frieren-beyond-journeys-end-18542</code></dd>
-                                    </div>
-                                    <div>
-                                        <dt>data_id</dt>
-                                        <dd>string</dd>
-                                    </div>
-                                    <div>
-                                        <dt>title</dt>
-                                        <dd>string · localized title</dd>
-                                    </div>
-                                    <div>
-                                        <dt>poster</dt>
-                                        <dd>string&lt;uri&gt;</dd>
-                                    </div>
-                                    <div>
-                                        <dt>description</dt>
-                                        <dd>string</dd>
-                                    </div>
-                                    <div>
-                                        <dt>tvInfo</dt>
-                                        <dd>object with showType, duration, releaseDate, quality, episodeInfo</dd>
-                                    </div>
-                                </dl>
-                            </div>
-                            <div class="schema-example">
-                                <p class="label">Example</p>
-                                <pre>{
-  "id": "frieren-beyond-journeys-end-18542",
-  "title": "Frieren: Beyond Journey's End",
-  "poster": "https://...",
-  "tvInfo": {
-    "showType": "TV",
-    "duration": "24m",
-    "quality": "HD"
-  }
-}</pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="schema-anime-card" class="schema-card">
-                        <div class="schema-head">
-                            <h3>AnimeCard</h3>
-                            <p>Compact tile used in search, categories, watchlist.</p>
-                        </div>
-                        <div class="schema-body">
-                            <div class="schema-fields">
-                                <dl>
-                                    <div>
-                                        <dt>id</dt>
-                                        <dd>string</dd>
-                                    </div>
-                                    <div>
-                                        <dt>title</dt>
-                                        <dd>string</dd>
-                                    </div>
-                                    <div>
-                                        <dt>poster</dt>
-                                        <dd>string&lt;uri&gt;</dd>
-                                    </div>
-                                    <div>
-                                        <dt>duration</dt>
-                                        <dd>string</dd>
-                                    </div>
-                                    <div>
-                                        <dt>rating</dt>
-                                        <dd>string</dd>
-                                    </div>
-                                    <div>
-                                        <dt>episodes</dt>
-                                        <dd>object { sub, dub }</dd>
-                                    </div>
-                                </dl>
-                            </div>
-                            <div class="schema-example">
-                                <pre>{ "id": "anime-id", "title": "Anime Title", "rating": "4.8", "episodes": { "sub": 12, "dub": 12 } }</pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="schema-anime-detail" class="schema-card">
-                        <div class="schema-head">
-                            <h3>AnimeDetail</h3>
-                            <p>Full payload returned by info/random endpoints.</p>
-                        </div>
-                        <div class="schema-body">
-                            <div class="schema-fields">
-                                <dl>
-                                    <div>
-                                        <dt>results.data</dt>
-                                        <dd>Core anime metadata (title, poster, synopsis, stats)</dd>
-                                    </div>
-                                    <div>
-                                        <dt>seasons</dt>
-                                        <dd>array of related seasons</dd>
-                                    </div>
-                                    <div>
-                                        <dt>relatedAnime</dt>
-                                        <dd>array&lt;AnimeCard&gt;</dd>
-                                    </div>
-                                    <div>
-                                        <dt>recommended</dt>
-                                        <dd>array&lt;AnimeCard&gt;</dd>
-                                    </div>
-                                </dl>
-                            </div>
-                            <div class="schema-example">
-                                <pre>{
-  "success": true,
-  "results": {
-    "data": { "id": "frieren-...", "title": "Frieren" },
-    "seasons": [...],
-    "relatedAnime": [...]
-  }
-}</pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="schema-stream" class="schema-card">
-                        <div class="schema-head">
-                            <h3>StreamInfo</h3>
-                            <p>Streaming payload with tracks and fallback info.</p>
-                        </div>
-                        <div class="schema-body">
-                            <div class="schema-fields">
-                                <dl>
-                                    <div>
-                                        <dt>streamingLink</dt>
-                                        <dd>array of sources with file/type + tracks + intro/outro</dd>
-                                    </div>
-                                    <div>
-                                        <dt>servers</dt>
-                                        <dd>array of server metadata (type, serverName, ids)</dd>
-                                    </div>
-                                </dl>
-                            </div>
-                            <div class="schema-example">
-                                <pre>{
-  "streamingLink": [{ "type": "sub", "link": { "file": "https://..." }, "tracks": [...] }],
-  "servers": [{ "serverName": "Vidcloud" }]
-}</pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="schema-schedule" class="schema-card">
-                        <div class="schema-head">
-                            <h3>ScheduleItem</h3>
-                            <p>Used across schedule endpoints.</p>
-                        </div>
-                        <div class="schema-body">
-                            <div class="schema-fields">
-                                <dl>
-                                    <div>
-                                        <dt>id</dt>
-                                        <dd>string</dd>
-                                    </div>
-                                    <div>
-                                        <dt>title</dt>
-                                        <dd>string</dd>
-                                    </div>
-                                    <div>
-                                        <dt>releaseDate</dt>
-                                        <dd>string (YYYY-MM-DD)</dd>
-                                    </div>
-                                    <div>
-                                        <dt>time</dt>
-                                        <dd>string (localized time)</dd>
-                                    </div>
-                                    <div>
-                                        <dt>episode_no</dt>
-                                        <dd>integer</dd>
-                                    </div>
-                                </dl>
-                            </div>
-                            <div class="schema-example">
-                                <pre>{ "id": "anime-id", "title": "Anime Title", "releaseDate": "2025-01-18", "time": "12:00" }</pre>
-                            </div>
-                        </div>
-                    </article>
-
-                    <article id="schema-search" class="schema-card">
-                        <div class="schema-head">
-                            <h3>SearchResult</h3>
-                            <p>Envelope for search/filter endpoints.</p>
-                        </div>
-                        <div class="schema-body">
-                            <div class="schema-fields">
-                                <dl>
-                                    <div>
-                                        <dt>page</dt>
-                                        <dd>integer</dd>
-                                    </div>
-                                    <div>
-                                        <dt>totalPage</dt>
-                                        <dd>integer</dd>
-                                    </div>
-                                    <div>
-                                        <dt>hasNext</dt>
-                                        <dd>boolean</dd>
-                                    </div>
-                                    <div>
-                                        <dt>data</dt>
-                                        <dd>array&lt;AnimeCard&gt;</dd>
-                                    </div>
-                                </dl>
-                            </div>
-                            <div class="schema-example">
-                                <pre>
-                                    { 
-                                        "page": 1, 
-                                        "totalPage": 5, 
-                                        "hasNext": true, 
-                                        "data": [
-                                            { 
-                                                "id": "anime-id" 
-                                            }
-                                        ] 
-                                    }
-                                </pre>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-
             <section id="support" class="panel">
                 <div class="panel-header">
                     <h2>Support & tooling</h2>
@@ -2058,16 +1806,6 @@
                     <li><strong>Issues:</strong> https://github.com/mnuddindev/jutsu-api/issues</li>
                     <li><strong>Discussions:</strong> https://github.com/mnuddindev/jutsu-api/discussions</li>
                 </ul>
-            </section>
-
-            <section id="reference" class="panel reference-panel">
-                <div class="panel-header">
-                    <h2>Interactive API reference</h2>
-                    <p>Powered by Stoplight Elements and the live Swagger specification.</p>
-                </div>
-                <elements-api apiDescriptionUrl="/swagger/doc.json" router="hash" layout="modern"
-                    hideExportButton="false" showSidebar="true" tryItCredentialsPolicy="same-origin"
-                    id="jutsu-reference"></elements-api>
             </section>
         </main>
     </div>

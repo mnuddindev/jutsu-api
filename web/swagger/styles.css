@@ -91,6 +91,26 @@ body {
     color: var(--brand-primary);
 }
 
+.github-button {
+    background: #1d1c1d;
+    color: #fff !important;
+    padding: 8px 16px;
+    border-radius: 6px !important;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.github-button:hover {
+    background: #1d1c1d !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.07) !important;
+}
+
 .docs-shell {
     max-width: 1600px;
     margin: 32px auto 64px;
@@ -345,7 +365,7 @@ pre code.hljs {
 }
 
 .hljs {
-	background: var(--code-bg) !important;
+    background: var(--code-bg) !important;
 }
 
 .code-inline {
@@ -406,8 +426,8 @@ pre code.hljs {
 }
 
 .path {
-	font-weight: 600;
-	color: var(--brand-primary);
+    font-weight: 600;
+    color: var(--brand-primary);
 }
 
 .tag {
@@ -898,8 +918,8 @@ pre code.hljs {
 }
 
 .parameter-description {
-	font-size: 11px;
-	padding: 4px 8px;
+    font-size: 11px;
+    padding: 4px 8px;
 }
 
 .parameter-subtitle {

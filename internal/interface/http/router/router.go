@@ -17,12 +17,6 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/ready", healthHandler.Ready)
 	app.Get("/live", healthHandler.Live)
 
-	app.Get("/favicon.ico", func(c *fiber.Ctx) error {
-		// Base64 encoded 1x1 transparent pixel
-		c.Set("Content-Type", "image/x-icon")
-		return c.SendString("AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAP///AP8AAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB")
-	})
-
 	// Swagger documentation JSON (served via swaggo)
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
@@ -31,6 +25,10 @@ func SetupRoutes(app *fiber.App) {
 	app.Static("/docs/assets", swaggerUIDir)
 	app.Get("/docs", func(c *fiber.Ctx) error {
 		return c.SendFile(filepath.Join(swaggerUIDir, "index.html"))
+	})
+
+	app.Get("/favicon.ico", func(c *fiber.Ctx) error {
+		return c.SendFile(filepath.Join(swaggerUIDir, "favicon.ico"))
 	})
 
 	// API routes
