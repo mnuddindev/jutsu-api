@@ -416,6 +416,11 @@ $(document).on('input', '.parameter-input', function () {
 $(document).ready(function () {
     hljs.highlightAll();
 
+    $('.endpoint-meta .endpoint-path .path').each(function () {
+        $('<span class="server">http://localhost:8080</span>').insertBefore($(this));
+    });
+
+
     // Generate parameter inputs
     $('.endpoint-card').each(function () {
         const $endpointCard = $(this);

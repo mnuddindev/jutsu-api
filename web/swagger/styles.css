@@ -376,25 +376,38 @@ pre code.hljs {
     background: var(--surface-muted);
 }
 
+.endpoint-card h3 {
+    margin: 0 0 12px;
+}
+
 .endpoint-meta {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 12px;
+    background: rgba(41, 81, 170, 0.12);
+    width: fit-content;
+    padding-right: 10px;
+    border-radius: 4px;
 }
 
 .method {
     font-size: 12px;
     font-weight: 700;
     padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(41, 81, 170, 0.12);
-    color: var(--brand-primary);
+    border-radius: 4px;
+    background: var(--brand-primary);
+    color: #fff;
+}
+
+.endpoint-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
 }
 
 .path {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
+	font-weight: 600;
+	color: var(--brand-primary);
 }
 
 .tag {
