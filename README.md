@@ -191,6 +191,10 @@ Complete API documentation is available in [docst/API.md](docs/API.md)
 The HTTP interface is fully described via Swagger:
 
 - UI: `http://localhost:8080/docs`
+<<<<<<< HEAD
+=======
+- Files: `docs/swagger.json`, `docs/swagger.yaml`, `docs/docs.go`
+>>>>>>> 3dc906b (🔧 Update Swagger UI link in README for accurate documentation access)
 
 ### GET Home info
 
