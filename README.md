@@ -184,14 +184,13 @@ docker run -p 8080:8080 jutsu-api
 
 ### API Reference
 
-Complete API documentation is available in http://localhost:8080/docs
+Complete API documentation is available in [docst/API.md](docs/API.md)
 
 ## 📚 Documentation
 
 The HTTP interface is fully described via Swagger:
 
-- UI: `http://localhost:8080/swagger/index.html`
-- Files: `docs/swagger.json`, `docs/swagger.yaml`, `docs/docs.go`
+- UI: `http://localhost:8080/docs`
 
 ### GET Home info
 
