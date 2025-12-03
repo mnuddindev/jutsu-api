@@ -13,7 +13,7 @@
 
 **A blazing-fast, production-ready RESTful API for anime streaming platforms**
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [API Reference](#-api-reference) • [Contributing](#-contributing)
+[Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [API Reference](#-documentation) • [Contributing](#-contributing)
 
 </div>
 
