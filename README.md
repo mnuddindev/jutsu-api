@@ -184,7 +184,7 @@ docker run -p 8080:8080 jutsu-api
 
 ### API Reference
 
-Complete API documentation is available in [docs/API.md](docs/API.md)
+Complete API documentation is available in http://localhost:8080/docs
 
 ## 📚 Documentation
 
