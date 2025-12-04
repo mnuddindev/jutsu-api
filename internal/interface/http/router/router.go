@@ -7,15 +7,18 @@ import (
 	fiberSwagger "github.com/swaggo/fiber-swagger"
 
 	"github.com/mnuddindev/jutsu-api/internal/interface/http/handler"
+	"github.com/mnuddindev/jutsu-api/internal/interface/middleware"
 )
 
-// SetupRoutes sets up all routes for the application
+// SetupRoutes sets up all routes for the apilication
 func SetupRoutes(app *fiber.App) {
+	api := app.Group("/api", middleware.NewRateLimiter(middleware.RateLimiterConfig{}))
+
 	// Health check routes
 	healthHandler := handler.NewHealthHandler()
-	app.Get("/health", healthHandler.Health)
-	app.Get("/ready", healthHandler.Ready)
-	app.Get("/live", healthHandler.Live)
+	api.Get("/health", healthHandler.Health)
+	api.Get("/ready", healthHandler.Ready)
+	api.Get("/live", healthHandler.Live)
 
 	// Swagger documentation JSON (served via swaggo)
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)
@@ -54,57 +57,57 @@ func SetupRoutes(app *fiber.App) {
 	topSearchHandler := handler.NewTopSearchHandler()
 
 	// Home info routes
-	app.Get("/api", homeHandler.GetHomeInfo)
+	api.Get("/", homeHandler.GetHomeInfo)
 
 	// Category routes (genre and other categories)
 	for _, routeType := range RouteTypes {
-		app.Get("/api/"+routeType, categoryHandler.GetCategory)
+		api.Get("/api/"+routeType, categoryHandler.GetCategory)
 	}
 
 	// Top ten
-	app.Get("/api/top-ten", topTenHandler.GetTopTen)
+	api.Get("/api/top-ten", topTenHandler.GetTopTen)
 
 	// Anime info
-	app.Get("/api/info", animeInfoHandler.GetAnimeInfo)
+	api.Get("/api/info", animeInfoHandler.GetAnimeInfo)
 
 	// Episodes
-	app.Get("/api/episodes/:id", episodeListHandler.GetEpisodes)
+	api.Get("/api/episodes/:id", episodeListHandler.GetEpisodes)
 
 	// Servers
-	app.Get("/api/servers", serversHandler.GetServers)
+	api.Get("/api/servers", serversHandler.GetServers)
 
 	// Stream
-	app.Get("/api/stream/:id", streamHandler.GetStream)
-	app.Get("/api/stream/fallback/:id", streamHandler.GetStreamFallback)
+	api.Get("/api/stream/:id", streamHandler.GetStream)
+	api.Get("/api/stream/fallback/:id", streamHandler.GetStreamFallback)
 
 	// Search
-	app.Get("/api/search", searchHandler.Search)
-	app.Get("/api/search/suggest", suggestionHandler.GetSuggestions)
-	app.Get("/api/top-search", topSearchHandler.GetTopSearch)
+	api.Get("/api/search", searchHandler.Search)
+	api.Get("/api/search/suggest", suggestionHandler.GetSuggestions)
+	api.Get("/api/top-search", topSearchHandler.GetTopSearch)
 
 	// Filter
-	app.Get("/api/filter", filterHandler.Filter)
+	api.Get("/api/filter", filterHandler.Filter)
 
 	// Schedule
-	app.Get("/api/schedule", scheduleHandler.GetSchedule)
-	app.Get("/api/schedule/:id", nextEpisodeScheduleHandler.GetNextEpisodeSchedule)
+	api.Get("/api/schedule", scheduleHandler.GetSchedule)
+	api.Get("/api/schedule/:id", nextEpisodeScheduleHandler.GetNextEpisodeSchedule)
 
 	// Random
-	app.Get("/api/random", randomHandler.GetRandom)
-	app.Get("/api/random/:id", randomHandler.GetRandomID)
+	api.Get("/api/random", randomHandler.GetRandom)
+	api.Get("/api/random/:id", randomHandler.GetRandomID)
 
 	// Qtip
-	app.Get("/api/qtip/:id", qtipHandler.GetQtip)
+	api.Get("/api/qtip/:id", qtipHandler.GetQtip)
 
 	// Producer
-	app.Get("/api/producer/:id", creatorHandler.GetProducer)
+	api.Get("/api/producer/:id", creatorHandler.GetProducer)
 
 	// Character and voice actors
-	app.Get("/api/character/list/:id", characterListHandler.GetVoiceActors)
-	app.Get("/api/character/:id", characterHandler.GetCharacter)
-	app.Get("/api/actors/:id", actorsHandler.GetVoiceActor)
+	api.Get("/api/character/list/:id", characterListHandler.GetVoiceActors)
+	api.Get("/api/character/:id", characterHandler.GetCharacter)
+	api.Get("/api/actors/:id", actorsHandler.GetVoiceActor)
 
 	// Watchlist
-	app.Get("/api/watchlist/:userId", watchlistHandler.GetWatchlist)
-	app.Get("/api/watchlist/:userId/:page", watchlistHandler.GetWatchlist)
+	api.Get("/api/watchlist/:userId", watchlistHandler.GetWatchlist)
+	api.Get("/api/watchlist/:userId/:page", watchlistHandler.GetWatchlist)
 }

@@ -56,11 +56,11 @@ func ExtractFilter(params map[string]string, baseURL string) (FilterResult, erro
 	})
 	// pagination
 	c.OnHTML(`.pre-pagination nav .pagination > .page-item a[title="Last"]`, func(e *colly.HTMLElement) {
-		res.TotalPage = atoiOr(lastSegment(e.Attr("href")), 1)
+		res.TotalPage = atoiOr(strings.Split(lastSegment(e.Attr("href")), "page=")[1], 1)
 	})
 	c.OnHTML(`.pre-pagination nav .pagination > .page-item a[title="Next"]`, func(e *colly.HTMLElement) {
 		if res.TotalPage == 0 {
-			res.TotalPage = atoiOr(lastSegment(e.Attr("href")), 1)
+			res.TotalPage = atoiOr(strings.Split(lastSegment(e.Attr("href")), "page=")[1], 1)
 		}
 	})
 	c.OnHTML(`.pre-pagination nav .pagination > .page-item.active a`, func(e *colly.HTMLElement) {
