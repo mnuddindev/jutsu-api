@@ -14,13 +14,10 @@ func RequestLogger() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		start := time.Now()
 
-		// Process request
 		err := c.Next()
 
-		// Calculate latency
 		latency := time.Since(start)
 
-		// Log request
 		fields := []zap.Field{
 			zap.String("method", c.Method()),
 			zap.String("path", c.Path()),

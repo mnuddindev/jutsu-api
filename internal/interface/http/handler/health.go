@@ -63,7 +63,6 @@ type HealthResponse struct {
 func (h *HealthHandler) Health(c *fiber.Ctx) error {
 	cfg := config.Cfg
 	if cfg == nil {
-		// Fallback if not initialized
 		if loaded, err := config.LoadConfig(); err == nil {
 			cfg = loaded
 		}
@@ -71,13 +70,11 @@ func (h *HealthHandler) Health(c *fiber.Ctx) error {
 
 	ctx := c.Context()
 
-	// Cache check using the NEW manager
 	cacheStart := time.Now()
 	cacheStatus := "ok"
 	cacheEnabled := h.cacheManager.IsEnabled()
 
 	if cacheEnabled {
-		// Use the new Ping method from manager
 		if err := h.cacheManager.Ping(ctx); err != nil {
 			cacheStatus = "unhealthy"
 		}
@@ -91,7 +88,6 @@ func (h *HealthHandler) Health(c *fiber.Ctx) error {
 		Enabled:        cacheEnabled,
 	}
 
-	// External providers check (no caching - always probe fresh)
 	providerStatus := probeProviders()
 
 	external := ExternalSourcesCheck{AnimeProvider: providerStatus}
@@ -126,7 +122,6 @@ func (h *HealthHandler) Health(c *fiber.Ctx) error {
 func (h *HealthHandler) Ready(c *fiber.Ctx) error {
 	ctx := c.Context()
 
-	// Check if cache is healthy (if enabled)
 	cacheReady := true
 	if h.cacheManager.IsEnabled() {
 		if err := h.cacheManager.Ping(ctx); err != nil {
@@ -182,14 +177,12 @@ func probeURL(hostOrURL string) string {
 
 	client := &http.Client{Timeout: 2 * time.Second}
 
-	// Try HEAD first
 	req, _ := http.NewRequest(http.MethodHead, url, nil)
 	resp, err := client.Do(req)
 	if err == nil && resp != nil && resp.StatusCode < 500 {
 		return "live"
 	}
 
-	// Fallback to GET
 	resp, err = client.Get(url)
 	if err == nil && resp != nil && resp.StatusCode < 500 {
 		return "live"

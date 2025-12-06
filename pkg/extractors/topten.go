@@ -80,14 +80,12 @@ func extractItemFromSelection(s *goquery.Selection) TopTenItem {
 		TVInfo: make(map[string]string),
 	}
 
-	// Exact selectors from your JavaScript code
 	item.Number = strings.TrimSpace(s.Find(".film-number span").Text())
 	item.Title = strings.TrimSpace(s.Find(".film-detail .film-name a").Text())
 	item.Poster = s.Find(".film-poster img").AttrOr("data-src", "")
 	item.JapaneseTitle = strings.TrimSpace(s.Find(".film-detail .film-name a").AttrOr("data-jname", ""))
 	item.DataID = s.Find(".film-poster").AttrOr("data-id", "")
 
-	// Get the href and extract the last segment (ID)
 	href := s.Find(".film-detail .film-name a").AttrOr("href", "")
 	if href != "" {
 		parts := strings.Split(strings.Trim(href, "/"), "/")
@@ -96,7 +94,6 @@ func extractItemFromSelection(s *goquery.Selection) TopTenItem {
 		}
 	}
 
-	// Extract TV info exactly like JavaScript version
 	for _, prop := range []string{"sub", "dub", "eps"} {
 		value := strings.TrimSpace(s.Find(fmt.Sprintf(".tick .tick-%s", prop)).Text())
 		if value != "" {

@@ -81,13 +81,11 @@ import (
 // @tag.description Health check endpoints
 
 func main() {
-	// Load configuration
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		panic("Failed to load configuration: " + err.Error())
 	}
 
-	// Initialize logger
 	if err := appLogger.InitLogger(&cfg.Logger); err != nil {
 		panic("Failed to initialize logger: " + err.Error())
 	}
@@ -96,27 +94,21 @@ func main() {
 	utils.SetAppStartTime(time.Now())
 	appLogger.Info("Starting Jutsu API", zap.String("version", cfg.App.Version))
 
-	// Initialize validator
 	if err := validation.InitValidator(); err != nil {
 		appLogger.Fatal("Failed to initialize validator", zap.Error(err))
 	}
 
-	// Initialize cache (optional - app can run without it)
 	var cacheManager *cache.Manager
 	if err := cache.InitCache(&cfg.Redis); err != nil {
 		appLogger.Warn("Failed to initialize cache - continuing without cache", zap.Error(err))
-		// Create disabled cache manager
 		cacheManager = cache.NewManager(nil, appLogger.Logger, cache.Config{Enabled: false})
 	} else {
 		appLogger.Info("Cache initialized successfully")
 
-		// Get Redis client
 		redisClient := cache.GetRedisClient()
 
-		// Check if Redis is actually enabled by checking environment variable
 		redisEnabled := cfg.Redis.Enabled
 
-		// Create cache manager with TTL configuration from environment
 		cacheConfig := cache.Config{
 			Enabled:        redisEnabled,
 			CharacterTTL:   cfg.Cache.CharacterTTL,   // 24 hours
@@ -152,7 +144,6 @@ func main() {
 		}()
 	}
 
-	// Create Fiber app with performance optimizations
 	app := fiber.New(fiber.Config{
 		AppName:                 cfg.App.Name,
 		Prefork:                 cfg.Server.Prefork,
@@ -171,17 +162,13 @@ func main() {
 		ErrorHandler:            errorHandler,
 	})
 
-	// Setup middleware
 	setupMiddleware(app, cfg)
 
-	// Setup routes
 	router.SetupRoutes(app, cacheManager)
 
-	// Create a channel to receive OS signals
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
-	// Start server in a goroutine for graceful shutdown
 	addr := cfg.GetServerAddr()
 	go func() {
 		if err := app.Listen(addr); err != nil {
@@ -189,16 +176,13 @@ func main() {
 		}
 	}()
 
-	// Small delay to ensure Fiber startup message is printed
 	time.Sleep(100 * time.Millisecond)
 	appLogger.Info("Server started successfully", zap.String("address", addr))
 
-	// Wait for interrupt signal to gracefully shutdown the server
 	<-quit
 
 	appLogger.Info("Shutting down server...")
 
-	// Gracefully shutdown server with a timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -211,18 +195,14 @@ func main() {
 
 // setupMiddleware sets up all middleware
 func setupMiddleware(app *fiber.App, cfg *config.Config) {
-	// Recovery middleware (should be first)
 	app.Use(middleware.SetupRecover())
 
-	// CORS middleware
 	app.Use(middleware.SetupCORS(&cfg.Cors))
 
-	// Request logger middleware
 	app.Use(middleware.RequestLogger())
 
 	// Rate limiting
 	if cfg.App.RateLimitEnabled {
-		// Apply to all API routes
 		app.Use("/api", middleware.NewRateLimiter(middleware.RateLimiterConfig{
 			Max: 100,
 		}))
@@ -245,7 +225,6 @@ func errorHandler(c *fiber.Ctx, err error) error {
 		message = e.Message
 	}
 
-	// Skip logging for static assets like favicon.ico
 	if c.Path() != "/favicon.ico" {
 		appLogger.Error("Request Error",
 			zap.Error(err),

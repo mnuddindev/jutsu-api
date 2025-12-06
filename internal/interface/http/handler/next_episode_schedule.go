@@ -67,7 +67,6 @@ func (h *NextEpisodeScheduleHandler) GetNextEpisodeSchedule(c *fiber.Ctx) error 
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}

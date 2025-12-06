@@ -30,7 +30,6 @@ func InitCache(cfg *config.RedisConfig) error {
 		MinIdleConns: cfg.MinIdleConns,
 	})
 
-	// Test connection
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -42,7 +41,6 @@ func InitCache(cfg *config.RedisConfig) error {
 }
 
 // GetRedisClient returns the Redis client instance
-// This is needed to create the cache Manager
 func GetRedisClient() *redis.Client {
 	return redisClient
 }

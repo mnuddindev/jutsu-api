@@ -77,7 +77,6 @@ func (h *CreatorHandler) handleCreatorRequest(c *fiber.Ctx, prefix string) error
 
 	cacheKey := fmt.Sprintf("creator:%s:%s:%d", prefix, id, page)
 
-	// Check if cached (for response field)
 	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryProducer, cacheKey)
 	wasCached := (cacheErr == nil)
 
@@ -107,7 +106,6 @@ func (h *CreatorHandler) handleCreatorRequest(c *fiber.Ctx, prefix string) error
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}

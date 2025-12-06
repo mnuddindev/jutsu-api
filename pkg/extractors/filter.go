@@ -54,7 +54,6 @@ func ExtractFilter(params map[string]string, baseURL string) (FilterResult, erro
 		m["adultContent"] = strings.TrimSpace(e.ChildText(".tick-rate"))
 		res.Data = append(res.Data, m)
 	})
-	// pagination
 	c.OnHTML(`.pre-pagination nav .pagination > .page-item a[title="Last"]`, func(e *colly.HTMLElement) {
 		res.TotalPage = atoiOr(strings.Split(lastSegment(e.Attr("href")), "page=")[1], 1)
 	})

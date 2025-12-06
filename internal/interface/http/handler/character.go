@@ -47,7 +47,6 @@ func (h *CharacterHandler) GetCharacter(c *fiber.Ctx) error {
 	cacheKey := fmt.Sprintf("character:%s", id)
 	ctx := c.Context()
 
-	// Check if cached (for response field)
 	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryCharacter, cacheKey)
 	wasCached := (cacheErr == nil)
 
@@ -61,7 +60,6 @@ func (h *CharacterHandler) GetCharacter(c *fiber.Ctx) error {
 				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch character: %v", err))
 			}
 
-			// Check if data is empty
 			if len(character.Results.Data) == 0 {
 				return nil, fiber.NewError(fiber.StatusNotFound, "character not found")
 			}
@@ -70,7 +68,6 @@ func (h *CharacterHandler) GetCharacter(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}

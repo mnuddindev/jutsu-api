@@ -61,7 +61,6 @@ func ExtractVoiceActorPage(id string, page int, baseURL string) (VoiceActorPageR
 		}
 		out.TotalPages = pageNum
 
-		// Characters & Voice Actors
 		doc.Find(".bac-list-wrap .bac-item").Each(func(_ int, charSel *goquery.Selection) {
 			var item CharactersVoiceActors
 

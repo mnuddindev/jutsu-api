@@ -37,7 +37,6 @@ func ExtractWatchlist(userID string, page int, baseURL string) (WatchlistResult,
 	var out WatchlistResult
 	url := fmt.Sprintf("https://%s/community/user/%s/watch-list?page=%d", baseURL, userID, page)
 
-	// total pages via Last/Next/Active
 	c.OnHTML(`.pre-pagination nav .pagination > .page-item a[title="Last"]`, func(e *colly.HTMLElement) {
 		if href := e.Attr("href"); href != "" {
 			parts := strings.Split(href, "=")

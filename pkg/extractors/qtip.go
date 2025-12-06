@@ -68,7 +68,6 @@ func ExtractQtip(id string, baseURL string) (QtipData, error) {
 	if errVisit != nil {
 		return QtipData{}, errVisit
 	}
-	// Ensure genres non-nil for JSON
 	if out.Genres == nil {
 		out.Genres = []string{}
 	}

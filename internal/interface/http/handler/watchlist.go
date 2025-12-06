@@ -56,7 +56,6 @@ func (h *WatchlistHandler) GetWatchlist(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch watchlist: %v", err))
 	}
 
-	// Restructure response format
 	watchlistData := make([]map[string]interface{}, 0, len(result.Watchlist))
 	for _, item := range result.Watchlist {
 		watchlistData = append(watchlistData, map[string]interface{}{

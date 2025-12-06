@@ -43,7 +43,6 @@ func (h *ServersHandler) GetServers(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "query parameter 'ep' is required")
 	}
 
-	// Generate cache key
 	cacheKey := fmt.Sprintf("servers:%s", episodeID)
 	ctx := c.Context()
 
@@ -61,7 +60,6 @@ func (h *ServersHandler) GetServers(c *fiber.Ctx) error {
 				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch servers: %v", err))
 			}
 
-			// Return empty array instead of nil
 			if servers == nil {
 				servers = []extractors.ServerItem{}
 			}
@@ -70,7 +68,6 @@ func (h *ServersHandler) GetServers(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}

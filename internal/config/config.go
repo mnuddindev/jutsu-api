@@ -102,9 +102,7 @@ var Cfg *Config
 
 // LoadConfig loads configuration from environment variables and config files
 func LoadConfig() (*Config, error) {
-	// Load .env file if it exists
 	if err := godotenv.Load(); err != nil {
-		// .env file is optional
 		fmt.Println("No .env file found, using environment variables")
 	}
 

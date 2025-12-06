@@ -19,14 +19,11 @@ var SugaredLogger *zap.SugaredLogger
 func InitLogger(cfg *config.LoggerConfig) error {
 	var encoderConfig zapcore.EncoderConfig
 
-	// Always use console encoder for better readability
-	// JSON encoding only for file output in production
 	if config.Cfg.IsProduction() {
 		encoderConfig = zap.NewProductionEncoderConfig()
 		encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 		encoderConfig.EncodeLevel = zapcore.LowercaseLevelEncoder
 	} else {
-		// Development: Use colorful, readable console output
 		encoderConfig = zap.NewDevelopmentEncoderConfig()
 		encoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05")
 		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
@@ -37,17 +34,14 @@ func InitLogger(cfg *config.LoggerConfig) error {
 	var consoleEncoder zapcore.Encoder
 	var fileEncoder zapcore.Encoder
 
-	// Console always uses console encoder for readability
 	consoleEncoder = zapcore.NewConsoleEncoder(encoderConfig)
 
-	// File uses JSON in production, console in development
 	if cfg.Encoding == "json" || config.Cfg.IsProduction() {
 		fileEncoder = zapcore.NewJSONEncoder(encoderConfig)
 	} else {
 		fileEncoder = zapcore.NewConsoleEncoder(encoderConfig)
 	}
 
-	// Set log level
 	var level zapcore.Level
 	switch strings.ToLower(cfg.Level) {
 	case "debug":
@@ -66,15 +60,12 @@ func InitLogger(cfg *config.LoggerConfig) error {
 		level = zapcore.InfoLevel
 	}
 
-	// Setup writers
 	var cores []zapcore.Core
 
-	// Console output (stdout) - always use console encoder for readability
 	consoleWriter := zapcore.AddSync(os.Stdout)
 	consoleCore := zapcore.NewCore(consoleEncoder, consoleWriter, level)
 	cores = append(cores, consoleCore)
 
-	// File output for production (if specified)
 	if cfg.OutputPath != "stdout" && cfg.OutputPath != "" {
 		fileWriter := zapcore.AddSync(&lumberjack.Logger{
 			Filename:   cfg.OutputPath,
@@ -88,7 +79,6 @@ func InitLogger(cfg *config.LoggerConfig) error {
 		cores = append(cores, fileCore)
 	}
 
-	// Error file output (if specified and different from output path)
 	if cfg.ErrorPath != "stderr" && cfg.ErrorPath != "" && cfg.ErrorPath != cfg.OutputPath {
 		errorWriter := zapcore.AddSync(&lumberjack.Logger{
 			Filename:   cfg.ErrorPath,
@@ -105,10 +95,8 @@ func InitLogger(cfg *config.LoggerConfig) error {
 		cores = append(cores, errorCore)
 	}
 
-	// Combine cores
 	core := zapcore.NewTee(cores...)
 
-	// Build logger
 	Logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 	if config.Cfg.IsDevelopment() {
 		Logger = Logger.WithOptions(zap.Development())
@@ -163,7 +151,6 @@ func WithFields(fields ...zap.Field) *zap.Logger {
 
 // LogRequest logs HTTP request details with better formatting
 func LogRequest(method, path string, statusCode int, latency time.Duration, err error) {
-	// Skip logging for static assets like favicon.ico
 	if path == "/favicon.ico" {
 		return
 	}
@@ -179,7 +166,6 @@ func LogRequest(method, path string, statusCode int, latency time.Duration, err 
 		fields = append(fields, zap.Error(err))
 		Error("HTTP Request Failed", fields...)
 	} else {
-		// Color code status codes
 		if statusCode >= 200 && statusCode < 300 {
 			Info("✓ HTTP Request", fields...)
 		} else if statusCode >= 300 && statusCode < 400 {

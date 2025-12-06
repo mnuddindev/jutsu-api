@@ -58,7 +58,6 @@ func NewSearchHandler(cacheManager *cache.Manager) *SearchHandler {
 func (h *SearchHandler) Search(c *fiber.Ctx) error {
 	params := make(map[string]string)
 
-	// Extract all possible query parameters
 	if keyword := strings.TrimSpace(c.Query("keyword")); keyword != "" {
 		params["keyword"] = keyword
 	}
@@ -114,7 +113,6 @@ func (h *SearchHandler) Search(c *fiber.Ctx) error {
 		params["page"] = strconv.Itoa(page)
 	}
 
-	// Generate cache key from params
 	cacheKey := h.generateSearchCacheKey(params)
 	ctx := c.Context()
 
@@ -147,7 +145,6 @@ func (h *SearchHandler) Search(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}
@@ -172,7 +169,6 @@ func (h *SearchHandler) generateSearchCacheKey(params map[string]string) string 
 			key += fmt.Sprintf("%s:%s:", k, v)
 		}
 	}
-	// Hash the key to ensure it's not too long
 	hash := md5.Sum([]byte(key))
 	return fmt.Sprintf("search:%s", hex.EncodeToString(hash[:]))
 }

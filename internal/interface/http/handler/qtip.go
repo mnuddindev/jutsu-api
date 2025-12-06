@@ -63,7 +63,6 @@ func (h *QtipHandler) GetQtip(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}

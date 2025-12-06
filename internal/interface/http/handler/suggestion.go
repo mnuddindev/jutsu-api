@@ -44,10 +44,8 @@ func (h *SuggestionHandler) GetSuggestions(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "query parameter 'keyword' is required")
 	}
 
-	// URL encode the keyword
 	encodedKeyword := url.QueryEscape(keyword)
 
-	// Generate cache key
 	cacheKey := fmt.Sprintf("suggestion:%s", encodedKeyword)
 	ctx := c.Context()
 
@@ -64,7 +62,6 @@ func (h *SuggestionHandler) GetSuggestions(c *fiber.Ctx) error {
 				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch suggestions: %v", err))
 			}
 
-			// Return empty array instead of nil
 			if suggestions == nil {
 				suggestions = []extractors.SuggestionItem{}
 			}
@@ -73,7 +70,6 @@ func (h *SuggestionHandler) GetSuggestions(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}

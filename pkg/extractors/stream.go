@@ -65,7 +65,6 @@ type StreamingInfo struct {
 }
 
 func ExtractStreamingInfo(fullID, name, typ string, fallback bool, baseURL string) (StreamingInfo, error) {
-	// Extract just the episode ID from the full format (anime-id?ep=episode-id)
 	episodeID := extractEpisodeID(fullID)
 	if episodeID == "" {
 		return StreamingInfo{}, fmt.Errorf("invalid ID format, expected 'anime-id?ep=episode-id'")
@@ -86,14 +85,11 @@ func ExtractStreamingInfo(fullID, name, typ string, fallback bool, baseURL strin
 		streamType = "sub"
 	}
 
-	// Match server by both name AND type
 	selected := findServerMatchByType(servers, requestedServer, streamType)
-	// If no match, try with "raw" type
 	if selected == nil {
 		selected = findServerMatchByType(servers, requestedServer, "raw")
 	}
 
-	// If no server match found, return servers only
 	if selected == nil {
 		if fallback {
 			return StreamingInfo{Servers: servers}, fmt.Errorf("no matching server found for name: %s, type: %s", requestedServer, streamType)
@@ -107,7 +103,6 @@ func ExtractStreamingInfo(fullID, name, typ string, fallback bool, baseURL strin
 		serverName = requestedServer
 	}
 
-	// Extract episode ID for fallback case (needs just episode ID, not full format)
 	episodeIDOnly := extractEpisodeID(fullID)
 	if episodeIDOnly == "" {
 		return StreamingInfo{Servers: servers}, fmt.Errorf("failed to extract episode ID from: %s", fullID)
@@ -122,7 +117,6 @@ func ExtractStreamingInfo(fullID, name, typ string, fallback bool, baseURL strin
 	return StreamingInfo{StreamingLink: stream, Servers: servers}, nil
 }
 
-// extractEpisodeID extracts the episode ID from format "anime-id?ep=episode-id"
 func extractEpisodeID(fullID string) string {
 	parts := strings.Split(fullID, "?ep=")
 	if len(parts) < 2 {
@@ -161,19 +155,10 @@ func findServerMatchByType(servers []ServerItem, name, typ string) *ServerItem {
 }
 
 func resolveStreamingLink(fullEpisodeID, episodeIDOnly, serverID, serverName, typ string, useFallback bool) (parsers.DecryptedSources, error) {
-	// fullEpisodeID is the full format (anime-id?ep=episode-id) - used for primary path
-	// episodeIDOnly is just the episode ID (e.g., "107257") - used for fallback path
-	// serverID is the data_id from the matched server
-	// For fallback, serverID is not required (decryptFallback doesn't use it)
 	if !useFallback && strings.TrimSpace(serverID) == "" {
 		return parsers.DecryptedSources{}, fmt.Errorf("missing server id for %s", serverName)
 	}
 
-	// Use v1 decryptor
-	// For fallback: epID should be just the episode ID (e.g., "107257"), serverID can be empty
-	// For primary: epID is not used, only the serverID (data_id) is used
-	// Calls: decryptSources_v1(id, requestedServer[0].data_id, name, type, fallback)
-	// where id is the full format (anime-id?ep=episode-id) for primary, but just episode ID for fallback
 	if useFallback {
 		return decryptSourcesV1Fn(episodeIDOnly, serverID, serverName, typ, useFallback)
 	}

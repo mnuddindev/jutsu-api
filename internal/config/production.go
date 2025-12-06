@@ -2,21 +2,17 @@ package config
 
 // ProductionConfig holds production-specific optimizations
 type ProductionConfig struct {
-	// Performance optimizations
 	EnablePrefork      bool
 	EnableCompression  bool
 	EnableETag         bool
 	MaxRequestBodySize int
 
-	// Security settings
 	EnableTrustedProxy bool
 	TrustedProxies     []string
 
-	// Monitoring
 	EnableMetrics bool
 	MetricsPath   string
 
-	// Rate limiting
 	EnableRateLimit bool
 	RateLimitRPS    int
 }

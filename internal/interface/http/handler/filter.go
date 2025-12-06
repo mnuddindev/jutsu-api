@@ -58,7 +58,6 @@ func NewFilterHandler(cacheManager *cache.Manager) *FilterHandler {
 func (h *FilterHandler) Filter(c *fiber.Ctx) error {
 	params := make(map[string]string)
 
-	// Extract all possible query parameters (only include non-empty values)
 	if typ := strings.TrimSpace(c.Query("type")); typ != "" {
 		params["type"] = typ
 	}
@@ -114,7 +113,6 @@ func (h *FilterHandler) Filter(c *fiber.Ctx) error {
 		params["page"] = strconv.Itoa(page)
 	}
 
-	// Generate cache key from params
 	cacheKey := h.generateFilterCacheKey(params)
 	ctx := c.Context()
 
@@ -149,7 +147,6 @@ func (h *FilterHandler) Filter(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}
@@ -174,7 +171,6 @@ func (h *FilterHandler) generateFilterCacheKey(params map[string]string) string 
 			key += fmt.Sprintf("%s:%s:", k, v)
 		}
 	}
-	// Hash the key to ensure it's not too long
 	hash := md5.Sum([]byte(key))
 	return fmt.Sprintf("filter:%s", hex.EncodeToString(hash[:]))
 }

@@ -31,7 +31,6 @@ func ExtractRecommendedData(id, baseURL string) ([]RecommendItem, error) {
 		it.Title = strings.TrimSpace(e.ChildText(".film-detail .film-name a"))
 		it.JapaneseTitle = strings.TrimSpace(e.DOM.Find(".film-detail .film-name a").AttrOr("data-jname", ""))
 		it.Poster = e.ChildAttr(".film-poster img", "data-src")
-		// showType and duration
 		it.TVInfo = map[string]string{}
 		e.DOM.Find(".film-detail .fd-infor .fdi-item").Each(func(_ int, s *goquery.Selection) {
 			t := strings.ToLower(strings.TrimSpace(s.Text()))

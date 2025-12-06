@@ -43,20 +43,16 @@ func (h *AnimeInfoHandler) GetAnimeInfo(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "query parameter 'id' is required")
 	}
 
-	// Get context for cache operations
 	ctx := c.Context()
 
 	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryAnimeInfo, id)
 	wasCached := (cacheErr == nil)
 
-	// Use GetOrSet for optimal cache-aside pattern
-	// The cache manager handles the category prefix automatically
 	dataBytes, err := h.cacheManager.GetOrSet(
 		ctx,
 		cache.CategoryAnimeInfo,
 		id,
 		func() (interface{}, error) {
-			// Fetch anime info and seasons in parallel
 			animeInfo, err1 := extractors.ExtractAnimeInfo(id, h.baseHost)
 			seasons, err2 := extractors.ExtractSeasons(id, h.baseHost)
 
@@ -69,7 +65,6 @@ func (h *AnimeInfoHandler) GetAnimeInfo(c *fiber.Ctx) error {
 					fmt.Sprintf("failed to fetch seasons: %v", err2))
 			}
 
-			// Return structured data
 			return AnimeInfoResponse{
 				Data:    animeInfo,
 				Seasons: seasons,
@@ -78,16 +73,13 @@ func (h *AnimeInfoHandler) GetAnimeInfo(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors from the fetch function
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}
-		// Handle other errors
 		return fiber.NewError(fiber.StatusInternalServerError,
 			fmt.Sprintf("failed to process request: %v", err))
 	}
 
-	// Unmarshal the cached or fresh data
 	var responseData AnimeInfoResponse
 	if err := json.Unmarshal(dataBytes, &responseData); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError,

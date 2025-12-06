@@ -14,7 +14,7 @@ import (
 // Requires a background context for the operation.
 func GetCachedData(ctx context.Context, manager *cache.Manager, category cache.CacheCategory, key string, dest interface{}) error {
 	if !manager.IsEnabled() {
-		return nil // Silently skip if disabled
+		return nil
 	}
 
 	data, err := manager.Get(ctx, category, key)
@@ -29,7 +29,7 @@ func GetCachedData(ctx context.Context, manager *cache.Manager, category cache.C
 // Requires a background context for the operation.
 func SetCachedData(ctx context.Context, manager *cache.Manager, category cache.CacheCategory, key string, value interface{}) error {
 	if !manager.IsEnabled() {
-		return nil // Silently skip if disabled
+		return nil
 	}
 
 	return manager.Set(ctx, category, key, value)

@@ -42,17 +42,15 @@ func NewScheduleHandler(cacheManager *cache.Manager) *ScheduleHandler {
 func (h *ScheduleHandler) GetSchedule(c *fiber.Ctx) error {
 	date := strings.TrimSpace(c.Query("date"))
 	if date == "" {
-		// Default to today's date
 		date = time.Now().Format("2006-01-02")
 	}
 
 	tzOffsetParam := c.Query("tzOffset", "-330")
 	tzOffset, err := strconv.Atoi(tzOffsetParam)
 	if err != nil {
-		tzOffset = -330 // Default timezone offset
+		tzOffset = -330
 	}
 
-	// Generate cache key
 	cacheKey := fmt.Sprintf("schedule:%s:%d", date, tzOffset)
 	ctx := c.Context()
 
@@ -73,7 +71,6 @@ func (h *ScheduleHandler) GetSchedule(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}

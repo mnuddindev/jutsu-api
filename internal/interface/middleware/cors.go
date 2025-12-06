@@ -11,30 +11,24 @@ import (
 
 // SetupCORS configures CORS middleware
 func SetupCORS(cfg *config.CorsConfig) fiber.Handler {
-	// Parse allowed methods
 	methods := strings.Split(cfg.AllowMethods, ",")
 	for i, method := range methods {
 		methods[i] = strings.TrimSpace(method)
 	}
 
-	// Parse allowed headers
 	headers := strings.Split(cfg.AllowHeaders, ",")
 	for i, header := range headers {
 		headers[i] = strings.TrimSpace(header)
 	}
 
-	// Parse exposed headers
 	exposedHeaders := strings.Split(cfg.ExposeHeaders, ",")
 	for i, header := range exposedHeaders {
 		exposedHeaders[i] = strings.TrimSpace(header)
 	}
 
-	// Handle wildcard origins
 	allowOrigins := strings.Join(cfg.AllowedOrigins, ",")
 	if len(cfg.AllowedOrigins) == 1 && cfg.AllowedOrigins[0] == "*" {
-		// If wildcard is used, credentials must be false
 		if cfg.AllowCredentials {
-			// Force credentials to false when using wildcard
 			cfg.AllowCredentials = false
 		}
 	}

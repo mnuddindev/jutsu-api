@@ -18,7 +18,6 @@ type RateLimiterConfig struct {
 func NewRateLimiter(config RateLimiterConfig) fiber.Handler {
 	var storage fiber.Storage
 
-	// Use Redis storage if URL is provided
 	if config.RedisURL != "" {
 		storage = redis.New(redis.Config{
 			URL:   config.RedisURL,
@@ -31,7 +30,6 @@ func NewRateLimiter(config RateLimiterConfig) fiber.Handler {
 		Expiration: config.Expiration,
 		Storage:    storage,
 		KeyGenerator: func(c *fiber.Ctx) string {
-			// Use IP address as the key
 			return c.IP()
 		},
 		LimitReached: func(c *fiber.Ctx) error {
@@ -63,7 +61,6 @@ func NewAPIKeyRateLimiter(config RateLimiterConfig) fiber.Handler {
 		Expiration: config.Expiration,
 		Storage:    storage,
 		KeyGenerator: func(c *fiber.Ctx) string {
-			// Use API key from header, fallback to IP
 			apiKey := c.Get("X-API-Key")
 			if apiKey != "" {
 				return "api_key:" + apiKey
@@ -88,25 +85,20 @@ func RateLimitByEndpoint() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		path := c.Path()
 
-		// Define rate limits per endpoint type
 		var max int
 		var expiration time.Duration
 
 		switch {
 		case path == "/api/" || path == "/api/home":
-			// Home endpoint - stricter limit
 			max = 30
 			expiration = 1 * time.Minute
 		case path == "/api/search" || path == "/api/search/suggest":
-			// Search endpoints - moderate limit
 			max = 60
 			expiration = 1 * time.Minute
 		case path == "/api/stream" || path == "/api/stream/fallback":
-			// Streaming endpoints - more generous
 			max = 100
 			expiration = 1 * time.Minute
 		default:
-			// Default rate limit for all other endpoints
 			max = 100
 			expiration = 1 * time.Minute
 		}

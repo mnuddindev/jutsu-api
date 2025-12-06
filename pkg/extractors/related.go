@@ -20,7 +20,6 @@ func ExtractRelatedData(id, baseURL string) ([]SidebarItem, error) {
 		it.Title = strings.TrimSpace(e.ChildText(".film-detail .film-name a"))
 		it.JapaneseTitle = strings.TrimSpace(e.DOM.Find(".film-detail .film-name a").AttrOr("data-jname", ""))
 		it.Poster = firstNonEmpty(e.ChildAttr(".film-poster img", "data-src"), e.ChildAttr(".film-poster img", "src"))
-		// showType
 		showTypeText := strings.ToLower(strings.TrimSpace(e.DOM.Find(".tick").Text()))
 		it.TVInfo = map[string]string{}
 		for _, typ := range []string{"TV", "ONA", "Movie", "OVA", "Special"} {

@@ -62,13 +62,11 @@ func (h *StreamHandler) GetStreamFallback(c *fiber.Ctx) error {
 }
 
 func (h *StreamHandler) handleStreamRequest(c *fiber.Ctx, fallback bool) error {
-	// Get anime ID from path parameter
 	animeID := strings.TrimSpace(c.Params("id"))
 	if animeID == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "path parameter 'id' is required")
 	}
 
-	// Get episode ID from query parameter
 	episodeID := strings.TrimSpace(c.Query("ep"))
 	if episodeID == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "query parameter 'ep' is required")
@@ -77,8 +75,6 @@ func (h *StreamHandler) handleStreamRequest(c *fiber.Ctx, fallback bool) error {
 	serverName := c.Query("server")
 	streamType := c.Query("type")
 
-	// Build full ID format: anime-id?ep=episode-id
-	// The extractor will extract just the episode ID for servers, but use full format for decryption
 	fullID := fmt.Sprintf("%s?ep=%s", animeID, episodeID)
 
 	streamInfo, err := extractors.ExtractStreamingInfo(fullID, serverName, streamType, fallback, h.baseHost)
@@ -90,7 +86,6 @@ func (h *StreamHandler) handleStreamRequest(c *fiber.Ctx, fallback bool) error {
 		return fiber.NewError(status, fmt.Sprintf("failed to resolve streaming info: %v", err))
 	}
 
-	// Transform response to match expected format
 	response := h.transformStreamResponse(streamInfo)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -111,17 +106,14 @@ func (h *StreamHandler) generateStreamCacheKey(animeID, episodeID, serverName, s
 	if fallback {
 		key += ":fallback"
 	}
-	// Hash the key to ensure it's not too long
 	hash := md5.Sum([]byte(key))
 	return fmt.Sprintf("stream:%s", hex.EncodeToString(hash[:]))
 }
 
 // transformStreamResponse transforms the extractor response to match the expected API format
 func (h *StreamHandler) transformStreamResponse(streamInfo extractors.StreamingInfo) map[string]interface{} {
-	// Transform streamingLink to array format
 	streamingLinkArray := []interface{}{}
 	if streamInfo.StreamingLink.ID != "" || streamInfo.StreamingLink.Link.File != "" {
-		// Convert ID to number if possible
 		var idNum interface{} = streamInfo.StreamingLink.ID
 		if idNumStr, err := parseNumber(streamInfo.StreamingLink.ID); err == nil {
 			idNum = idNumStr
@@ -139,10 +131,8 @@ func (h *StreamHandler) transformStreamResponse(streamInfo extractors.StreamingI
 		streamingLinkArray = append(streamingLinkArray, streamingLinkItem)
 	}
 
-	// Transform servers to match expected format
 	serversArray := []map[string]interface{}{}
 	for _, server := range streamInfo.Servers {
-		// Convert data_id, server_id to numbers if possible
 		var dataIDNum interface{} = server.DataID
 		var serverIDNum interface{} = server.ServerID
 		if num, err := parseNumber(server.DataID); err == nil {
@@ -168,11 +158,9 @@ func (h *StreamHandler) transformStreamResponse(streamInfo extractors.StreamingI
 
 // parseNumber attempts to parse a string as a number (int or float)
 func parseNumber(s string) (interface{}, error) {
-	// Try parsing as int first
 	if i, err := strconv.Atoi(s); err == nil {
 		return i, nil
 	}
-	// Try parsing as float
 	if f, err := strconv.ParseFloat(s, 64); err == nil {
 		return f, nil
 	}

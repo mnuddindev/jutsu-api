@@ -56,10 +56,8 @@ func NewCategoryHandler(cacheManager *cache.Manager) *CategoryHandler {
 // @Router       /az-list [get]
 // @Router       /az-list/{letter} [get]
 func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
-	// Extract route type from path (e.g., "/api/genre/action" -> "genre/action")
 	path := c.Path()
 	routeType := strings.TrimPrefix(path, "/api/")
-	// Handle martial-arts typo fix
 	if routeType == "genre/martial-arts" {
 		routeType = "genre/marial-arts"
 	}
@@ -73,7 +71,6 @@ func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
 	cacheKey := fmt.Sprintf("%s_page_%d", strings.ReplaceAll(routeType, "/", "_"), page)
 	ctx := c.Context()
 
-	// Check if cached (for response field)
 	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryGenre, cacheKey)
 	wasCached := (cacheErr == nil)
 
@@ -98,7 +95,6 @@ func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}

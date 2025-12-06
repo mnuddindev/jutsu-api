@@ -50,11 +50,9 @@ func (h *HomeHandler) GetHomeInfo(c *fiber.Ctx) error {
 		cache.CategoryHome,
 		cacheKey,
 		func() (interface{}, error) {
-			// Get current date in YYYY-MM-DD format
 			now := time.Now()
 			dateStr := now.Format("2006-01-02")
 
-			// Extract genres from route types
 			routeTypes := []string{
 				"genre/action", "genre/adventure", "genre/cars", "genre/comedy", "genre/dementia",
 				"genre/demons", "genre/drama", "genre/ecchi", "genre/fantasy", "genre/game",
@@ -71,13 +69,11 @@ func (h *HomeHandler) GetHomeInfo(c *fiber.Ctx) error {
 				genres = append(genres, strings.Replace(rt, "genre/", "", 1))
 			}
 
-			// Fetch all data in parallel
 			spotlights, err1 := extractors.ExtractSpotlights(h.baseHost)
 			trending, err2 := extractors.ExtractTrending(h.baseHost)
 			topTen, err3 := extractors.ExtractTopTen(h.baseHost)
 			schedule, err4 := extractors.ExtractSchedule(dateStr, -330, h.baseHost)
 
-			// Extract category pages
 			topAiringItems, _, err5 := helper.ExtractPage(1, "top-airing", h.baseHost)
 			mostPopularItems, _, err6 := helper.ExtractPage(1, "most-popular", h.baseHost)
 			mostFavoriteItems, _, err7 := helper.ExtractPage(1, "most-favorite", h.baseHost)
@@ -86,7 +82,6 @@ func (h *HomeHandler) GetHomeInfo(c *fiber.Ctx) error {
 			topUpcomingItems, _, err10 := helper.ExtractPage(1, "top-upcoming", h.baseHost)
 			recentlyAddedItems, _, err11 := helper.ExtractPage(1, "recently-added", h.baseHost)
 
-			// Check for errors
 			if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
 				return nil, fiber.NewError(fiber.StatusBadGateway, "failed to fetch home data")
 			}
@@ -94,7 +89,6 @@ func (h *HomeHandler) GetHomeInfo(c *fiber.Ctx) error {
 				return nil, fiber.NewError(fiber.StatusBadGateway, "failed to fetch category data")
 			}
 
-			// Extract first item from category results
 			var topAiringData, mostPopularData, mostFavoriteData, latestCompletedData, latestEpisodeData, topUpcomingData, recentlyAddedData interface{}
 			if items, ok := topAiringItems.([]scrape.ExtractedItem); ok && len(items) > 0 {
 				topAiringData = items[0]
@@ -136,14 +130,12 @@ func (h *HomeHandler) GetHomeInfo(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	// Unmarshal response
 	var responseData map[string]interface{}
 	if err := json.Unmarshal(dataBytes, &responseData); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to parse response data")

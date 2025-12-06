@@ -22,10 +22,8 @@ var (
 
 // InitValidator initializes the validator
 func InitValidator() error {
-	// Create validator instance
 	Validate = validator.New()
 
-	// Register custom tag name function to use json tags
 	Validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
 		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
 		if name == "-" {
@@ -39,12 +37,10 @@ func InitValidator() error {
 	uni := ut.New(en, en)
 	Translator, _ = uni.GetTranslator("en")
 
-	// Register default translations
 	if err := enTranslations.RegisterDefaultTranslations(Validate, Translator); err != nil {
 		return fmt.Errorf("failed to register default translations: %w", err)
 	}
 
-	// Register custom validators
 	registerCustomValidators()
 
 	return nil

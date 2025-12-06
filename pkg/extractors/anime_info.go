@@ -162,7 +162,6 @@ func ExtractAnimeInfo(id, baseURL string) (AnimeInfo, error) {
 		}
 	}
 
-	// Recommended/related/popular (reuse existing extractors)
 	recommended, _ := ExtractRecommendedData(id, baseURL)
 	related, _ := ExtractRelatedData(id, baseURL)
 	popular, _ := ExtractPopularData(id, baseURL)

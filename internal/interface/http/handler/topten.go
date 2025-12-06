@@ -68,7 +68,6 @@ func (h *TopTenHandler) GetTopTen(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}
@@ -80,8 +79,6 @@ func (h *TopTenHandler) GetTopTen(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError,
 			fmt.Sprintf("failed to parse top ten data: %v", err))
 	}
-
-	// If no cache or invalid cache, fetch fresh data
 
 	return c.JSON(fiber.Map{
 		"success": true,

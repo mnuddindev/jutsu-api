@@ -54,7 +54,6 @@ func (h *CharacterListHandler) GetVoiceActors(c *fiber.Ctx) error {
 	cacheKey := fmt.Sprintf("character_list:%s:%d", id, page)
 	ctx := c.Context()
 
-	// Check if cached (for response field)
 	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryCharacter, cacheKey)
 	wasCached := (cacheErr == nil)
 
@@ -83,7 +82,6 @@ func (h *CharacterListHandler) GetVoiceActors(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		// Handle Fiber errors
 		if fErr, ok := err.(*fiber.Error); ok {
 			return fErr
 		}

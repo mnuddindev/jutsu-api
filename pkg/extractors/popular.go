@@ -31,7 +31,6 @@ func ExtractPopularData(id, baseURL string) ([]SidebarItem, error) {
 		it.Title = strings.TrimSpace(e.ChildText(".film-detail .film-name a"))
 		it.JapaneseTitle = strings.TrimSpace(e.DOM.Find(".film-detail .film-name a").AttrOr("data-jname", ""))
 		it.Poster = firstNonEmpty(e.ChildAttr(".film-poster img", "data-src"), e.ChildAttr(".film-poster img", "src"))
-		// showType
 		showTypeText := strings.ToLower(strings.TrimSpace(e.DOM.Find(".tick").Text()))
 		it.TVInfo = map[string]string{}
 		for _, typ := range []string{"TV", "ONA", "Movie", "OVA", "Special"} {
@@ -43,7 +42,6 @@ func ExtractPopularData(id, baseURL string) ([]SidebarItem, error) {
 		if it.TVInfo["showType"] == "" {
 			it.TVInfo["showType"] = "Unknown"
 		}
-		// sub/dub/eps
 		for _, k := range []string{"sub", "dub", "eps"} {
 			v := strings.TrimSpace(e.DOM.Find(".tick-item.tick-" + k).Text())
 			if v != "" {

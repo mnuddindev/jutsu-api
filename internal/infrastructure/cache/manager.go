@@ -54,8 +54,7 @@ type Manager struct {
 
 // Config holds cache configuration
 type Config struct {
-	Enabled bool
-	// TTL values in seconds
+	Enabled        bool
 	CharacterTTL   int
 	ActorTTL       int
 	StudioTTL      int
@@ -154,7 +153,7 @@ func (m *Manager) Get(ctx context.Context, category CacheCategory, key string) (
 // Set stores data in cache with appropriate TTL
 func (m *Manager) Set(ctx context.Context, category CacheCategory, key string, value interface{}) error {
 	if !m.enabled || m.client == nil {
-		return nil // Silently skip if cache disabled
+		return nil
 	}
 
 	data, err := json.Marshal(value)
@@ -170,7 +169,6 @@ func (m *Manager) Set(ctx context.Context, category CacheCategory, key string, v
 	fullKey := m.buildKey(category, key)
 	ttl := m.getTTL(category)
 
-	// Don't cache if TTL is 0
 	if ttl == 0 {
 		m.logger.Debug("skipping cache (TTL=0)",
 			zap.String("category", string(category)),
@@ -227,19 +225,16 @@ func (m *Manager) Delete(ctx context.Context, category CacheCategory, key string
 
 // GetOrSet gets from cache or sets if not exists (cache-aside pattern)
 func (m *Manager) GetOrSet(ctx context.Context, category CacheCategory, key string, fetchFn func() (interface{}, error)) ([]byte, error) {
-	// Try cache first
 	data, err := m.Get(ctx, category, key)
 	if err == nil {
 		return data, nil
 	}
 
-	// Cache miss - fetch data
 	value, err := fetchFn()
 	if err != nil {
 		return nil, err
 	}
 
-	// Store in cache (async, don't block response)
 	go func() {
 		if err := m.Set(context.Background(), category, key, value); err != nil {
 			m.logger.Error("async cache set failed",
@@ -250,7 +245,6 @@ func (m *Manager) GetOrSet(ctx context.Context, category CacheCategory, key stri
 		}
 	}()
 
-	// Return fresh data
 	return json.Marshal(value)
 }
 
@@ -317,7 +311,7 @@ func (m *Manager) getTTL(category CacheCategory) time.Duration {
 	if ttl, ok := m.ttls[category]; ok {
 		return ttl
 	}
-	return 1 * time.Hour // default fallback
+	return 1 * time.Hour
 }
 
 // IsEnabled returns whether caching is enabled
@@ -326,7 +320,6 @@ func (m *Manager) IsEnabled() bool {
 }
 
 // ported from old cache.go for hash operations
-
 // HSet sets a field in a hash, using the category key prefix.
 func (m *Manager) HSet(ctx context.Context, category CacheCategory, key, field string, value interface{}) error {
 	if !m.enabled || m.client == nil {
@@ -334,7 +327,6 @@ func (m *Manager) HSet(ctx context.Context, category CacheCategory, key, field s
 	}
 
 	fullKey := m.buildKey(category, key)
-	// Marshal value before setting (consistent with Set)
 	data, err := json.Marshal(value)
 	if err != nil {
 		m.logger.Error("cache HSet marshal error", zap.String("category", string(category)), zap.String("key", key), zap.Error(err))
@@ -534,7 +526,7 @@ func (m *Manager) TTL(ctx context.Context, category CacheCategory, key string) (
 // This uses the category's configured TTL.
 func (m *Manager) SetNX(ctx context.Context, category CacheCategory, key string, value interface{}) (bool, error) {
 	if !m.enabled || m.client == nil {
-		return false, nil // Operation assumed not to have occurred
+		return false, nil
 	}
 
 	data, err := json.Marshal(value)
@@ -550,7 +542,6 @@ func (m *Manager) SetNX(ctx context.Context, category CacheCategory, key string,
 	fullKey := m.buildKey(category, key)
 	ttl := m.getTTL(category)
 
-	// Don't execute if TTL is 0
 	if ttl == 0 {
 		return false, nil
 	}
@@ -656,36 +647,15 @@ func (m *Manager) GetString(ctx context.Context, category CacheCategory, key str
 // This is the correct, port-ready replacement for the old global cache.HealthCheck.
 func (m *Manager) Ping(ctx context.Context) error {
 	if !m.enabled || m.client == nil {
-		// Log an error if the manager is disabled or uninitialized
 		m.logger.Error("cache ping failed: client not initialized or disabled")
 		return fmt.Errorf("cache client is not initialized or disabled")
 	}
 
-	// Use the injected client and context to execute the PING command
 	if err := m.client.Ping(ctx).Err(); err != nil {
 		m.logger.Error("cache ping failed", zap.Error(err))
 		return fmt.Errorf("cache ping failed: %w", err)
 	}
 
 	m.logger.Debug("cache ping successful")
-	return nil
-}
-
-// HealthCheck is an alias for Ping for backwards compatibility
-// It checks if Redis is responding properly
-func (m *Manager) HealthCheck() error {
-	if !m.enabled || m.client == nil {
-		return fmt.Errorf("cache disabled or client not initialized")
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-
-	if err := m.client.Ping(ctx).Err(); err != nil {
-		m.logger.Error("cache health check failed", zap.Error(err))
-		return fmt.Errorf("cache health check failed: %w", err)
-	}
-
-	m.logger.Debug("cache health check passed")
 	return nil
 }
