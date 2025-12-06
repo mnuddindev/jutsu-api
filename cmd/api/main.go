@@ -102,9 +102,49 @@ func main() {
 	}
 
 	// Initialize cache (optional - app can run without it)
+	var cacheManager *cache.Manager
 	if err := cache.InitCache(&cfg.Redis); err != nil {
 		appLogger.Warn("Failed to initialize cache - continuing without cache", zap.Error(err))
+		// Create disabled cache manager
+		cacheManager = cache.NewManager(nil, appLogger.Logger, cache.Config{Enabled: false})
 	} else {
+		appLogger.Info("Cache initialized successfully")
+
+		// Get Redis client
+		redisClient := cache.GetRedisClient()
+
+		// Check if Redis is actually enabled by checking environment variable
+		redisEnabled := cfg.Redis.Enabled
+
+		// Create cache manager with TTL configuration from environment
+		cacheConfig := cache.Config{
+			Enabled:        redisEnabled,
+			CharacterTTL:   cfg.Cache.CharacterTTL,   // 24 hours
+			ActorTTL:       cfg.Cache.ActorTTL,       // 24 hours
+			StudioTTL:      cfg.Cache.StudioTTL,      // 24 hours
+			ProducerTTL:    cfg.Cache.ProducerTTL,    // 24 hours
+			AnimeInfoTTL:   cfg.Cache.AnimeInfoTTL,   // 6 hours
+			EpisodesTTL:    cfg.Cache.EpisodesTTL,    // 1 hour
+			QtipTTL:        cfg.Cache.QtipTTL,        // 6 hours
+			HomeTTL:        cfg.Cache.HomeTTL,        // 15 minutes
+			TopTenTTL:      cfg.Cache.TopTenTTL,      // 1 hour
+			TopSearchTTL:   cfg.Cache.TopSearchTTL,   // 1 hour
+			TopAiringTTL:   cfg.Cache.TopAiringTTL,   // 2 hours
+			GenreTTL:       cfg.Cache.GenreTTL,       // 4 hours
+			ScheduleTTL:    cfg.Cache.ScheduleTTL,    // 10 minutes
+			NextEpisodeTTL: cfg.Cache.NextEpisodeTTL, // 30 minutes
+			ServersTTL:     cfg.Cache.ServersTTL,     // 5 minutes
+			SearchTTL:      cfg.Cache.SearchTTL,      // 5 minutes
+			SuggestTTL:     cfg.Cache.SuggestTTL,     // 3 minutes
+			RandomTTL:      cfg.Cache.RandomTTL,      // 1 minute
+			StreamTTL:      cfg.Cache.StreamTTL,      // Don't cache
+		}
+
+		cacheManager = cache.NewManager(redisClient, appLogger.Logger, cacheConfig)
+		appLogger.Info("Cache manager initialized",
+			zap.Bool("enabled", redisEnabled),
+			zap.Int("anime_info_ttl", cacheConfig.AnimeInfoTTL))
+
 		defer func() {
 			if err := cache.CloseCache(); err != nil {
 				appLogger.Error("Failed to close cache", zap.Error(err))
@@ -135,7 +175,7 @@ func main() {
 	setupMiddleware(app, cfg)
 
 	// Setup routes
-	router.SetupRoutes(app)
+	router.SetupRoutes(app, cacheManager)
 
 	// Create a channel to receive OS signals
 	quit := make(chan os.Signal, 1)
@@ -151,6 +191,7 @@ func main() {
 
 	// Small delay to ensure Fiber startup message is printed
 	time.Sleep(100 * time.Millisecond)
+	appLogger.Info("Server started successfully", zap.String("address", addr))
 
 	// Wait for interrupt signal to gracefully shutdown the server
 	<-quit
@@ -179,7 +220,18 @@ func setupMiddleware(app *fiber.App, cfg *config.Config) {
 	// Request logger middleware
 	app.Use(middleware.RequestLogger())
 
-	// Add other middleware here as needed
+	// Rate limiting
+	if cfg.App.RateLimitEnabled {
+		// Apply to all API routes
+		app.Use("/api", middleware.NewRateLimiter(middleware.RateLimiterConfig{
+			Max: 100,
+		}))
+		appLogger.Info("Rate limiting enabled",
+			zap.Int("max", 100),
+			zap.Int("window_seconds", 60))
+	} else {
+		appLogger.Info("Rate limiting disabled")
+	}
 }
 
 // errorHandler is a custom error handler

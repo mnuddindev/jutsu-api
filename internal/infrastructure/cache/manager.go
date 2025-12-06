@@ -651,3 +651,41 @@ func (m *Manager) GetString(ctx context.Context, category CacheCategory, key str
 	)
 	return result, nil
 }
+
+// Ping checks the connection to Redis by executing the PING command.
+// This is the correct, port-ready replacement for the old global cache.HealthCheck.
+func (m *Manager) Ping(ctx context.Context) error {
+	if !m.enabled || m.client == nil {
+		// Log an error if the manager is disabled or uninitialized
+		m.logger.Error("cache ping failed: client not initialized or disabled")
+		return fmt.Errorf("cache client is not initialized or disabled")
+	}
+
+	// Use the injected client and context to execute the PING command
+	if err := m.client.Ping(ctx).Err(); err != nil {
+		m.logger.Error("cache ping failed", zap.Error(err))
+		return fmt.Errorf("cache ping failed: %w", err)
+	}
+
+	m.logger.Debug("cache ping successful")
+	return nil
+}
+
+// HealthCheck is an alias for Ping for backwards compatibility
+// It checks if Redis is responding properly
+func (m *Manager) HealthCheck() error {
+	if !m.enabled || m.client == nil {
+		return fmt.Errorf("cache disabled or client not initialized")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	if err := m.client.Ping(ctx).Err(); err != nil {
+		m.logger.Error("cache health check failed", zap.Error(err))
+		return fmt.Errorf("cache health check failed: %w", err)
+	}
+
+	m.logger.Debug("cache health check passed")
+	return nil
+}

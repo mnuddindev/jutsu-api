@@ -16,14 +16,16 @@ type Config struct {
 	Redis  RedisConfig
 	Logger LoggerConfig
 	Cors   CorsConfig
+	Cache  CacheConfig
 }
 
 // AppConfig holds application-level configuration
 type AppConfig struct {
-	Name        string
-	Version     string
-	Environment string
-	Debug       bool
+	Name             string
+	Version          string
+	Environment      string
+	Debug            bool
+	RateLimitEnabled bool
 }
 
 // ServerConfig holds server configuration
@@ -38,6 +40,7 @@ type ServerConfig struct {
 
 // RedisConfig holds Redis configuration
 type RedisConfig struct {
+	Enabled       bool
 	Host          string
 	Port          string
 	Password      string
@@ -71,6 +74,30 @@ type CorsConfig struct {
 	MaxAge           int
 }
 
+// CacheConfig holds cache TTl configuration
+type CacheConfig struct {
+	Enabled        bool
+	CharacterTTL   int
+	ActorTTL       int
+	StudioTTL      int
+	ProducerTTL    int
+	AnimeInfoTTL   int
+	EpisodesTTL    int
+	QtipTTL        int
+	HomeTTL        int
+	TopTenTTL      int
+	TopSearchTTL   int
+	TopAiringTTL   int
+	GenreTTL       int
+	ScheduleTTL    int
+	NextEpisodeTTL int
+	ServersTTL     int
+	SearchTTL      int
+	SuggestTTL     int
+	RandomTTL      int
+	StreamTTL      int
+}
+
 var Cfg *Config
 
 // LoadConfig loads configuration from environment variables and config files
@@ -89,10 +116,11 @@ func LoadConfig() (*Config, error) {
 
 	config := &Config{
 		App: AppConfig{
-			Name:        getString("APP_NAME", "Jutsu API"),
-			Version:     getString("APP_VERSION", "1.0.0"),
-			Environment: getString("APP_ENV", "development"),
-			Debug:       getBool("APP_DEBUG", false),
+			Name:             getString("APP_NAME", "Jutsu API"),
+			Version:          getString("APP_VERSION", "1.0.0"),
+			Environment:      getString("APP_ENV", "development"),
+			Debug:            getBool("APP_DEBUG", false),
+			RateLimitEnabled: getBool("RATE_LIMIT_ENABLED", true),
 		},
 		Server: ServerConfig{
 			Host:         getString("SERVER_HOST", "0.0.0.0"),
@@ -103,8 +131,9 @@ func LoadConfig() (*Config, error) {
 			Prefork:      getBool("SERVER_PREFORK", false),
 		},
 		Redis: RedisConfig{
+			Enabled:       getBool("REDIS_ENABLED", true),
 			Host:          getString("REDIS_HOST", "localhost"),
-			Port:          getString("REDIS_PORT", "6379"),
+			Port:          getString("REDIS_PORT", "10120"),
 			Password:      getString("REDIS_PASSWORD", ""),
 			DB:            getInt("REDIS_DB", 0),
 			MaxRetries:    getInt("REDIS_MAX_RETRIES", 3),
@@ -130,6 +159,28 @@ func LoadConfig() (*Config, error) {
 			AllowCredentials: getBool("CORS_ALLOW_CREDENTIALS", false),
 			ExposeHeaders:    getString("CORS_EXPOSE_HEADERS", "Content-Length"),
 			MaxAge:           getInt("CORS_MAX_AGE", 3600),
+		},
+		Cache: CacheConfig{
+			Enabled:        getBool("CACHE_ENABLED", true),
+			CharacterTTL:   getInt("CACHE_TTL_CHARACTER", 86400),
+			ActorTTL:       getInt("CACHE_TTL_ACTOR", 86400),
+			StudioTTL:      getInt("CACHE_TTL_STUDIO", 86400),
+			ProducerTTL:    getInt("CACHE_TTL_PRODUCER", 86400),
+			AnimeInfoTTL:   getInt("CACHE_TTL_ANIME_INFO", 21600),
+			EpisodesTTL:    getInt("CACHE_TTL_EPISODES", 3600),
+			QtipTTL:        getInt("CACHE_TTL_QTIP", 21600),
+			HomeTTL:        getInt("CACHE_TTL_HOME", 900),
+			TopTenTTL:      getInt("CACHE_TTL_TOP_TEN", 3600),
+			TopSearchTTL:   getInt("CACHE_TTL_TOP_SEARCH", 3600),
+			TopAiringTTL:   getInt("CACHE_TTL_TOP_AIRING", 7200),
+			GenreTTL:       getInt("CACHE_TTL_GENRE", 14400),
+			ScheduleTTL:    getInt("CACHE_TTL_SCHEDULE", 600),
+			NextEpisodeTTL: getInt("CACHE_TTL_NEXT_EPISODE", 1800),
+			ServersTTL:     getInt("CACHE_TTL_SERVERS", 300),
+			SearchTTL:      getInt("CACHE_TTL_SEARCH", 300),
+			SuggestTTL:     getInt("CACHE_TTL_SUGGEST", 180),
+			RandomTTL:      getInt("CACHE_TTL_RANDOM", 60),
+			StreamTTL:      getInt("CACHE_TTL_STREAM", 0),
 		},
 	}
 

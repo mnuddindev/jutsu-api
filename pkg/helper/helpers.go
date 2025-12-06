@@ -1,34 +1,38 @@
 package helper
 
 import (
-	"time"
+	"context"
+	"encoding/json"
 
 	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/scrape"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
-// Cache helpers using the app Redis cache
-
-// GetCachedData retrieves a cached value by key into dest.
-// If the key does not exist, dest is left untouched and nil is returned.
-func GetCachedData(key string, dest interface{}) error {
-	if cache.Client == nil {
-		return nil
+// GetCachedData retrieves a cached value by key into dest using the cache manager.
+// If the key does not exist, dest is left untouched and an error is returned.
+// Requires a background context for the operation.
+func GetCachedData(ctx context.Context, manager *cache.Manager, category cache.CacheCategory, key string, dest interface{}) error {
+	if !manager.IsEnabled() {
+		return nil // Silently skip if disabled
 	}
-	return cache.Get(key, dest)
+
+	data, err := manager.Get(ctx, category, key)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(data, dest)
 }
 
-// SetCachedData stores value at key with the provided ttl.
-// If ttl is zero, a default of 24h is used.
-func SetCachedData(key string, value interface{}, ttl time.Duration) error {
-	if cache.Client == nil {
-		return nil
+// SetCachedData stores value at key with the category's TTL using the cache manager.
+// Requires a background context for the operation.
+func SetCachedData(ctx context.Context, manager *cache.Manager, category cache.CacheCategory, key string, value interface{}) error {
+	if !manager.IsEnabled() {
+		return nil // Silently skip if disabled
 	}
-	if ttl <= 0 {
-		ttl = 24 * time.Hour
-	}
-	return cache.Set(key, value, ttl)
+
+	return manager.Set(ctx, category, key, value)
 }
 
 // Scraping helpers – thin wrappers around existing Go implementations.
