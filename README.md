@@ -102,8 +102,6 @@ go run cmd/api/main.go
 
 The API will be available at `http://localhost:8080`
 
-> 📖 For detailed setup instructions, see [SETUP.md](SETUP.md)
-
 ---
 
 ## ⚙️ Configuration
@@ -184,7 +182,7 @@ docker run -p 8080:8080 jutsu-api
 
 ### API Reference
 
-Complete API documentation is available in [docst/API.md](docs/API.md)
+Complete API documentation is available in [docs/API.md](docs/API.md)
 
 ## 📚 Documentation
 
@@ -194,7 +192,6 @@ The HTTP interface is fully described via Swagger:
 <<<<<<< HEAD
 =======
 - Files: `docs/swagger.json`, `docs/swagger.yaml`, `docs/docs.go`
->>>>>>> 3dc906b (🔧 Update Swagger UI link in README for accurate documentation access)
 
 ### GET Home info
 
