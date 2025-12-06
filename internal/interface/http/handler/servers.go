@@ -1,25 +1,28 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 // ServersHandler serves the available servers endpoint.
 type ServersHandler struct {
-	baseHost string
+	baseHost     string
+	cacheManager *cache.Manager
 }
 
 // NewServersHandler creates a ServersHandler configured with the v1 provider host.
-func NewServersHandler() *ServersHandler {
+func NewServersHandler(cacheManager *cache.Manager) *ServersHandler {
 	return &ServersHandler{
-		baseHost: utils.GetV1BaseHost(),
+		baseHost:     utils.GetV1BaseHost(),
+		cacheManager: cacheManager,
 	}
 }
 
@@ -42,32 +45,44 @@ func (h *ServersHandler) GetServers(c *fiber.Ctx) error {
 
 	// Generate cache key
 	cacheKey := fmt.Sprintf("servers:%s", episodeID)
+	ctx := c.Context()
 
-	// Try to get from cache
-	var cached []extractors.ServerItem
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && len(cached) > 0 {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
+	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryServers, cacheKey)
+	wasCached := (cacheErr == nil)
 
-	servers, err := extractors.ExtractServers(episodeID, h.baseHost)
+	dataBytes, err := h.cacheManager.GetOrSet(
+		ctx,
+		cache.CategoryServers,
+		cacheKey,
+		func() (interface{}, error) {
+
+			servers, err := extractors.ExtractServers(episodeID, h.baseHost)
+			if err != nil {
+				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch servers: %v", err))
+			}
+
+			// Return empty array instead of nil
+			if servers == nil {
+				servers = []extractors.ServerItem{}
+			}
+			return servers, nil
+		},
+	)
+
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch servers: %v", err))
+		// Handle Fiber errors
+		if fErr, ok := err.(*fiber.Error); ok {
+			return fErr
+		}
+		return fiber.NewError(500, err.Error())
 	}
 
-	// Return empty array instead of nil
-	if servers == nil {
-		servers = []extractors.ServerItem{}
-	}
-
-	// Cache the response
-	_ = helper.SetCachedData(cacheKey, servers, helper.ServersCacheTTL)
+	var result []extractors.ServerItem
+	json.Unmarshal(dataBytes, &result)
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": servers,
+		"cached":  wasCached,
+		"results": result,
 	})
 }

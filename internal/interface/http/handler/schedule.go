@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -8,20 +9,22 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 // ScheduleHandler serves the schedule endpoint.
 type ScheduleHandler struct {
-	baseHost string
+	baseHost     string
+	cacheManager *cache.Manager
 }
 
 // NewScheduleHandler creates a ScheduleHandler configured with the v1 provider host.
-func NewScheduleHandler() *ScheduleHandler {
+func NewScheduleHandler(cacheManager *cache.Manager) *ScheduleHandler {
 	return &ScheduleHandler{
-		baseHost: utils.GetV1BaseHost(),
+		baseHost:     utils.GetV1BaseHost(),
+		cacheManager: cacheManager,
 	}
 }
 
@@ -51,27 +54,38 @@ func (h *ScheduleHandler) GetSchedule(c *fiber.Ctx) error {
 
 	// Generate cache key
 	cacheKey := fmt.Sprintf("schedule:%s:%d", date, tzOffset)
+	ctx := c.Context()
 
-	// Try to get from cache
-	var cached interface{}
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
+	_, cacheErr := h.cacheManager.Get(ctx, cache.CategorySchedule, cacheKey)
+	wasCached := (cacheErr == nil)
 
-	schedule, err := extractors.ExtractSchedule(date, tzOffset, h.baseHost)
+	dataBytes, err := h.cacheManager.GetOrSet(
+		ctx,
+		cache.CategorySchedule,
+		cacheKey,
+		func() (interface{}, error) {
+			schedule, err := extractors.ExtractSchedule(date, tzOffset, h.baseHost)
+			if err != nil {
+				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch schedule: %v", err))
+			}
+			return schedule, nil
+		},
+	)
+
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch schedule: %v", err))
+		// Handle Fiber errors
+		if fErr, ok := err.(*fiber.Error); ok {
+			return fErr
+		}
+		return fiber.NewError(500, err.Error())
 	}
 
-	// Cache the response
-	_ = helper.SetCachedData(cacheKey, schedule, helper.ScheduleCacheTTL)
+	var result map[string]interface{}
+	json.Unmarshal(dataBytes, &result)
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": schedule,
+		"cached":  wasCached,
+		"results": result,
 	})
 }

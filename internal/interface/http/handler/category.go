@@ -1,26 +1,29 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 // CategoryHandler serves category/genre listing endpoints.
 type CategoryHandler struct {
-	baseHost string
+	baseHost     string
+	cacheManager *cache.Manager
 }
 
 // NewCategoryHandler creates a CategoryHandler configured with the v1 provider host.
-func NewCategoryHandler() *CategoryHandler {
+func NewCategoryHandler(cacheManager *cache.Manager) *CategoryHandler {
 	return &CategoryHandler{
-		baseHost: utils.GetV1BaseHost(),
+		baseHost:     utils.GetV1BaseHost(),
+		cacheManager: cacheManager,
 	}
 }
 
@@ -68,31 +71,46 @@ func (h *CategoryHandler) GetCategory(c *fiber.Ctx) error {
 	}
 
 	cacheKey := fmt.Sprintf("%s_page_%d", strings.ReplaceAll(routeType, "/", "_"), page)
-	var cached extractors.CategoryResult
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached.Data != nil {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
+	ctx := c.Context()
 
-	result, err := extractors.ExtractCategory(routeType, page, h.baseHost)
+	// Check if cached (for response field)
+	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryGenre, cacheKey)
+	wasCached := (cacheErr == nil)
+
+	dataBytes, err := h.cacheManager.GetOrSet(
+		ctx,
+		cache.CategoryGenre,
+		cacheKey,
+		func() (interface{}, error) {
+			result, err := extractors.ExtractCategory(routeType, page, h.baseHost)
+			if err != nil {
+				if strings.Contains(err.Error(), "exceeds total available pages") {
+					return nil, fiber.NewError(fiber.StatusNotFound, err.Error())
+				}
+				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to load category data: %v", err))
+			}
+
+			if result.TotalPages > 0 && page > result.TotalPages {
+				return nil, fiber.NewError(fiber.StatusNotFound, "requested page exceeds total available pages")
+			}
+			return result, nil
+		},
+	)
+
 	if err != nil {
-		if strings.Contains(err.Error(), "exceeds total available pages") {
-			return fiber.NewError(fiber.StatusNotFound, err.Error())
+		// Handle Fiber errors
+		if fErr, ok := err.(*fiber.Error); ok {
+			return fErr
 		}
-		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to load category data: %v", err))
+		return fiber.NewError(500, err.Error())
 	}
 
-	if result.TotalPages > 0 && page > result.TotalPages {
-		return fiber.NewError(fiber.StatusNotFound, "requested page exceeds total available pages")
-	}
-
-	_ = helper.SetCachedData(cacheKey, result, helper.CategoryCacheTTL)
+	var result extractors.CategoryResult
+	json.Unmarshal(dataBytes, &result)
 
 	return c.JSON(fiber.Map{
 		"success": true,
+		"cached":  wasCached,
 		"results": result,
 	})
 }

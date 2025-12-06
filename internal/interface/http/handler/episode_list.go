@@ -1,26 +1,29 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 // EpisodeListHandler serves the episode list endpoint.
 type EpisodeListHandler struct {
-	baseHost string
+	baseHost     string
+	cacheManager *cache.Manager
 }
 
 // NewEpisodeListHandler creates an EpisodeListHandler configured with the v1 provider host.
-func NewEpisodeListHandler() *EpisodeListHandler {
+func NewEpisodeListHandler(cacheManager *cache.Manager) *EpisodeListHandler {
 	return &EpisodeListHandler{
-		baseHost: utils.GetV1BaseHost(),
+		baseHost:     utils.GetV1BaseHost(),
+		cacheManager: cacheManager,
 	}
 }
 
@@ -43,26 +46,40 @@ func (h *EpisodeListHandler) GetEpisodes(c *fiber.Ctx) error {
 
 	// URL encode the id
 	encodedID := url.QueryEscape(id)
-
+	ctx := c.Context()
 	cacheKey := fmt.Sprintf("episodes_%s", encodedID)
-	var cached extractors.EpisodeList
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && len(cached.Episodes) > 0 {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
 
-	episodes, err := extractors.ExtractEpisodeList(encodedID, h.baseHost)
+	// Check if cached (for response field)
+	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryEpisodes, cacheKey)
+	wasCached := (cacheErr == nil)
+
+	dataBytes, err := h.cacheManager.GetOrSet(
+		ctx,
+		cache.CategoryEpisodes,
+		cacheKey,
+		func() (interface{}, error) {
+			episodes, err := extractors.ExtractEpisodeList(encodedID, h.baseHost)
+			if err != nil {
+				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch episodes: %v", err))
+			}
+			return episodes, nil
+		},
+	)
+
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch episodes: %v", err))
+		// Handle Fiber errors
+		if fErr, ok := err.(*fiber.Error); ok {
+			return fErr
+		}
+		return fiber.NewError(500, err.Error())
 	}
 
-	_ = helper.SetCachedData(cacheKey, episodes, helper.EpisodeListCacheTTL)
+	var result extractors.EpisodeList
+	json.Unmarshal(dataBytes, &result)
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": episodes,
+		"cached":  wasCached,
+		"results": result,
 	})
 }

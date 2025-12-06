@@ -8,7 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
@@ -52,18 +51,6 @@ func (h *WatchlistHandler) GetWatchlist(c *fiber.Ctx) error {
 		page = 1
 	}
 
-	cacheKey := fmt.Sprintf("watchlist:%s:%d", userID, page)
-
-	// Try to get from cache
-	var cached map[string]interface{}
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
-
 	result, err := extractors.ExtractWatchlist(userID, page, h.baseHost)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch watchlist: %v", err))
@@ -95,9 +82,6 @@ func (h *WatchlistHandler) GetWatchlist(c *fiber.Ctx) error {
 		"totalPages": result.TotalPages,
 		"data":       watchlistData,
 	}
-
-	// Cache the response
-	_ = helper.SetCachedData(cacheKey, responseData, helper.WatchlistCacheTTL)
 
 	return c.JSON(fiber.Map{
 		"success": true,

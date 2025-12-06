@@ -10,7 +10,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
@@ -78,19 +77,6 @@ func (h *StreamHandler) handleStreamRequest(c *fiber.Ctx, fallback bool) error {
 	serverName := c.Query("server")
 	streamType := c.Query("type")
 
-	// Generate cache key based on all parameters
-	cacheKey := h.generateStreamCacheKey(animeID, episodeID, serverName, streamType, fallback)
-
-	// Try to get from cache
-	var cached map[string]interface{}
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil && len(cached) > 0 {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
-
 	// Build full ID format: anime-id?ep=episode-id
 	// The extractor will extract just the episode ID for servers, but use full format for decryption
 	fullID := fmt.Sprintf("%s?ep=%s", animeID, episodeID)
@@ -106,13 +92,6 @@ func (h *StreamHandler) handleStreamRequest(c *fiber.Ctx, fallback bool) error {
 
 	// Transform response to match expected format
 	response := h.transformStreamResponse(streamInfo)
-
-	// Cache the response (only cache successful responses with data)
-	streamingLinks, _ := response["streamingLink"].([]interface{})
-	servers, _ := response["servers"].([]map[string]interface{})
-	if len(streamingLinks) > 0 || len(servers) > 0 {
-		_ = helper.SetCachedData(cacheKey, response, helper.StreamInfoCacheTTL)
-	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,

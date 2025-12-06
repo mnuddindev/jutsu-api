@@ -1,25 +1,28 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 // NextEpisodeScheduleHandler serves the next episode schedule endpoint.
 type NextEpisodeScheduleHandler struct {
-	baseHost string
+	baseHost     string
+	cacheManager *cache.Manager
 }
 
 // NewNextEpisodeScheduleHandler creates a NextEpisodeScheduleHandler configured with the v1 provider host.
-func NewNextEpisodeScheduleHandler() *NextEpisodeScheduleHandler {
+func NewNextEpisodeScheduleHandler(cacheManager *cache.Manager) *NextEpisodeScheduleHandler {
 	return &NextEpisodeScheduleHandler{
-		baseHost: utils.GetV1BaseHost(),
+		baseHost:     utils.GetV1BaseHost(),
+		cacheManager: cacheManager,
 	}
 }
 
@@ -41,31 +44,42 @@ func (h *NextEpisodeScheduleHandler) GetNextEpisodeSchedule(c *fiber.Ctx) error 
 	}
 
 	cacheKey := fmt.Sprintf("next_episode_schedule:%s", id)
+	ctx := c.Context()
 
-	// Try to get from cache
-	var cached interface{}
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
+	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryNextEpisode, cacheKey)
+	wasCached := (cacheErr == nil)
 
-	nextSchedule, err := extractors.ExtractNextEpisodeSchedule(id, h.baseHost)
+	dataBytes, err := h.cacheManager.GetOrSet(
+		ctx,
+		cache.CategoryNextEpisode,
+		cacheKey,
+		func() (interface{}, error) {
+			nextSchedule, err := extractors.ExtractNextEpisodeSchedule(id, h.baseHost)
+			if err != nil {
+				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch next episode schedule: %v", err))
+			}
+
+			responseData := fiber.Map{
+				"nextEpisodeSchedule": nextSchedule,
+			}
+			return responseData, nil
+		},
+	)
+
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch next episode schedule: %v", err))
+		// Handle Fiber errors
+		if fErr, ok := err.(*fiber.Error); ok {
+			return fErr
+		}
+		return fiber.NewError(500, err.Error())
 	}
 
-	responseData := fiber.Map{
-		"nextEpisodeSchedule": nextSchedule,
-	}
-
-	// Cache the response
-	_ = helper.SetCachedData(cacheKey, responseData, helper.NextEpisodeScheduleCacheTTL)
+	var result fiber.Map
+	json.Unmarshal(dataBytes, &result)
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": responseData,
+		"cached":  wasCached,
+		"results": result,
 	})
 }

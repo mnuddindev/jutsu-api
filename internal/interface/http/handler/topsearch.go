@@ -1,24 +1,27 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 // TopSearchHandler serves the top search endpoint.
 type TopSearchHandler struct {
-	baseHost string
+	baseHost     string
+	cacheManager *cache.Manager
 }
 
 // NewTopSearchHandler creates a TopSearchHandler configured with the v1 provider host.
-func NewTopSearchHandler() *TopSearchHandler {
+func NewTopSearchHandler(cacheManager *cache.Manager) *TopSearchHandler {
 	return &TopSearchHandler{
-		baseHost: utils.GetV1BaseHost(),
+		baseHost:     utils.GetV1BaseHost(),
+		cacheManager: cacheManager,
 	}
 }
 
@@ -33,27 +36,38 @@ func NewTopSearchHandler() *TopSearchHandler {
 // @Router       /top-search [get]
 func (h *TopSearchHandler) GetTopSearch(c *fiber.Ctx) error {
 	cacheKey := "top_search"
+	ctx := c.Context()
 
-	// Try to get from cache
-	var cached interface{}
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
+	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryTopSearch, cacheKey)
+	wasCached := (cacheErr == nil)
 
-	topSearch, err := extractors.ExtractTopSearch(h.baseHost)
+	dataBytes, err := h.cacheManager.GetOrSet(
+		ctx,
+		cache.CategoryTopSearch,
+		cacheKey,
+		func() (interface{}, error) {
+			topSearch, err := extractors.ExtractTopSearch(h.baseHost)
+			if err != nil {
+				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch top search: %v", err))
+			}
+			return topSearch, nil
+		},
+	)
+
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch top search: %v", err))
+		// Handle Fiber errors
+		if fErr, ok := err.(*fiber.Error); ok {
+			return fErr
+		}
+		return fiber.NewError(500, err.Error())
 	}
 
-	// Cache the response
-	_ = helper.SetCachedData(cacheKey, topSearch, helper.TopSearchCacheTTL)
+	var result interface{}
+	json.Unmarshal(dataBytes, &result)
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": topSearch,
+		"cached":  wasCached,
+		"results": result,
 	})
 }

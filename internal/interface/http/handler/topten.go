@@ -1,24 +1,27 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 // TopTenHandler serves the top ten anime endpoint.
 type TopTenHandler struct {
-	baseHost string
+	baseHost     string
+	cacheManager *cache.Manager
 }
 
 // NewTopTenHandler creates a TopTenHandler configured with the v1 provider host.
-func NewTopTenHandler() *TopTenHandler {
+func NewTopTenHandler(cacheManaer *cache.Manager) *TopTenHandler {
 	return &TopTenHandler{
-		baseHost: utils.GetV1BaseHost(),
+		baseHost:     utils.GetV1BaseHost(),
+		cacheManager: cacheManaer,
 	}
 }
 
@@ -33,44 +36,56 @@ func NewTopTenHandler() *TopTenHandler {
 // @Router       /top-ten [get]
 func (h *TopTenHandler) GetTopTen(c *fiber.Ctx) error {
 	cacheKey := "topTen"
+	ctx := c.Context()
 
-	// Try to get from cache first
-	var cached extractors.TopTenResult
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil {
-		// Check if we have valid cached data
-		hasData := false
-		if cached != nil {
-			for _, items := range cached {
-				if len(items) > 0 {
-					hasData = true
-					break
+	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryTopTen, cacheKey)
+	wasCached := (cacheErr == nil)
+
+	dataBytes, err := h.cacheManager.GetOrSet(
+		ctx,
+		cache.CategoryTopTen,
+		cacheKey,
+		func() (interface{}, error) {
+			topTen, err := extractors.ExtractTopTen(h.baseHost)
+			if err != nil {
+				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch top ten: %v", err))
+			}
+			hasData := false
+			if topTen != nil {
+				for _, items := range topTen {
+					if len(items) > 0 {
+						hasData = true
+						break
+					}
 				}
 			}
-		}
 
-		if hasData {
-			return c.JSON(fiber.Map{
-				"success": true,
-				"results": cached,
-				"cached":  true,
-			})
+			if !hasData {
+				return nil, fiber.NewError(fiber.StatusBadGateway, "no top ten data available")
+			}
+			return topTen, nil
+		},
+	)
+
+	if err != nil {
+		// Handle Fiber errors
+		if fErr, ok := err.(*fiber.Error); ok {
+			return fErr
 		}
+		return fiber.NewError(500, err.Error())
+	}
+
+	var result extractors.TopTenResult
+	if err := json.Unmarshal(dataBytes, &result); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError,
+			fmt.Sprintf("failed to parse top ten data: %v", err))
 	}
 
 	// If no cache or invalid cache, fetch fresh data
-	topTen, err := extractors.ExtractTopTen(h.baseHost)
-	if err != nil {
-		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch top ten: %v", err))
-	}
-
-	// Cache the fresh data
-	if err := helper.SetCachedData(cacheKey, topTen, helper.TopTenCacheTTL); err != nil {
-		// Log but don't fail the request
-		fmt.Printf("Failed to cache top ten data: %v\n", err)
-	}
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": topTen,
+		"cached":  wasCached,
+		"results": result,
 	})
 }

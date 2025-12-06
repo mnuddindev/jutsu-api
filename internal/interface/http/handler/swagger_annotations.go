@@ -30,6 +30,8 @@ type HomeResponse struct {
 type AnimeInfoResponse struct {
 	Success bool                   `json:"success" example:"true"`
 	Results map[string]interface{} `json:"results"`
+	Data    interface{}            `json:"data"`
+	Seasons interface{}            `json:"seasons"`
 }
 
 // StreamingInfoResponse represents streaming information response

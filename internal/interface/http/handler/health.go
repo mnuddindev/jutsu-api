@@ -13,17 +13,22 @@ import (
 )
 
 // HealthHandler handles health check requests
-type HealthHandler struct{}
+type HealthHandler struct {
+	cacheManager *cache.Manager
+}
 
 // NewHealthHandler creates a new health handler
-func NewHealthHandler() *HealthHandler {
-	return &HealthHandler{}
+func NewHealthHandler(cacheManager *cache.Manager) *HealthHandler {
+	return &HealthHandler{
+		cacheManager: cacheManager,
+	}
 }
 
 // CacheCheck represents cache health
 type CacheCheck struct {
 	Status         string `json:"status"`
 	ResponseTimeMs int64  `json:"response_time_ms"`
+	Enabled        bool   `json:"enabled"`
 }
 
 // ExternalSourcesCheck represents external source health
@@ -64,38 +69,41 @@ func (h *HealthHandler) Health(c *fiber.Ctx) error {
 		}
 	}
 
-	// Cache check
+	ctx := c.Context()
+
+	// Cache check using the NEW manager
 	cacheStart := time.Now()
 	cacheStatus := "ok"
-	if err := cache.HealthCheck(); err != nil {
-		cacheStatus = "unhealthy"
+	cacheEnabled := h.cacheManager.IsEnabled()
+
+	if cacheEnabled {
+		// Use the new Ping method from manager
+		if err := h.cacheManager.Ping(ctx); err != nil {
+			cacheStatus = "unhealthy"
+		}
+	} else {
+		cacheStatus = "disabled"
 	}
+
 	cacheCheck := CacheCheck{
 		Status:         cacheStatus,
 		ResponseTimeMs: time.Since(cacheStart).Milliseconds(),
+		Enabled:        cacheEnabled,
 	}
 
-	// External providers check with Redis cache (24h)
-	providerStatus := map[string]string{}
-	cached := false
-	if cache.Client != nil {
-		if err := cache.Get("providers:status", &providerStatus); err == nil && len(providerStatus) > 0 {
-			cached = true
-		}
-	}
-	if !cached {
-		providers := utils.GetBaseProviders()
-		for _, p := range providers {
-			providerStatus[p] = probeURL(p)
-		}
-		// cache for 24h
-		_ = cache.Set("providers:status", providerStatus, 24*time.Hour)
-	}
+	// External providers check (no caching - always probe fresh)
+	providerStatus := probeProviders()
 
 	external := ExternalSourcesCheck{AnimeProvider: providerStatus}
 
+	// Determine overall status
+	overallStatus := "ok"
+	if cacheStatus == "unhealthy" {
+		overallStatus = "degraded"
+	}
+
 	resp := HealthResponse{
-		Status:    "ok",
+		Status:    overallStatus,
 		Service:   cfg.App.Name,
 		Version:   cfg.App.Version,
 		Uptime:    utils.GetUptimeString(),
@@ -112,11 +120,30 @@ func (h *HealthHandler) Health(c *fiber.Ctx) error {
 // @Tags health
 // @Accept json
 // @Produce json
-// @Success 200 {object} map[string]string
+// @Success 200 {object} map[string]interface{}
+// @Success 503 {object} map[string]interface{}
 // @Router /ready [get]
 func (h *HealthHandler) Ready(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(map[string]string{
+	ctx := c.Context()
+
+	// Check if cache is healthy (if enabled)
+	cacheReady := true
+	if h.cacheManager.IsEnabled() {
+		if err := h.cacheManager.Ping(ctx); err != nil {
+			cacheReady = false
+		}
+	}
+
+	if !cacheReady {
+		return c.Status(fiber.StatusServiceUnavailable).JSON(map[string]interface{}{
+			"status": "not_ready",
+			"reason": "cache unavailable",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(map[string]interface{}{
 		"status": "ready",
+		"cache":  "ok",
 	})
 }
 
@@ -134,23 +161,39 @@ func (h *HealthHandler) Live(c *fiber.Ctx) error {
 	})
 }
 
+// probeProviders checks all anime providers
+func probeProviders() map[string]string {
+	providerStatus := map[string]string{}
+	providers := utils.GetBaseProviders()
+
+	for _, p := range providers {
+		providerStatus[p] = probeURL(p)
+	}
+
+	return providerStatus
+}
+
 // probeURL checks if a provider is reachable and returns "live" or "down"
 func probeURL(hostOrURL string) string {
 	url := hostOrURL
 	if !strings.HasPrefix(strings.ToLower(url), "http://") && !strings.HasPrefix(strings.ToLower(url), "https://") {
 		url = "https://" + hostOrURL
 	}
+
 	client := &http.Client{Timeout: 2 * time.Second}
+
 	// Try HEAD first
 	req, _ := http.NewRequest(http.MethodHead, url, nil)
 	resp, err := client.Do(req)
 	if err == nil && resp != nil && resp.StatusCode < 500 {
 		return "live"
 	}
+
 	// Fallback to GET
 	resp, err = client.Get(url)
 	if err == nil && resp != nil && resp.StatusCode < 500 {
 		return "live"
 	}
+
 	return "down"
 }

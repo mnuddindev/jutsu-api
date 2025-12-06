@@ -1,25 +1,28 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 // CharacterHandler serves the character details endpoint.
 type CharacterHandler struct {
-	baseHost string
+	baseHost     string
+	cacheManager *cache.Manager
 }
 
 // NewCharacterHandler creates a CharacterHandler configured with the v1 provider host.
-func NewCharacterHandler() *CharacterHandler {
+func NewCharacterHandler(cacheManager *cache.Manager) *CharacterHandler {
 	return &CharacterHandler{
-		baseHost: utils.GetV1BaseHost(),
+		baseHost:     utils.GetV1BaseHost(),
+		cacheManager: cacheManager,
 	}
 }
 
@@ -42,32 +45,44 @@ func (h *CharacterHandler) GetCharacter(c *fiber.Ctx) error {
 	}
 
 	cacheKey := fmt.Sprintf("character:%s", id)
+	ctx := c.Context()
 
-	// Try to get from cache
-	var cached interface{}
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
+	// Check if cached (for response field)
+	_, cacheErr := h.cacheManager.Get(ctx, cache.CategoryCharacter, cacheKey)
+	wasCached := (cacheErr == nil)
 
-	character, err := extractors.ExtractCharacter(id, h.baseHost)
+	dataBytes, err := h.cacheManager.GetOrSet(
+		ctx,
+		cache.CategoryCharacter,
+		cacheKey,
+		func() (interface{}, error) {
+			character, err := extractors.ExtractCharacter(id, h.baseHost)
+			if err != nil {
+				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch character: %v", err))
+			}
+
+			// Check if data is empty
+			if len(character.Results.Data) == 0 {
+				return nil, fiber.NewError(fiber.StatusNotFound, "character not found")
+			}
+			return character, nil
+		},
+	)
+
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch character: %v", err))
+		// Handle Fiber errors
+		if fErr, ok := err.(*fiber.Error); ok {
+			return fErr
+		}
+		return fiber.NewError(500, err.Error())
 	}
 
-	// Check if data is empty
-	if len(character.Results.Data) == 0 {
-		return fiber.NewError(fiber.StatusNotFound, "character not found")
-	}
-
-	// Cache the response
-	_ = helper.SetCachedData(cacheKey, character.Results, helper.CharacterCacheTTL)
+	var result interface{}
+	json.Unmarshal(dataBytes, &result)
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": character.Results,
+		"cached":  wasCached,
+		"results": result,
 	})
 }

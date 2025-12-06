@@ -3,26 +3,29 @@ package handler
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/pkg/extractors"
-	"github.com/mnuddindev/jutsu-api/pkg/helper"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
 // FilterHandler serves the filter endpoint.
 type FilterHandler struct {
-	baseHost string
+	baseHost     string
+	cacheManager *cache.Manager
 }
 
 // NewFilterHandler creates a FilterHandler configured with the v1 provider host.
-func NewFilterHandler() *FilterHandler {
+func NewFilterHandler(cacheManager *cache.Manager) *FilterHandler {
 	return &FilterHandler{
-		baseHost: utils.GetV1BaseHost(),
+		baseHost:     utils.GetV1BaseHost(),
+		cacheManager: cacheManager,
 	}
 }
 
@@ -113,42 +116,53 @@ func (h *FilterHandler) Filter(c *fiber.Ctx) error {
 
 	// Generate cache key from params
 	cacheKey := h.generateFilterCacheKey(params)
+	ctx := c.Context()
 
-	// Try to get from cache
-	var cached map[string]interface{}
-	if err := helper.GetCachedData(cacheKey, &cached); err == nil && cached != nil {
-		return c.JSON(fiber.Map{
-			"success": true,
-			"results": cached,
-			"cached":  true,
-		})
-	}
+	_, cacheErr := h.cacheManager.Get(ctx, cache.CategorySearch, cacheKey)
+	wasCached := (cacheErr == nil)
 
-	result, err := extractors.ExtractFilter(params, h.baseHost)
+	dataBytes, err := h.cacheManager.GetOrSet(
+		ctx,
+		cache.CategorySearch,
+		cacheKey,
+		func() (interface{}, error) {
+			result, err := extractors.ExtractFilter(params, h.baseHost)
+			if err != nil {
+				if strings.Contains(err.Error(), "exceeds total available pages") {
+					return nil, fiber.NewError(fiber.StatusNotFound, err.Error())
+				}
+				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to filter: %v", err))
+			}
+
+			if result.TotalPage > 0 && page > result.TotalPage {
+				return nil, fiber.NewError(fiber.StatusNotFound, "requested page exceeds total available pages")
+			}
+
+			responseData := fiber.Map{
+				"data":      result.Data,
+				"totalPage": result.TotalPage,
+				"page":      result.Page,
+				"hasNext":   result.HasNext,
+			}
+			return responseData, nil
+		},
+	)
+
 	if err != nil {
-		if strings.Contains(err.Error(), "exceeds total available pages") {
-			return fiber.NewError(fiber.StatusNotFound, err.Error())
+		// Handle Fiber errors
+		if fErr, ok := err.(*fiber.Error); ok {
+			return fErr
 		}
-		return fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to filter: %v", err))
+		return fiber.NewError(500, err.Error())
 	}
 
-	if result.TotalPage > 0 && page > result.TotalPage {
-		return fiber.NewError(fiber.StatusNotFound, "requested page exceeds total available pages")
-	}
-
-	responseData := fiber.Map{
-		"data":      result.Data,
-		"totalPage": result.TotalPage,
-		"page":      result.Page,
-		"hasNext":   result.HasNext,
-	}
-
-	// Cache the response
-	_ = helper.SetCachedData(cacheKey, responseData, helper.FilterCacheTTL)
+	var result map[string]interface{}
+	json.Unmarshal(dataBytes, &result)
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"results": responseData,
+		"cached":  wasCached,
+		"results": result,
 	})
 }
 
