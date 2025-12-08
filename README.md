@@ -180,12 +180,6 @@ docker run -p 8080:8080 jutsu-api
 
 ## 📚 Documentation
 
-### API Reference
-
-Complete API documentation is available in [docs/API.md](docs/API.md)
-
-## 📚 Documentation
-
 The HTTP interface is fully described via Swagger:
 
 - UI: `http://localhost:8080/docs`
