@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
 	"strconv"
 	"strings"
@@ -92,22 +90,6 @@ func (h *StreamHandler) handleStreamRequest(c *fiber.Ctx, fallback bool) error {
 		"success": true,
 		"results": response,
 	})
-}
-
-// generateStreamCacheKey generates a unique cache key for stream requests
-func (h *StreamHandler) generateStreamCacheKey(animeID, episodeID, serverName, streamType string, fallback bool) string {
-	key := fmt.Sprintf("stream:%s:%s", animeID, episodeID)
-	if serverName != "" {
-		key += ":" + serverName
-	}
-	if streamType != "" {
-		key += ":" + streamType
-	}
-	if fallback {
-		key += ":fallback"
-	}
-	hash := md5.Sum([]byte(key))
-	return fmt.Sprintf("stream:%s", hex.EncodeToString(hash[:]))
 }
 
 // transformStreamResponse transforms the extractor response to match the expected API format
