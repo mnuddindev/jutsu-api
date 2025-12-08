@@ -53,42 +53,93 @@ func SetupRoutes(app *fiber.App, cacheManager *cache.Manager) {
 
 	api := app.Group("/api")
 
-	api.Get("/", middleware.CacheByRoute(cacheManager, "home"), homeHandler.GetHomeInfo)
+	api.Get("/",
+		middleware.CacheByRoute(cacheManager, "home"),
+		homeHandler.GetHomeInfo,
+	)
 
 	for _, routeType := range RouteTypes {
-		api.Get("/"+routeType, categoryHandler.GetCategory)
+		api.Get("/"+routeType,
+			middleware.CacheByRoute(cacheManager, "genre"),
+			categoryHandler.GetCategory,
+		)
 	}
 
-	api.Get("/top-ten", topTenHandler.GetTopTen)
+	api.Get("/top-ten",
+		middleware.CacheByRoute(cacheManager, "top"),
+		topTenHandler.GetTopTen,
+	)
 
-	api.Get("/info", middleware.CacheByRoute(cacheManager, "anime"), animeInfoHandler.GetAnimeInfo)
+	api.Get("/info",
+		middleware.CacheByRoute(cacheManager, "anime"),
+		animeInfoHandler.GetAnimeInfo,
+	)
 
-	api.Get("/episodes/:id", episodeListHandler.GetEpisodes)
+	api.Get("/episodes/:id",
+		middleware.CacheByRoute(cacheManager, "episodes"),
+		episodeListHandler.GetEpisodes,
+	)
 
-	api.Get("/servers", serversHandler.GetServers)
+	api.Get("/servers",
+		middleware.CacheByRoute(cacheManager, "search"),
+		serversHandler.GetServers,
+	)
 
-	api.Get("/stream/:id", streamHandler.GetStream)
-	api.Get("/stream/fallback/:id", streamHandler.GetStreamFallback)
+	api.Get("/search",
+		middleware.CacheByRoute(cacheManager, "search"),
+		searchHandler.Search,
+	)
+	api.Get("/search/suggest",
+		middleware.CacheByRoute(cacheManager, "search"),
+		suggestionHandler.GetSuggestions,
+	)
+	api.Get("/top-search",
+		middleware.CacheByRoute(cacheManager, "top"),
+		topSearchHandler.GetTopSearch,
+	)
 
-	api.Get("/search", searchHandler.Search)
-	api.Get("/search/suggest", suggestionHandler.GetSuggestions)
-	api.Get("/top-search", topSearchHandler.GetTopSearch)
+	api.Get("/filter",
+		middleware.CacheByRoute(cacheManager, "search"),
+		filterHandler.Filter,
+	)
 
-	api.Get("/filter", filterHandler.Filter)
-
-	api.Get("/schedule", scheduleHandler.GetSchedule)
-	api.Get("/schedule/:id", nextEpisodeScheduleHandler.GetNextEpisodeSchedule)
+	api.Get("/schedule",
+		middleware.CacheByRoute(cacheManager, "schedule"),
+		scheduleHandler.GetSchedule,
+	)
+	api.Get("/schedule/:id",
+		middleware.CacheByRoute(cacheManager, "schedule"),
+		nextEpisodeScheduleHandler.GetNextEpisodeSchedule,
+	)
 
 	api.Get("/random", randomHandler.GetRandom)
 	api.Get("/random/:id", randomHandler.GetRandomID)
 
-	api.Get("/qtip/:id", qtipHandler.GetQtip)
+	api.Get("/qtip/:id",
+		middleware.CacheByRoute(cacheManager, "anime"),
+		qtipHandler.GetQtip,
+	)
 
-	api.Get("/producer/:id", creatorHandler.GetProducer)
+	api.Get("/producer/:id",
+		middleware.CacheByRoute(cacheManager, "genre"),
+		creatorHandler.GetProducer,
+	)
 
-	api.Get("/character/list/:id", characterListHandler.GetVoiceActors)
-	api.Get("/character/:id", characterHandler.GetCharacter)
-	api.Get("/actors/:id", actorsHandler.GetVoiceActor)
+	api.Get("/character/list/:id",
+		middleware.CacheByRoute(cacheManager, "character"),
+		characterListHandler.GetVoiceActors,
+	)
+	api.Get("/character/:id",
+		middleware.CacheByRoute(cacheManager, "character"),
+		characterHandler.GetCharacter,
+	)
+	api.Get("/actors/:id",
+		middleware.CacheByRoute(cacheManager, "character"),
+		actorsHandler.GetVoiceActor,
+	)
+
+	api.Get("/stream/:id", streamHandler.GetStream)
+	api.Get("/stream/fallback/:id", streamHandler.GetStreamFallback)
 
 	api.Get("/watchlist/:userId", watchlistHandler.GetWatchlist)
 	api.Get("/watchlist/:userId/:page", watchlistHandler.GetWatchlist)
