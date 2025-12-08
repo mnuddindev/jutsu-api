@@ -188,10 +188,10 @@ Complete API documentation is available in [docs/API.md](docs/API.md)
 
 The HTTP interface is fully described via Swagger:
 
-- # UI: `http://localhost:8080/docs`
+- UI: `http://localhost:8080/docs`
 - Files: `docs/swagger.json`, `docs/swagger.yaml`, `docs/docs.go`
 
-## `GET` Home info
+### `GET` Home info
 
 ```bash
 GET /api/
@@ -304,7 +304,7 @@ curl -X GET "http://localhost:8080/api/"
 }
 ```
 
-## `GET` Top 10 anime's info
+### `GET` Top 10 anime's info
 
 ```bash
 GET /api/top-ten
@@ -364,7 +364,7 @@ curl -X GET "http://localhost:8080/api/top-ten"
 }
 ```
 
-## `GET` Top Search
+### `GET` Top Search
 
 ```bash
 GET /api/top-search
@@ -398,7 +398,7 @@ curl -X GET "http://localhost:8080/api/top-search"
 }
 ```
 
-## `GET` Specified anime's info
+### `GET` Specified anime's info
 
 ```bash
 GET /api/info
@@ -478,7 +478,7 @@ curl -X GET "http://localhost:8080/api/info?id=frieren-beyond-journeys-end-18542
 }
 ```
 
-## `GET` Random anime's info
+### `GET` Random anime's info
 
 ```bash
 GET /api/random
@@ -554,7 +554,7 @@ curl -X GET "http://localhost:8080/api/random"
 }
 ```
 
-## `GET` Categories info
+### `GET` Categories info
 
 ```bash
 GET /api/{category}
@@ -708,7 +708,7 @@ curl -X GET "http://localhost:8080/api/most-popular?page=1"
 }
 ```
 
-## `GET` Anime of specific producers or studio
+### `GET` Anime of specific producers or studio
 
 ```bash
 GET /api/producer/{id}
@@ -760,7 +760,7 @@ curl -X GET "http://localhost:8080/api/producer/1?page=1"
 }
 ```
 
-## `GET` Search result's info
+### `GET` Search result's info
 
 ```bash
 GET /api/search
@@ -814,7 +814,7 @@ curl -X GET "http://localhost:8080/api/search?keyword=one%20punch%20man&page=1"
 }
 ```
 
-## `GET` Search suggestions
+### `GET` Search suggestions
 
 ```bash
 GET /api/search/suggest
@@ -852,7 +852,7 @@ curl -X GET "http://localhost:8080/api/search/suggest?keyword=demon"
 }
 ```
 
-## `GET` Filter Anime
+### `GET` Filter Anime
 
 ```bash
 GET /api/filter
@@ -920,7 +920,7 @@ curl -X GET "http://localhost:8080/api/filter?type=tv&status=completed&rated=5&s
 }
 ```
 
-## `GET` Anime's episode list
+### `GET` Anime's episode list
 
 ```bash
 GET /api/episodes/{id}
@@ -962,7 +962,7 @@ curl -X GET "http://localhost:8080/api/episodes/one-piece-100"
 }
 ```
 
-## `GET` Schedule of upcoming anime
+### `GET` Schedule of upcoming anime
 
 ```bash
 GET /api/schedule
@@ -1006,7 +1006,7 @@ curl -X GET "http://localhost:8080/api/schedule?date=2024-09-23"
 }
 ```
 
-## `GET` Schedule of next episode of Anime
+### `GET` Schedule of next episode of Anime
 
 ```bash
 GET /api/schedule/{id}
@@ -1049,7 +1049,7 @@ curl -X GET "http://localhost:8080/api/schedule/one-piece-100"
 }
 ```
 
-## `GET` Qtip info
+### `GET` Qtip info
 
 ```bash
 GET /api/qtip/{id}
@@ -1082,7 +1082,7 @@ curl -X GET "http://localhost:8080/api/qtip/frieren-beyond-journeys-end-18542"
 }
 ```
 
-## `GET` Characters
+### `GET` Characters
 
 ```bash
 GET /api/character/list/{id}
@@ -1136,7 +1136,7 @@ curl -X GET "http://localhost:8080/api/character/list/one-piece-100?page=1"
 }
 ```
 
-## `GET` Streaming info
+### `GET` Streaming info
 
 ```bash
 GET /api/stream/{id}
@@ -1197,7 +1197,7 @@ curl -X GET "http://localhost:8080/api/stream/frieren-beyond-journeys-end-18542?
 }
 ```
 
-## `GET` Fallback Streaming info
+### `GET` Fallback Streaming info
 
 ```bash
 GET /api/stream/fallback/{id}
@@ -1258,7 +1258,7 @@ curl -X GET "http://localhost:8080/api/stream/fallback/frieren-beyond-journeys-e
 }
 ```
 
-## `GET` Available servers of anime
+### `GET` Available servers of anime
 
 ```bash
 GET /api/servers
@@ -1298,7 +1298,7 @@ curl -X GET "http://localhost:8080/api/servers?ep=124260"
 }
 ```
 
-## `GET` Character Details
+### `GET` Character Details
 
 ```bash
 GET /api/character/{id}
@@ -1350,7 +1350,7 @@ curl -X GET "http://localhost:8080/api/character/asta-340"
 }
 ```
 
-## `GET` Voice Actor Details
+### `GET` Voice Actor Details
 
 ```bash
 GET /api/actors/{id}
@@ -1399,7 +1399,7 @@ curl -X GET "http://localhost:8080/api/actors/gakuto-kajiwara-534"
 }
 ```
 
-## `GET` User Watchlist
+### `GET` User Watchlist
 
 ```bash
 GET /api/watchlist/{userId}
@@ -1446,7 +1446,7 @@ curl -X GET "http://localhost:8080/api/watchlist/user123"
 }
 ```
 
-## `GET` Health Check
+### `GET` Health Check
 
 ```bash
 GET /health
