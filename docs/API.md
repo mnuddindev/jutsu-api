@@ -39,13 +39,13 @@ Currently, no authentication is required for public endpoints.
 ## `GET` Home info
 
 ```bash
-GET /api
+GET /api/
 ```
 
 ### Endpoint
 
 ```bash
-/api
+/api/
 ```
 
 > #### No parameter required ❌
@@ -53,7 +53,7 @@ GET /api
 #### Example of request
 
 ```bash
-curl -X GET "http://localhost:8080/api"
+curl -X GET "http://localhost:8080/api/"
 ```
 
 #### Sample Response
@@ -418,13 +418,107 @@ GET /api/{category}
 | `category` |     `path`     | `string`  | `Category`  |   Yes ✔️    |   --    |
 |   `page`   |    `query`     | `number`  | `Page-no.`  |    No ❌    |   `1`   |
 
-#### Available Categories
+## Available Categories
 
-- `/api/top-airing`
-- `/api/most-popular`
-- `/api/genre/{slug}` (e.g., action, adventure, comedy)
-- `/api/producer/{id}`
-- `/api/studio/{id}`
+### 📊 Status & Popularity Filters
+
+- `top-airing`
+- `most-popular`
+- `most-favorite`
+- `completed`
+- `recently-updated`
+- `recently-added`
+- `top-upcoming`
+
+### 🗣️ Language Filters
+
+- `subbed-anime`
+- `dubbed-anime`
+
+### 🎭 Genre Filters
+
+- `genre/action`
+- `genre/adventure`
+- `genre/cars`
+- `genre/comedy`
+- `genre/dementia`
+- `genre/demons`
+- `genre/drama`
+- `genre/ecchi`
+- `genre/fantasy`
+- `genre/game`
+- `genre/harem`
+- `genre/historical`
+- `genre/horror`
+- `genre/isekai`
+- `genre/josei`
+- `genre/kids`
+- `genre/magic`
+- `genre/martial-arts`
+- `genre/mecha`
+- `genre/military`
+- `genre/music`
+- `genre/mystery`
+- `genre/parody`
+- `genre/police`
+- `genre/psychological`
+- `genre/romance`
+- `genre/samurai`
+- `genre/school`
+- `genre/sci-fi`
+- `genre/seinen`
+- `genre/shoujo`
+- `genre/shoujo-ai`
+- `genre/shounen`
+- `genre/shounen-ai`
+- `genre/slice-of-life`
+- `genre/space`
+- `genre/sports`
+- `genre/super-power`
+- `genre/supernatural`
+- `genre/thriller`
+- `genre/vampire`
+
+### 🔠 Alphabetical (A-Z) Listing
+
+- `az-list`
+- `az-list/other`
+- `az-list/0-9`
+- `az-list/a`
+- `az-list/b`
+- `az-list/c`
+- `az-list/d`
+- `az-list/e`
+- `az-list/f`
+- `az-list/g`
+- `az-list/h`
+- `az-list/i`
+- `az-list/j`
+- `az-list/k`
+- `az-list/l`
+- `az-list/m`
+- `az-list/n`
+- `az-list/o`
+- `az-list/p`
+- `az-list/q`
+- `az-list/r`
+- `az-list/s`
+- `az-list/t`
+- `az-list/u`
+- `az-list/v`
+- `az-list/w`
+- `az-list/x`
+- `az-list/y`
+- `az-list/z`
+
+### 🎞️ Format/Type Filters
+
+- `movie`
+- `special`
+- `ova`
+- `ona`
+- `tv`
+- `music`
 
 #### Example of request
 

@@ -74,7 +74,7 @@ func ExtractPage(page int, params, baseURL string) ([]ExtractedItem, int, error)
 		showType := "Unknown"
 		e.ForEach(".film-detail .fd-infor .fdi-item", func(_ int, el *colly.HTMLElement) {
 			t := strings.ToLower(strings.TrimSpace(el.Text))
-			for _, typ := range []string{"tv", "ona", "movie", "ova", "special"} {
+			for _, typ := range []string{"tv", "ona", "movie", "ova", "special", "music"} {
 				if strings.Contains(t, typ) {
 					showType = strings.TrimSpace(el.Text)
 				}
