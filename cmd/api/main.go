@@ -17,8 +17,6 @@ import (
 	"github.com/mnuddindev/jutsu-api/internal/interface/middleware"
 	"github.com/mnuddindev/jutsu-api/internal/interface/validation"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
-
-	_ "github.com/mnuddindev/jutsu-api/docs"
 )
 
 // @title           Jutsu API

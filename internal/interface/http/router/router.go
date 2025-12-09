@@ -4,7 +4,6 @@ import (
 	"path/filepath"
 
 	"github.com/gofiber/fiber/v2"
-	fiberSwagger "github.com/swaggo/fiber-swagger"
 
 	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/internal/interface/http/handler"
@@ -18,16 +17,15 @@ func SetupRoutes(app *fiber.App, cacheManager *cache.Manager) {
 	app.Get("/ready", healthHandler.Ready)
 	app.Get("/live", healthHandler.Live)
 
-	app.Get("/swagger/*", fiberSwagger.WrapHandler)
-
-	swaggerUIDir := "./web/swagger"
-	app.Static("/docs/assets", swaggerUIDir)
+	docsDir := "./web/docs"
 	app.Get("/docs", func(c *fiber.Ctx) error {
-		return c.SendFile(filepath.Join(swaggerUIDir, "index.html"))
+		return c.SendFile(filepath.Join(docsDir, "index.html"))
 	})
 
+	app.Static("/docs/assets", filepath.Join(docsDir, "."))
+
 	app.Get("/favicon.ico", func(c *fiber.Ctx) error {
-		return c.SendFile(filepath.Join(swaggerUIDir, "favicon.ico"))
+		return c.SendFile(filepath.Join(docsDir, "favicon.ico"))
 	})
 
 	homeHandler := handler.NewHomeHandler(cacheManager)
