@@ -62,3 +62,4 @@ dump.rdb
 ./tests/integration
 ./debug_page.html
 ./docker-compose.yml
+./migrations

@@ -12,10 +12,13 @@ import (
 
 	"github.com/mnuddindev/jutsu-api/internal/config"
 	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
+	"github.com/mnuddindev/jutsu-api/internal/infrastructure/database"
 	appLogger "github.com/mnuddindev/jutsu-api/internal/infrastructure/logger"
 	"github.com/mnuddindev/jutsu-api/internal/interface/http/router"
 	"github.com/mnuddindev/jutsu-api/internal/interface/middleware"
 	"github.com/mnuddindev/jutsu-api/internal/interface/validation"
+	"github.com/mnuddindev/jutsu-api/internal/repo"
+	"github.com/mnuddindev/jutsu-api/internal/service"
 	"github.com/mnuddindev/jutsu-api/pkg/utils"
 )
 
@@ -90,18 +93,25 @@ func main() {
 	defer appLogger.Sync()
 
 	utils.SetAppStartTime(time.Now())
-	appLogger.Info("Starting Jutsu API", zap.String("version", cfg.App.Version))
+	appLogger.Info("✅ Starting Jutsu API", zap.String("version", cfg.App.Version))
 
 	if err := validation.InitValidator(); err != nil {
 		appLogger.Fatal("Failed to initialize validator", zap.Error(err))
 	}
+
+	pgPool, err := database.InitDatabase(cfg)
+	if err != nil {
+		appLogger.Fatal("Failed to connect to PostgreSQL: ", zap.Error(err))
+	}
+	appLogger.Info("✅ DatabaseQL connected successfully")
+	defer pgPool.Close()
 
 	var cacheManager *cache.Manager
 	if err := cache.InitCache(&cfg.Redis); err != nil {
 		appLogger.Warn("Failed to initialize cache - continuing without cache", zap.Error(err))
 		cacheManager = cache.NewManager(nil, appLogger.Logger, cache.Config{Enabled: false})
 	} else {
-		appLogger.Info("Cache initialized successfully")
+		appLogger.Info("✅ Cache initialized successfully")
 
 		redisClient := cache.GetRedisClient()
 
@@ -128,10 +138,15 @@ func main() {
 			SuggestTTL:     cfg.Cache.SuggestTTL,     // 3 minutes
 			RandomTTL:      cfg.Cache.RandomTTL,      // 1 minute
 			StreamTTL:      cfg.Cache.StreamTTL,      // Don't cache
+
+			UserSessionTTL:  cfg.User.UserSessionTTL,
+			UserProfileTTL:  cfg.User.UserProfileTTL,
+			JWTBlacklistTTL: cfg.User.JWTBlacklistTTL,
+			RefreshTokenTTL: cfg.User.RefreshTokenTTL,
 		}
 
 		cacheManager = cache.NewManager(redisClient, appLogger.Logger, cacheConfig)
-		appLogger.Info("Cache manager initialized",
+		appLogger.Info("✅ Cache manager initialized",
 			zap.Bool("enabled", redisEnabled),
 			zap.Int("anime_info_ttl", cacheConfig.AnimeInfoTTL))
 
@@ -160,9 +175,23 @@ func main() {
 		ErrorHandler:            errorHandler,
 	})
 
+	userRepo := repo.NewUserRepository(pgPool)
+	tokenRepo := repo.NewTokenRepository(pgPool, cacheManager, appLogger.Logger)
+
+	// Initialize services
+	tokenService := service.NewTokenService(
+		cfg.JWT.AccessSecretKey,
+		cfg.JWT.RefreshSecretKey,
+		"jutsu-api",
+		time.Duration(cfg.JWT.AccessTokenTTL)*time.Second,
+		time.Duration(cfg.JWT.RefreshTokenTTL)*time.Second,
+	)
+	passService := service.NewPasswordService(cfg.JWT.Cost)
+	authService := service.NewAuthService(userRepo, tokenRepo, tokenService, passService)
+
 	setupMiddleware(app, cfg)
 
-	router.SetupRoutes(app, cacheManager)
+	router.SetupRoutes(app, cacheManager, authService, tokenService, tokenRepo)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
@@ -175,11 +204,13 @@ func main() {
 	}()
 
 	time.Sleep(100 * time.Millisecond)
-	appLogger.Info("Server started successfully", zap.String("address", addr))
+	appLogger.Info("🚀 Jutsu API is running",
+		zap.String("address", addr),
+	)
 
 	<-quit
 
-	appLogger.Info("Shutting down server...")
+	appLogger.Info("🛑 Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -188,7 +219,7 @@ func main() {
 		appLogger.Error("Server forced to shutdown", zap.Error(err))
 	}
 
-	appLogger.Info("Server exited")
+	appLogger.Info("✅ Server exited gracefully")
 }
 
 // setupMiddleware sets up all middleware
@@ -204,7 +235,7 @@ func setupMiddleware(app *fiber.App, cfg *config.Config) {
 		app.Use("/api", middleware.NewRateLimiter(middleware.RateLimiterConfig{
 			Max: 100,
 		}))
-		appLogger.Info("Rate limiting enabled",
+		appLogger.Info("✅ Rate limiting enabled",
 			zap.Int("max", 100),
 			zap.Int("window_seconds", 60))
 	} else {
@@ -236,4 +267,22 @@ func errorHandler(c *fiber.Ctx, err error) error {
 		"success": false,
 		"message": message,
 	})
+}
+
+// startTokenCleanupJob starts a background job to cleanup expired tokens
+func startTokenCleanupJob(tokenRepo *repo.TokenRepository) {
+	ticker := time.NewTicker(24 * time.Hour)
+	defer ticker.Stop()
+
+	appLogger.Info("Token cleanup job started")
+
+	for range ticker.C {
+		ctx := context.Background()
+		count, err := tokenRepo.CleanupExpiredTokens(ctx)
+		if err != nil {
+			appLogger.Error("Token cleanup error", zap.Error(err))
+		} else if count > 0 {
+			appLogger.Info("Cleaned up expired tokens", zap.Int("count", count))
+		}
+	}
 }

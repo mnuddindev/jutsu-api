@@ -11,12 +11,15 @@ import (
 
 // Config holds all configuration for the application
 type Config struct {
-	App    AppConfig
-	Server ServerConfig
-	Redis  RedisConfig
-	Logger LoggerConfig
-	Cors   CorsConfig
-	Cache  CacheConfig
+	App      AppConfig
+	Database DatabaseConfig
+	Server   ServerConfig
+	Redis    RedisConfig
+	Logger   LoggerConfig
+	Cors     CorsConfig
+	Cache    CacheConfig
+	JWT      JWTConfig
+	User     UserConfig
 }
 
 // AppConfig holds application-level configuration
@@ -26,6 +29,19 @@ type AppConfig struct {
 	Environment      string
 	Debug            bool
 	RateLimitEnabled bool
+}
+
+// DatabaseConfig holds database configuration
+type DatabaseConfig struct {
+	Host            string
+	Port            string
+	User            string
+	Password        string
+	Database        string
+	SSLMode         string
+	MaxConnections  int32
+	MaxConnLifetime int
+	MaxConnIdleTime int
 }
 
 // ServerConfig holds server configuration
@@ -98,6 +114,22 @@ type CacheConfig struct {
 	StreamTTL      int
 }
 
+type JWTConfig struct {
+	AccessSecretKey  string
+	RefreshSecretKey string
+	AccessTokenTTL   int
+	RefreshTokenTTL  int
+	Cost             int
+}
+
+type UserConfig struct {
+	UserSessionTTL  int
+	MaxUserSession  int
+	UserProfileTTL  int
+	JWTBlacklistTTL int
+	RefreshTokenTTL int
+}
+
 var Cfg *Config
 
 // LoadConfig loads configuration from environment variables and config files
@@ -119,6 +151,17 @@ func LoadConfig() (*Config, error) {
 			Environment:      getString("APP_ENV", "development"),
 			Debug:            getBool("APP_DEBUG", false),
 			RateLimitEnabled: getBool("RATE_LIMIT_ENABLED", true),
+		},
+		Database: DatabaseConfig{
+			Host:            getString("DB_HOST", "localhost"),
+			Port:            getString("DB_PORT", "5432"),
+			User:            getString("DB_USER", "mnuddin"),
+			Password:        getString("DB_PASS", "mnuddin"),
+			Database:        getString("DB_NAME", "jutsu"),
+			SSLMode:         getString("DB_SSL_MODE", "disable"),
+			MaxConnections:  int32(getInt("DB_MAX_CONN", 10)),
+			MaxConnLifetime: getInt("DB_CONN_MAX_LIFETIME", 1800),
+			MaxConnIdleTime: getInt("DB_MAX_IDLE_CONN", 5),
 		},
 		Server: ServerConfig{
 			Host:         getString("SERVER_HOST", "0.0.0.0"),
@@ -179,6 +222,20 @@ func LoadConfig() (*Config, error) {
 			SuggestTTL:     getInt("CACHE_TTL_SUGGEST", 180),
 			RandomTTL:      getInt("CACHE_TTL_RANDOM", 60),
 			StreamTTL:      getInt("CACHE_TTL_STREAM", 0),
+		},
+		JWT: JWTConfig{
+			AccessSecretKey:  getString("JWT_ACCESS_SECRET", "e85j2CFLDVHBc1geV6b8ur3309MteCYe"),
+			RefreshSecretKey: getString("JWT_REFRESH_SECRET", "Di_iThHkq9eChxSTpSthrJnsDsdCiwfo"),
+			AccessTokenTTL:   getInt("JWT_ACCESS_TTL", 900),
+			RefreshTokenTTL:  getInt("JWT_REFRESH_TTL", 604800),
+			Cost:             getInt("BCRYPT_COST", 12),
+		},
+		User: UserConfig{
+			UserSessionTTL:  getInt("USER_SESSION_TTL", 86400),
+			MaxUserSession:  getInt("USER_MAX_SESSION", 1),
+			UserProfileTTL:  getInt("USER_PROFILE_TTL", 3600),
+			JWTBlacklistTTL: getInt("JWT_BLACKLIST_TTL", 604800),
+			RefreshTokenTTL: getInt("REFRESH_TOKEN_TTL", 604800),
 		},
 	}
 

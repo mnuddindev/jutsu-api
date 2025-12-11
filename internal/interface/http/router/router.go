@@ -8,14 +8,19 @@ import (
 	"github.com/mnuddindev/jutsu-api/internal/infrastructure/cache"
 	"github.com/mnuddindev/jutsu-api/internal/interface/http/handler"
 	"github.com/mnuddindev/jutsu-api/internal/interface/middleware"
+	"github.com/mnuddindev/jutsu-api/internal/repo"
+	"github.com/mnuddindev/jutsu-api/internal/service"
 )
 
 // SetupRoutes sets up all routes for the application
-func SetupRoutes(app *fiber.App, cacheManager *cache.Manager) {
+func SetupRoutes(app *fiber.App, cacheManager *cache.Manager, authService *service.AuthService, tokenService *service.TokenService, tokenRepo *repo.TokenRepository) {
+	authHandler := handler.NewAuthHandler(authService)
 	healthHandler := handler.NewHealthHandler(cacheManager)
 	app.Get("/health", healthHandler.Health)
 	app.Get("/ready", healthHandler.Ready)
 	app.Get("/live", healthHandler.Live)
+
+	SetupAuthRoutes(app, authHandler, tokenService, tokenRepo, cacheManager)
 
 	docsDir := "./web/docs"
 	app.Get("/docs", func(c *fiber.Ctx) error {

@@ -41,7 +41,13 @@ const (
 	CategorySearch  CacheCategory = "search"
 	CategorySuggest CacheCategory = "suggest"
 	CategoryRandom  CacheCategory = "random"
-	CategoryStream  CacheCategory = "stream" // Usually not cached
+	CategoryStream  CacheCategory = "stream"
+
+	CategoryUserSession  CacheCategory = "user_session"
+	CategoryUserProfile  CacheCategory = "user_profile"
+	CategoryRateLimit    CacheCategory = "rate_limit"
+	CategoryJWTBlacklist CacheCategory = "jwt_blacklist"
+	CategoryRefreshToken CacheCategory = "refresh_token"
 )
 
 // Manager handles caching operations with different TTLs per category
@@ -74,6 +80,12 @@ type Config struct {
 	SuggestTTL     int
 	RandomTTL      int
 	StreamTTL      int
+
+	UserSessionTTL  int
+	UserProfileTTL  int
+	RateLimitTTL    int
+	JWTBlacklistTTL int
+	RefreshTokenTTL int
 }
 
 // NewManager creates a new cache manager
@@ -107,6 +119,13 @@ func NewManager(client *redis.Client, logger *zap.Logger, config Config) *Manage
 		CategorySuggest: time.Duration(config.SuggestTTL) * time.Second,
 		CategoryRandom:  time.Duration(config.RandomTTL) * time.Second,
 		CategoryStream:  time.Duration(config.StreamTTL) * time.Second,
+
+		// Auth Categories
+		CategoryUserSession:  time.Duration(config.UserSessionTTL) * time.Second,
+		CategoryUserProfile:  time.Duration(config.UserProfileTTL) * time.Second,
+		CategoryRateLimit:    time.Duration(config.RateLimitTTL) * time.Second,
+		CategoryJWTBlacklist: time.Duration(config.JWTBlacklistTTL) * time.Second,
+		CategoryRefreshToken: time.Duration(config.RefreshTokenTTL) * time.Second,
 	}
 
 	return &Manager{

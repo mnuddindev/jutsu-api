@@ -50,19 +50,6 @@ func (h *TopTenHandler) GetTopTen(c *fiber.Ctx) error {
 			if err != nil {
 				return nil, fiber.NewError(fiber.StatusBadGateway, fmt.Sprintf("failed to fetch top ten: %v", err))
 			}
-			hasData := false
-			if topTen != nil {
-				for _, items := range topTen {
-					if len(items) > 0 {
-						hasData = true
-						break
-					}
-				}
-			}
-
-			if !hasData {
-				return nil, fiber.NewError(fiber.StatusBadGateway, "no top ten data available")
-			}
 			return topTen, nil
 		},
 	)

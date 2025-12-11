@@ -105,7 +105,4 @@ func ValidateRequest(c *fiber.Ctx, req interface{}) error {
 
 // registerCustomValidators registers custom validation functions
 func registerCustomValidators() {
-	// Add custom validators here
-	// Example:
-	// Validate.RegisterValidation("custom_tag", customValidatorFunc)
 }
